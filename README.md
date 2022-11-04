@@ -2,6 +2,7 @@
 MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gong, Yunchen Liu, and Wei Shi (Ted) Wang
 
 # MongoDB in docker setup
+## For Users DB
 * Install docker
 * `docker run -d -p 27017:27017 --name user_service_db mongo`
 * cd `mongo-db` and run `users_db.py`
@@ -9,6 +10,16 @@ Should output the following row and saved in the docker mongoDB `auctiondb` and 
 
 ```
 {'_id': ObjectId('6360afed0d873cec09f2eab0'), 'user_id': 1, 'name': 'Ted', 'status': 0, 'email': 'weishi830@hotmail.com', 'seller_rating': 4.1}
+```
+* As long as the docker container does not get killed, the data in db will be preserved.
+
+## For Items DB
+* Install docker
+* `docker run -d -p 27017:27017 --name inventory_service_db mongo`
+* cd `mongo-db` and run `items_db.py`
+Should output the following row and saved in the docker mongoDB `inventorydb` and table `items`:
+```
+{'_id': ObjectId('63647af674f3beb5c5df472c'), 'item_id': 1, 'name': 'iPhone14', 'description': 'color: black', 'quantity': 1, 'shipping_cost': 6.8, 'is_buy_now': False, 'price': 1000, 'status': 0}
 ```
 * As long as the docker container does not get killed, the data in db will be preserved.
 
