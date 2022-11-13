@@ -35,3 +35,29 @@ The result should show tables including UserItem, Categories and CategoriesItem.
 ('UserItem',)
 (1234, 6789)
 ```
+
+## Send Email API
+The api link is https://zvhfeuzz3m.execute-api.us-east-1.amazonaws.com/Prod/mail/
+
+It's a POST API. The body is of the following format:
+```
+{
+  "subject": "This is a test", 
+  "body": "Congrats, it works!", 
+  "to":"weishi830@hotmail.com"
+}
+```
+
+The email will be sent from the email address of `random.name.mpcs51205@gmail.com`.
+
+The response should be in the form of:
+```
+{
+    "source_email": "random.name.mpcs51205@gmail.com",
+    "destination_email": "weishi830@hotmail.com",
+    "subject": "This is a test",
+    "body": "Congrats, it works!",
+    "status": "success"
+}
+```
+
