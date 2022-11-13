@@ -1,7 +1,40 @@
 # mpcs51205-auction-project
 MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gong, Yunchen Liu, and Wei Shi (Ted) Wang
 
-# MongoDB in docker setup
+# system setup
+./run.sh
+
+# test inventory
+* run the whole system:
+./run.sh
+
+* home page for test:
+curl -X GET http://localhost:5001/
+
+* create item:
+curl --request POST 'http://127.0.0.1:5001/create_item' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name":"bbb",
+    "quantity":2,
+    "description":"desc",
+    "shipping_cost": 3,
+    "is_buy_now": true,
+    "price":222
+}'
+
+* get an item (replace an_item_id with a real id)
+curl --location --request GET 'http://127.0.0.1:5001/get_item?id=an_item_id'
+
+* change item quantity  (replace an_item_id with a real id)
+curl --request POST 'http://127.0.0.1:5001/change_item_cnt' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": "an_item_id",
+    "quantity":4
+}'
+
+
 ## For Users DB
 * Install docker
 * `docker run -d -p 27017:27017 --name user_service_db mongo`
