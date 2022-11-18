@@ -80,17 +80,26 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 
 For Auction DB:
 
-- `docker run --name=auction_db --env="MYSQL_ROOT_PASSWORD=root_password" -p 3308:3306 -d mysql:latest`
+- If you have not run the db before, do: `docker run --name=auction_db --env="MYSQL_ROOT_PASSWORD=root_password" -p 3308:3306 -d mysql:latest`
+- If you have run the db before, do: `docker start auction_db`
 - `cd mysql-db`
 - `python3 auction_db.py`
   You should see:
 
 ```
+Current tables in auction_db:
 ('Auction',)
-(1234, datetime.datetime(2022, 11, 16, 15, 31, 19), datetime.datetime(2022, 11, 16, 17, 31, 19), 1, 0, 0, 0.0, 0)
+('AuctionItem',)
+('Bid',)
+Current auctions in Auction table:
+(1234, datetime.datetime(2022, 11, 18, 12, 31, 59), datetime.datetime(2022, 11, 18, 14, 31, 59), 1, 0, 0, 0.0, 0)
+Current auction-items in AuctionItem table:
+(1234, 5)
+Current bids in Bid table:
+(1, 1234, 6, 20.5, datetime.datetime(2022, 11, 18, 12, 33, 59))
 ```
 
-(but it will have a different date as the time is current time).
+(but it will have a different dates as they are based on the current time).
 
 ## Send Email API
 
