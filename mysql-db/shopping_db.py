@@ -66,7 +66,7 @@ def create_cart_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS cart")
-    create_cart = "CREATE TABLE cart (cart_id int, user_id int, create_at datetime, checkout_at datetime)"
+    create_cart = "CREATE TABLE cart (cart_id int AUTO_INCREMENT PRIMARY KEY, user_id int, create_at datetime, checkout_at datetime)"
     cursor.execute(create_cart)
 
     start_time_test = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

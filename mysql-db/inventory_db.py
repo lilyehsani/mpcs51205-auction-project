@@ -41,7 +41,7 @@ def create_item_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS item")
-    create_item = "CREATE TABLE item (item_id int, name varchar(255), description varchar(255), quantity int, " \
+    create_item = "CREATE TABLE item (item_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255), description varchar(255), quantity int, " \
                   "shipping_cost float, is_buy_now boolean, purchasing_price float, status int) "
     cursor.execute(create_item)
     insert_item = "INSERT INTO item values (1, 'Bubble Tea', 'Watermelon jasmine flavor', 1, 3.0, false, 6.8, 0)"
@@ -66,7 +66,7 @@ def create_category_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS categories")
-    create_categories = "CREATE TABLE categories (category_id int, name varchar(255))"
+    create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255))"
     cursor.execute(create_categories)
 
     insert_categories = "INSERT INTO categories values (1, 'Food')"
