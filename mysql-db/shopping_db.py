@@ -47,14 +47,7 @@ def create_user_item_table():
     insert_user_item = "INSERT INTO user_item values (1, 1)"
     cursor.execute(insert_user_item)
 
-    # test
-    cursor.execute("SHOW TABLES")
-    for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM user_item")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+    db.commit()
     cursor.close()
 
 
@@ -81,14 +74,7 @@ def create_cart_table():
     insert_cart = "INSERT INTO cart values (1, 1, '" + start_time_test + "', '" + end_time_test + "')"
     cursor.execute(insert_cart)
 
-    # test
-    cursor.execute("SHOW TABLES")
-    for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM cart")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+    db.commit()
     cursor.close()
 
 
@@ -112,14 +98,37 @@ def create_cart_item_table():
     insert_cart_item = "INSERT INTO cart_item values (1, 1)"
     cursor.execute(insert_cart_item)
 
-    # test
+    db.commit()
+    cursor.close()
+
+
+def db_test():
+    db_host = config.get('host')
+    db_port = config.get('port')
+    db_user = config.get('user')
+    db_pwd = config.get('password')
+    db = mysql.connector.connect(
+        host=db_host,
+        port=db_port,
+        user=db_user,
+        password=db_pwd,
+        database="shopping_db"
+    )
+    cursor = db.cursor()
+
     cursor.execute("SHOW TABLES")
+    tables = []
     for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM cart_item")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+        table_name = x[0]
+        tables.append(table_name)
+
+    for table in tables:
+        print(table + " table:")
+        cursor.execute("SELECT * FROM " + table)
+        results = cursor.fetchall()
+        for result in results:
+            print(result)
+
     cursor.close()
 
 
@@ -128,3 +137,4 @@ if __name__ == '__main__':
     create_user_item_table()
     create_cart_table()
     create_cart_item_table()
+    db_test()

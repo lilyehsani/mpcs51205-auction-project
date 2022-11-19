@@ -47,14 +47,7 @@ def create_item_table():
     insert_item = "INSERT INTO item values (1, 'Bubble Tea', 'Watermelon jasmine flavor', 1, 3.0, false, 6.8, 0)"
     cursor.execute(insert_item)
 
-    # test
-    cursor.execute("SHOW TABLES")
-    for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM item")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+    db.commit()
     cursor.close()
 
 
@@ -79,14 +72,7 @@ def create_category_table():
     insert_categories = "INSERT INTO categories values (1, 'Food')"
     cursor.execute(insert_categories)
 
-    # test
-    cursor.execute("SHOW TABLES")
-    for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM categories")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+    db.commit()
     cursor.close()
 
 
@@ -110,14 +96,37 @@ def create_category_item_table():
     insert_category_item = "INSERT INTO category_item values (1, 1)"
     cursor.execute(insert_category_item)
 
-    # test
+    db.commit()
+    cursor.close()
+
+
+def db_test():
+    db_host = config.get('host')
+    db_port = config.get('port')
+    db_user = config.get('user')
+    db_pwd = config.get('password')
+    db = mysql.connector.connect(
+        host=db_host,
+        port=db_port,
+        user=db_user,
+        password=db_pwd,
+        database="inventory_db"
+    )
+    cursor = db.cursor()
+
     cursor.execute("SHOW TABLES")
+    tables = []
     for x in cursor:
-        print(x)
-    cursor.execute("SELECT * FROM category_item")
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
+        table_name = x[0]
+        tables.append(table_name)
+
+    for table in tables:
+        print(table + " table:")
+        cursor.execute("SELECT * FROM " + table)
+        results = cursor.fetchall()
+        for result in results:
+            print(result)
+
     cursor.close()
 
 
@@ -126,3 +135,4 @@ if __name__ == '__main__':
     create_item_table()
     create_category_table()
     create_category_item_table()
+    db_test()

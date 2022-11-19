@@ -65,17 +65,36 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 
 # MySQL in docker setup
 
-- Install docker
-- `docker run --name=user_mysql_1 --env="MYSQL_ROOT_PASSWORD=root_password" -p 3307:3306 -d mysql:latest`
+For Shopping DB:
+
+- `docker run --name=shopping_db --env="MYSQL_ROOT_PASSWORD=root_password" -p 3307:3306 -d mysql:latest`
 - `cd mysql-db`
-- `python3 mysql_default.py`
-  The result should show tables including UserItem, Categories and CategoriesItem. Also a piece of test data should show up:
+- `python3 shopping_db.py`
+  You should see:
 
 ```
-('Categories',)
-('CategoriesItem',)
-('UserItem',)
-(1234, 6789)
+cart table:
+(1, 1, datetime.datetime(2022, 11, 19, 11, 6, 13), datetime.datetime(2022, 11, 19, 13, 6, 13))
+cart_item table:
+(1, 1)
+user_item table:
+(1, 1)
+```
+
+For Inventory DB:
+
+- `docker run --name=inventory_db --env="MYSQL_ROOT_PASSWORD=root_password" -p 3309:3306 -d mysql:latest`
+- `cd mysql-db`
+- `python3 inventory_db.py`
+  You should see:
+
+```
+categories table:
+(1, 'Food')
+category_item table:
+(1, 1)
+item table:
+(1, 'Bubble Tea', 'Watermelon jasmine flavor', 1, 3.0, 0, 6.8, 0)
 ```
 
 For Auction DB:
