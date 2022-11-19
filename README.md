@@ -84,7 +84,7 @@ For Auction DB:
 - If you have run the db before, do: `docker start auction_db`
 - `cd mysql-db`
 - `python3 auction_db.py`
-  You should see:
+  You should see something like:
 
 ```
 Current tables in auction_db:
@@ -92,14 +92,18 @@ Current tables in auction_db:
 ('AuctionItem',)
 ('Bid',)
 Current auctions in Auction table:
-(1234, datetime.datetime(2022, 11, 18, 12, 31, 59), datetime.datetime(2022, 11, 18, 14, 31, 59), 1, 0, 0, 0.0, 0)
+(1, datetime.datetime(2022, 11, 18, 21, 6, 35), datetime.datetime(2022, 11, 18, 23, 6, 35), 1, 0, None, None, None)
+(2, datetime.datetime(2022, 11, 18, 23, 6, 35), datetime.datetime(2022, 11, 19, 1, 6, 35), 4, 0, None, None, None)
 Current auction-items in AuctionItem table:
-(1234, 5)
+(1, 5)
+(2, 6)
 Current bids in Bid table:
-(1, 1234, 6, 20.5, datetime.datetime(2022, 11, 18, 12, 33, 59))
+(1, 1, 1, 20.5, datetime.datetime(2022, 11, 18, 21, 8, 35))
+(2, 1, 2, 25.5, datetime.datetime(2022, 11, 18, 21, 9, 35))
+(3, 1, 1, 30.5, datetime.datetime(2022, 11, 18, 21, 10, 35))
 ```
 
-(but it will have a different dates as they are based on the current time).
+(but it will have a different dates as they are based on the current time). This represents 2 auctions, one of which is happening now and one which takes place in two hours. The first is of the item with id=5, the second of the item with id=6. Three bids have been placed on the auction that is online.
 
 ## Send Email API
 
