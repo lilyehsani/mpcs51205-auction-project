@@ -7,7 +7,6 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 ./run.sh
 
 # test inventory
-
 - run the whole system:
   ./run.sh
 

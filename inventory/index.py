@@ -15,7 +15,6 @@ item_status = {
     "normal": 0,
     "red_flag": 1,
     "deleted": 2,
-    "absent": -1 # status not recorded in DB
 }
 
 err_msg = {
@@ -60,8 +59,8 @@ def get_item():
         return pack_err(err)
     return pack_success(item_info)
 
-@app.route('/change_item_cnt',methods=['POST'])
-def change_item_cnt():
+@app.route('/change_item_quantity',methods=['POST'])
+def change_item_quantity():
     data = request.get_data()
     data = json.loads(data)
     id = data.get('id')
@@ -93,8 +92,9 @@ def get_item_by_id(id):
         "description": ret_info['description'] if "description" in ret_info else "",
         "quantity": ret_info['quantity'] if 'quantity' in ret_info else 0,
         "shipping_cost": ret_info['shipping_cost'] if 'shipping_cost' in ret_info else 0,
-        "price": ret_info['price'] if 'price' in ret_info else 0,
-        "status": ret_info['status'] if 'status' in ret_info else item_status["absent"],
+        "is_buy_now": ret_info['is_buy_now'] if 'is_buy_now' in ret_info else False,
+        "price": ret_info['price'] if 'price' in ret_info and 'is_buy_now' in ret_info and ret_info['is_buy_now'] else 0,
+        "status": ret_info['status'] if 'status' in ret_info else item_status["normal"],
     }   
     return result, ""
 
