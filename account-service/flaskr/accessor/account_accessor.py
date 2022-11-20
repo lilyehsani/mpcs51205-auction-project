@@ -1,7 +1,7 @@
 import pymongo  # package for working with MongoDB
 from bson import ObjectId
 
-from model.user import User
+from flaskr.model.user import User
 
 db_address: str = "mongodb://localhost:27017/"
 db_name: str = "accountdb"
@@ -24,7 +24,7 @@ class AccountAccessor:
             raise Exception("The user name already exist. Please try a different one.")
 
         user = {"name": name, "status": status, "email": email, "seller_rating": seller_rating, "user_name": user_name,
-             "user_password": user_password}
+                "user_password": user_password}
 
         return self.table.insert_one(user).inserted_id
 
@@ -67,9 +67,10 @@ class AccountAccessor:
         if not existing_user:
             raise Exception("This user does not exist.")
 
-        self.table.update_one(query, {"name": name, "status": status, "email": email, "seller_rating": seller_rating,
-                                      "user_name": user_name,
-                                      "user_password": user_password})
+        self.table.update_one(query,
+                              {"$set": {"name": name, "status": status, "email": email, "seller_rating": seller_rating,
+                                        "user_name": user_name,
+                                        "user_password": user_password}})
 
     def delete_user(self, user_id: str) -> None:
         query = {"_id": ObjectId(user_id)}
@@ -81,13 +82,13 @@ class AccountAccessor:
         self._soft_delete(query, existing_user)
 
     def _soft_delete(self, query: dict, existing_user: dict):
-        self.table.update_one(query, {"name": existing_user.get('name'),
-                                      "status": -1,
-                                      "email": existing_user.get('email'),
-                                      "seller_rating": existing_user.get('seller_rating'),
-                                      "user_name": existing_user.get('user_name'),
-                                      "user_password": existing_user.get('user_password')
-                                      })
+        self.table.update_one(query, {"$set": {"name": existing_user.get('name'),
+                                               "status": -1,
+                                               "email": existing_user.get('email'),
+                                               "seller_rating": existing_user.get('seller_rating'),
+                                               "user_name": existing_user.get('user_name'),
+                                               "user_password": existing_user.get('user_password')
+                                               }})
 
     def hard_delete_user(self, user_id: str) -> int:
         return self.table.delete_one({'_id': ObjectId(user_id)}).deleted_count
@@ -102,10 +103,10 @@ class AccountAccessor:
         self._suspend(query, existing_user)
 
     def _suspend(self, query, existing_user):
-        self.table.update_one(query, {"name": existing_user.get('name'),
-                                      "status": 0,
-                                      "email": existing_user.get('email'),
-                                      "seller_rating": existing_user.get('seller_rating'),
-                                      "user_name": existing_user.get('user_name'),
-                                      "user_password": existing_user.get('user_password')
-                                      })
+        self.table.update_one(query, {"$set": {"name": existing_user.get('name'),
+                                               "status": 0,
+                                               "email": existing_user.get('email'),
+                                               "seller_rating": existing_user.get('seller_rating'),
+                                               "user_name": existing_user.get('user_name'),
+                                               "user_password": existing_user.get('user_password')
+                                               }})

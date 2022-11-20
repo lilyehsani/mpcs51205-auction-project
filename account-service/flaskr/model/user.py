@@ -7,3 +7,13 @@ class User:
         self.email = email
         self.seller_rating = seller_rating
         self.user_name = user_name
+
+    def to_json(self):
+        return {
+            "id": str(self.user_id),
+            "name": self.name,
+            "status": self.status,
+            "email": self.status,
+            "seller_rating": self.seller_rating,
+            "user_name": self.user_name
+        }
