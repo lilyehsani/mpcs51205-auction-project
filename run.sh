@@ -3,7 +3,7 @@ pwd
 docker stop InventoryDB || true
 docker rm InventoryDB || true
 docker rmi randomteam:inventory || true
-docker run -d --hostname inventorydb --name InventoryDB mongo
+docker run --hostname inventorydb --name=InventoryDB --env="MYSQL_ROOT_PASSWORD=root_password" -p 3309:3306 -d mysql:latest
 
 docker image build -t randomteam:inventory ./inventory
 docker stop Inventory || true

@@ -66,10 +66,10 @@ def create_category_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS categories")
-    create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255))"
+    create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255), status int)"
     cursor.execute(create_categories)
 
-    insert_categories = "INSERT INTO categories values (1, 'Food')"
+    insert_categories = "INSERT INTO categories values (1, 'Food', 1)"
     cursor.execute(insert_categories)
 
     db.commit()

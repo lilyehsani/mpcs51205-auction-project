@@ -3,6 +3,9 @@ import os
 import pymongo 
 import uuid
 import json
+import mysql.connector
+
+# todo how to create table auto when starting the mysql-db service
 
 app = Flask(__name__)
 # to test in local
@@ -10,6 +13,8 @@ app = Flask(__name__)
 dbclient = pymongo.MongoClient("mongodb://inventorydb:27017/")
 db = dbclient["inventorydb"]
 items = db["items"]
+sql_conn = mysql.connector.connect(user='root', password='root_password', database='inventory_db', port=3309)
+sql_cursor = sql_conn.cursor()
 
 item_status = {
     "normal": 0,
