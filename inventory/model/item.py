@@ -5,7 +5,7 @@ item_status = {
 }
 
 class Item:
-    def __init__(self,id:int, name:str, description:str, quantity:int, shipping_cost:float, is_buy_now:bool, price:float, status:int)-> None:
+    def __init__(self,id:int, name:str, description:str, quantity:int, shipping_cost:float, is_buy_now:bool, price:float, status:int, category_id:int, category:str)-> None:
         self.id = id
         self.name = name
         self.description = description
@@ -15,4 +15,6 @@ class Item:
         self.price = price
         self.is_buy_now = is_buy_now
         self.status = status
+        self.category_id = category_id
+        self.category = category
         

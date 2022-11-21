@@ -1,6 +1,4 @@
-from unicodedata import name
 import mysql.connector
-# import model
 import sys
 sys.path.append('/Users/yunchenliu/Desktop/mpcs51205-auction-project/inventory')
 from model.item import Item, item_status
@@ -14,13 +12,7 @@ class ItemAccessor:
     def pack_item(self, rows) -> list[Item]:
         result = []
         for row in rows: 
-            result.append(Item(id = row[0],name=row[1],description=row[2], quantity=row[3],shipping_cost=row[4],is_buy_now=row[5],price=row[6],status = row[7]))
-        return result
-    
-    def pack_category(self, rows):
-        result = []
-        for row in rows: 
-            result.append(Category(id = row[0],name=row[1], status = row[2]))
+            result.append(Item(id = row[0],name=row[1],description=row[2], quantity=row[3],shipping_cost=row[4],is_buy_now=row[5],price=row[6],status = row[7], category_id=row[8], category=row[9]))
         return result
 
     def check_item_exist(self, id) -> bool:
@@ -29,21 +21,30 @@ class ItemAccessor:
 
     def create_item(self, name:str, description:str, quantity:int, shipping_cost:float, is_buy_now:bool, price:float, status:int) -> int:
         sql = "insert into item values (NULL, '%s', '%s', %d, %f, %d, %f, %d)" % (name, description, quantity, shipping_cost, is_buy_now, price, status)
-        self.cursor.execute(sql)
-        ret_id = int(self.cursor.lastrowid)
-        self.db.commit()
-        return ret_id
+        try:
+            self.cursor.execute(sql)
+            ret_id = int(self.cursor.lastrowid)
+            self.db.commit()
+            return ret_id
+        except Exception as e:
+            print("create_item err", e)
+            return -1
 
     def get_item_by_ids(self, item_id_list: list[int]) -> Item:
         if len(item_id_list) == 0:
             return []
         item_id_list = [str(i) for i in item_id_list] 
         id_list = ",".join(item_id_list)
-        sql = "SELECT * FROM item where item_id in (%s)" % (id_list)
+        # sql = "SELECT * FROM item where item_id in (%s)" % (id_list)
+        sql = "SELECT i.item_id, i.name,i.description, i.quantity, i.shipping_cost, i.is_buy_now, i.purchasing_price, i.status, categories.category_id, categories.name FROM item as i left join category_item on i.item_id = category_item.item_id left join categories on categories.category_id = category_item.category_id where i.item_id in (%s)"  % (id_list)
         print(sql)
-        self.cursor.execute(sql)
-        items = self.cursor.fetchall()
-        return self.pack_item(items)
+        try:
+            self.cursor.execute(sql)
+            items = self.cursor.fetchall()
+            return self.pack_item(items)
+        except Exception as e:
+            print("get_item_by_ids err", e)
+            return []
     
     def delete_item(self, id:int) -> bool:
         self.update_item(id=id, status=item_status["deleted"])
@@ -78,74 +79,30 @@ class ItemAccessor:
         except Exception as e:
             print("inventory update_item error", e)
             return False
-        return True   
+        return True     
 
-    def create_category(self, name:str, status:int) -> int:
-        sql = "insert into categories values (NULL, '%s', %d)" % (name, status)
-        print(sql)
+    def search_item_by_category(self, category_id):
+        sql = "SELECT i.item_id, i.name,i.description, i.quantity, i.shipping_cost, i.is_buy_now, i.purchasing_price, i.status, categories.category_id, categories.name FROM item as i join category_item on i.item_id = category_item.item_id join categories on categories.category_id = category_item.category_id where categories.category_id = %d"  % (category_id) 
         try:
             self.cursor.execute(sql)
-            ret_id = int(self.cursor.lastrowid)
-            self.db.commit()
-            return ret_id    
+            items = self.cursor.fetchall()
+            return self.pack_item(items)
         except Exception as e:
-            print("create_category error:", e)
-            return -1
-
-    def get_category_by_ids(self, category_id_list:list[int]) -> list[Category]:
-        if len(category_id_list) == 0:
+            print("inventory search_item_by_category error", e)
             return []
-        category_id_list = [str(i) for i in category_id_list] 
-        id_list = ",".join(category_id_list)
-        sql = "SELECT * FROM categories where category_id in (%s)" % (id_list)
-        print(sql)
-        self.cursor.execute(sql)
-        categories = self.cursor.fetchall()
-        return self.pack_category(categories) 
-
-    def update_category(self, id, new_name):
-        if len(self.get_category_by_ids([id])) != 1:
-            return False
-        sql = "update categories set name = '%s' where category_id = %d" % (new_name, id)
-        print(sql)
-        try:
-            self.cursor.execute(sql)
-            self.db.commit()
-        except Exception as e:
-            print("inventory update_category error", e)
-            return False
-        return True  
-
-    def delete_category(self, id):
-        if len(self.get_category_by_ids([id])) != 1:
-            return False
-        sql = "update categories set status = %d where category_id = %d" % (category_status["deleted"], id)
-        print(sql)
-        try:
-            self.cursor.execute(sql)
-            self.db.commit()
-        except Exception as e:
-            print("inventory delete_category error", e)
-            return False
-        return True  
-
-    # add category when creating item
-    # update category for item
-    # add category when getting items
-
-    def get_all_categories(self):
-        pass
-
-    def search_item_by_category(self, category):
-        pass
 
     # search by name or description
-    def search_item_by_key_words(self, key_words):
-
-
-
-
-    
+    def search_item_by_key_words(self, key_word):
+        sql = "select item_id from item where name like '%%%s%%' or description like '%%%s%%'" % (key_word)
+        try:
+            self.cursor.execute(sql)
+            item_ids = self.cursor.fetchall()
+            item_id_list = [i[0] for i in item_ids]
+            return self.get_item_by_ids(item_id_list)
+        except Exception as e:
+            print("inventory search_item_by_category error", e)
+            return []  
 
 if __name__ == '__main__':
     ia = ItemAccessor()
+    ia.search_item_by_key_words("one")

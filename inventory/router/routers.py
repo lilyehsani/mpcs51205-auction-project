@@ -1,30 +1,22 @@
 # from flask import Flask,request, jsonify
 # import os
-# import pymongo 
-# import uuid
 # import json
-# import mysql.connector
+# import sys
+# sys.path.append('/Users/yunchenliu/Desktop/mpcs51205-auction-project/inventory')
+# from accessor.category_accessor import CategoryAccessor
+# from accessor.item_accessor import ItemAccessor
+# from model.item import item_status
 
 # # todo how to create table auto when starting the mysql-db service
 
 # app = Flask(__name__)
-# # to test in local
-# # dbclient = pymongo.MongoClient("mongodb://localhost:27017/")
-# dbclient = pymongo.MongoClient("mongodb://inventorydb:27017/")
-# db = dbclient["inventorydb"]
-# items = db["items"]
-# sql_conn = mysql.connector.connect(user='root', password='root_password', database='inventory_db', port=3309)
-# sql_cursor = sql_conn.cursor()
-
-# item_status = {
-#     "normal": 0,
-#     "red_flag": 1,
-#     "deleted": 2,
-# }
+# category_accessor = CategoryAccessor()
+# item_accessor = ItemAccessor()
 
 # err_msg = {
 #     "param_err": "invalid param",
 #     "db_err": "db error",
+#     "service_err": "service error",
 #     "not_found": "item not found in DB"
 # }
 
@@ -33,26 +25,26 @@
 # def home():
 #     return "inventory index page"
 
+
 # @app.route('/create_item',methods=['POST'])
 # def create_item():
 #     data = request.get_data()
 #     data = json.loads(data)
-#     item_id = str(uuid.uuid4())
 #     check_result, error = check_item_input(data)
 #     if not check_result:
 #         return pack_err(error)
-#     item_list = [
-#         {"id": item_id, "name": data.get('name'), "description": data.get('description'), "quantity":data.get('quantity'), "shipping_cost": data.get('shipping_cost'), "is_buy_now": data.get('is_buy_now'), "price": data.get('price'), "status": item_status["normal"]},
-#     ]       
-#     print(item_list) 
 #     try:
-#         items.insert_many(item_list)
+#         item_id = item_accessor.create_item(data.get('name'), data.get('description'), data.get('quantity'), data.get('shipping_cost'), data.get('is_buy_now'), data.get('price'), item_status["normal"])
+#         if item_id == -1:
+#             return pack_err(err_msg["db_err"])
+#         if not category_accessor.add_category_item_relation(item_id, data.get('category_id')):
+#             return pack_err(err_msg["db_err"])
 #     except Exception as e:
 #         print("exception when creating item:", e)
 #         return pack_err(err_msg["db_err"])
-#     item_info, err = get_item_by_id(item_id)
-#     if not item_info:
-#         return pack_err(err)
+#     item_info = item_accessor.get_item_by_ids([item_id])
+#     if not item_info or len(item_info) == 0:
+#         return pack_err(err_msg["service_err"])
 #     return pack_success(item_info)
 
 # # http://10.1.1.1:5000/get_item?id=12345
@@ -82,6 +74,42 @@
 #         return pack_err(err)
 #     return pack_success(item_info) 
     
+# @app.route('/search_item', methods=['GET'])
+# def get_all_categories():
+#     pass
+
+# @app.route('/update_item', methods=['POST'])
+# def update_item():
+#     pass
+
+# @app.route('/delete_item', methods=['POST'])
+# def delete_item():
+#     pass
+
+# @app.route('/red_flag_item', methods=['POST'])
+# def red_flag_item():
+#     pass
+
+# @app.route('/add_category', methods=['POST'])
+# def add_category():
+#     pass
+
+# @app.route('/update_category', methods=['POST'])
+# def update_category():
+#     pass
+
+# @app.route('/delete_category', methods=['POST'])
+# def delete_category():
+#     pass
+
+# @app.route('/get_items_by_category', methods=['POST'])
+# def get_items_by_category():
+#     pass
+
+# @app.route('/get_all_categories', methods=['POST'])
+# def get_all_categories():
+#     pass
+
 # # -------- inner functions ----------
 # def get_item_by_id(id):
 #     try:

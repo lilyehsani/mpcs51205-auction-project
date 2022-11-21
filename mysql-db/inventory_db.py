@@ -90,7 +90,7 @@ def create_category_item_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS category_item")
-    create_category_item = "CREATE TABLE category_item (category_id int, item_id int)"
+    create_category_item = "CREATE TABLE category_item (category_id int, item_id int, FOREIGN KEY (category_id) REFERENCES categories(category_id), FOREIGN KEY (item_id) REFERENCES item(item_id), UNIQUE KEY category_item_id (category_id, item_id))"
     cursor.execute(create_category_item)
 
     insert_category_item = "INSERT INTO category_item values (1, 1)"
