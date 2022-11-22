@@ -2,7 +2,7 @@ import mysql.connector
 from datetime import datetime, timedelta
 
 # specify database configurations
-db_host = "auction_db"
+db_host = "localhost"
 db_port = 3308
 db_user = "root"
 db_pwd = "root_password"
@@ -14,10 +14,10 @@ Initializes the database.
 def init_db():
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
-        host= db_host,
+        host = db_host,
         port = db_port,
-        user= db_user,
-        password= db_pwd
+        user = db_user,
+        password = db_pwd
     )
     cursor = db.cursor()
 
@@ -257,7 +257,6 @@ def print_tables():
     cursor.close()
     db.close()
 
-
 def db_test():
     print_tables()
     now = datetime.now()
@@ -283,7 +282,6 @@ def db_test():
         print("The follow error should prevent the bid because the auction is offline:")
         print(err)
     print_from_db("Current bids in Bid table:", "Bid")
-    print(get_auction_by_id(1))
 
 
 if __name__ == '__main__':
