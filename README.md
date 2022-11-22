@@ -54,6 +54,15 @@ To use the auction service:
   "item_id": 5
   }'
 
+- Place bid (wih example values):
+  curl --request POST 'http://127.0.0.1:5002/place_bid' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "auction_id":1,
+  "user_id":2,
+  "bid_amount":40.50
+  }'
+
 - Get all auctions:
   curl --location --request GET 'http://127.0.0.1:5002/get_all_auction'
 

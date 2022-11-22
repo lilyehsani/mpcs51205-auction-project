@@ -1,5 +1,6 @@
 import mysql.connector
 from flaskr.model.auction import Auction
+from flaskr.model.bid import Bid
 from datetime import datetime
 
 class AuctionAccessor:
@@ -76,7 +77,7 @@ class AuctionAccessor:
 
         # Insert the auction
         insert_auction = ("INSERT INTO Auction (start_time, end_time, quantity, status, " + 
-                        "current_highest_bid, finished_price, finished_user) VALUES " + 
+                        "current_highest_bid_id, finished_price, finished_user) VALUES " + 
                         "(%s, %s, %s, %s, %s, %s, %s)")
         insert_auction_data = (start_time, end_time, quantity, 0, None, None, None)
         
@@ -189,7 +190,7 @@ class AuctionAccessor:
         new_highest_bid_id = cursor.lastrowid
 
         # Update current highest bid in Auction table
-        update_auction = "UPDATE Auction SET current_highest_bid = %s WHERE auction_id = %s"
+        update_auction = "UPDATE Auction SET current_highest_bid_id = %s WHERE auction_id = %s"
         update_auction_data = (new_highest_bid_id, auction_id)
 
         try:
@@ -266,3 +267,28 @@ class AuctionAccessor:
             auctions.append(auction)
 
         return auctions
+
+    def get_bids_by_auction(self, auction_id: int):
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_bid = "SELECT * FROM Bid WHERE auction_id = %s"
+        get_bid_data = [auction_id]
+        cursor.execute(get_bid, get_bid_data)
+        fetched_bids = cursor.fetchall()
+
+        bids = []
+
+        for bid_info in fetched_bids:
+            bid = Bid(bid_info[0], bid_info[1], bid_info[2],
+                      bid_info[3], bid_info[4])
+            bids.append(bid)
+                        
+        return bids

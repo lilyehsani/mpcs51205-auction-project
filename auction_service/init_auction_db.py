@@ -47,7 +47,7 @@ def create_auction_tables():
     # Create 3 auction-related tables
     create_auction = ("CREATE TABLE Auction (auction_id INT AUTO_INCREMENT PRIMARY KEY, " + 
                       "start_time datetime, end_time datetime, quantity int, status int, " +
-                      "current_highest_bid int, finished_price float, finished_user int)")
+                      "current_highest_bid_id int, finished_price float, finished_user int)")
     create_auction_item = "CREATE TABLE AuctionItem (auction_id int, item_id int)"
     create_bids = ("CREATE TABLE Bid (bid_id INT AUTO_INCREMENT PRIMARY KEY, auction_id int, " +
                    "user_id int, bid_amount float, bid_time datetime)")
@@ -81,7 +81,7 @@ def create_new_auction(start_time: datetime, end_time: datetime, quantity: int, 
 
     # Insert the auction
     insert_auction = ("INSERT INTO Auction (start_time, end_time, quantity, status, " + 
-                      "current_highest_bid, finished_price, finished_user) VALUES " + 
+                      "current_highest_bid_id, finished_price, finished_user) VALUES " + 
                       "(%s, %s, %s, %s, %s, %s, %s)")
     insert_auction_data = (start_time, end_time, quantity, 0, None, None, None)
     
@@ -193,7 +193,7 @@ def place_bid(auction_id: int, user_id: int, bid_amount: float, bid_time: dateti
     new_highest_bid_id = cursor.lastrowid
 
     # Update current highest bid in Auction table
-    update_auction = "UPDATE Auction SET current_highest_bid = %s WHERE auction_id = %s"
+    update_auction = "UPDATE Auction SET current_highest_bid_id = %s WHERE auction_id = %s"
     update_auction_data = (new_highest_bid_id, auction_id)
 
     try:

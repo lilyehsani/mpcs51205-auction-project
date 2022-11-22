@@ -27,16 +27,32 @@ def create_auction():
         start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
         auction_id = accessor.create_new_auction(start_time, end_time, data.get("quantity"), data.get("item_id"))
-        print(auction_id)
     except Exception as err:
         return pack_err(str(err))
 
     try:
         auction_info = accessor.get_auction_by_id(auction_id)
-        print(auction_info)
     except Exception as err:
         return pack_err(str(err))
     return pack_success(auction_info.to_json())
+
+@app.route("/place_bid",methods=["POST"])
+def place_bid():
+    data = request.get_data()
+    data = json.loads(data)
+    check_result, err = check_bid_input(data)
+    if not check_result:
+        return pack_err(str(err))
+
+    accessor = AuctionAccessor()
+
+    try:
+        bid_time = datetime.now()
+        accessor.place_bid(data.get("auction_id"), data.get("user_id"), data.get("bid_amount"), bid_time)
+    except Exception as err:
+        return pack_err(str(err))
+        
+    return json_success()
 
 @app.route("/get_all_auction",methods=["GET"])
 def get_all_auction():
@@ -111,8 +127,24 @@ def cancel_auction():
         accessor.update_auction(auction_id, "status", 4)
     except Exception as err:
         return pack_err(str(err))
-        
+
     return json_success()
+
+@app.route("/get_bids_by_auction",methods=["GET"])
+def get_bids_by_auction():
+    accessor = AuctionAccessor()
+    auction_id = request.args.get("id")
+
+    try:
+        bids = accessor.get_bids_by_auction(auction_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_bids = []
+    for bid in bids:
+        json_bids.append(bid.to_json())
+
+    return pack_success(json_bids)
 
 # -------- inner functions ----------
 def check_auction_input(data):
@@ -130,7 +162,23 @@ def check_auction_input(data):
         assert item_id is not None, "invalid item id"
         assert isinstance(item_id, int), "invalid item id"
     except Exception as e:
-        print("create_item param error %s"%e)
+        print("create_auction param error %s"%e)
+        return False, "Invalid Parameter"
+    return True, ""
+
+def check_bid_input(data):
+    try:
+        auction_id = data.get("auction_id")
+        assert auction_id is not None, "invalid auction id"
+        assert isinstance(auction_id, int), "invalid auction id"
+        user_id = data.get("user_id")
+        assert user_id is not None, "invalid user id"
+        assert isinstance(user_id, int), "invalid user id"
+        bid_amount = data.get("bid_amount")
+        assert bid_amount is not None, "invalid bid amount"
+        assert isinstance(bid_amount, float) or isinstance(bid_amount, int), "invalid bid amount"
+    except Exception as e:
+        print("place_bid param error %s"%e)
         return False, "Invalid Parameter"
     return True, ""
 
