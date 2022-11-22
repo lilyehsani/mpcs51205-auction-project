@@ -14,6 +14,6 @@ RUN pip install -r requirements.txt
 COPY . /app
 
 # configure the container to run in an executed manner
-ENTRYPOINT ["python3"]
+# ENTRYPOINT ["python3"]
 
-CMD ["init_auction_db.py", "index.py"]
+CMD ["./entrypoint.sh"]

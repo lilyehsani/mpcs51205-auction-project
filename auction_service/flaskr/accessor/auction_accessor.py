@@ -2,9 +2,6 @@ import mysql.connector
 from flaskr.model.auction import Auction
 from datetime import datetime
 
-# This is not working for some reason
-# from model.auction import Auction
-
 class AuctionAccessor:
     '''
     Provides an interface for the Auction database. Assumes the database has been created, and its
