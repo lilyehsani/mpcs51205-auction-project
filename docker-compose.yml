@@ -1,0 +1,19 @@
+version: "3"
+services:
+  auction_service:
+    build: auction_service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - "auction_db"
+  auction_db:
+    image: mysql:latest
+    build: mysql-server
+    environment:
+      # MYSQL_DATABASE: auction_db
+      MYSQL_ROOT_PASSWORD: root_password
+      # MYSQL_ROOT_HOST: localhost
+      # MYSQL_USER: root
+      # MYSQL_PASSWORD: root_password
+    ports:
+      - "3308:3306"

@@ -27,12 +27,17 @@ def create_auction():
         start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
         auction_id = accessor.create_new_auction(start_time, end_time, data.get("quantity"), data.get("item_id"))
+        print(auction_id)
     except Exception as err:
         print(err)
-        return
+        return jsonify({
+            "status": False,
+            "err_msg": str(err)
+            })
         # return pack_err("An exception occurred")
     try:
         auction_info = accessor.get_auction_by_id(auction_id)
+        print(auction_info)
     except Exception as err:
         print(err)
         return

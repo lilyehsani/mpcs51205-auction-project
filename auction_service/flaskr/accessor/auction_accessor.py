@@ -11,7 +11,7 @@ class AuctionAccessor:
     tables (Auction, AuctionItem, and Bid) have been set up.
     '''
     def __init__(self):
-        self.db_host = "localhost"
+        self.db_host = "auction_db"
         self.db_port = 3308
         self.db_user = "root"
         self.db_pwd = "root_password"
@@ -97,7 +97,6 @@ class AuctionAccessor:
         try:
             cursor.execute(insert_auction_item, insert_auction_item_data)
         except mysql.connector.Error as err:
-            print(err)
             raise Exception(err)
 
         # Commit changes and close

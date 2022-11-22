@@ -16,4 +16,4 @@ COPY . /app
 # configure the container to run in an executed manner
 ENTRYPOINT ["python3"]
 
-CMD ["index.py"]
+CMD ["init_auction_db.py", "index.py"]

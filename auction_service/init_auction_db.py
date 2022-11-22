@@ -1,93 +1,16 @@
 import mysql.connector
 from datetime import datetime, timedelta
 
-# This is a good place to play around with Auction DB functions
-# but the final accessor code will be in auction_service/auction_accessor.py
-class Auction:
-    '''
-    Stores information related to a single auction. Must have an ID, start and end times, a 
-    quantity, and a status. The current highest bid is the bid ID of the bid that is currently
-    winning the auction when the instance of the class is created. The finished price and
-    finished user will only be set after the auction is over.
-    '''
-    def __init__(self, auction_id: int, item_id: int, start_time: datetime, end_time: datetime, 
-                 quantity: int, status: int, current_highest_bid: int=None, 
-                 finished_price: float=None, finished_user: int=None):
-        self.auction_id = auction_id
-        self.item_id = item_id
-        self.start_time = start_time
-        self.end_time = end_time
-        self.quantity = quantity
-        self.status = status
-        self.current_highest_bid = current_highest_bid
-        self.finished_price = finished_price
-        self.finished_user = finished_user
-
-    def __repr__(self):
-        res = "*** Printing Auction Information ***\n"
-        res += "Auction ID: {}\nStart time: {}\nEnd time: {}\nQuantity: {}\nStatus: {}\n"
-        res += "Current highest bid ID: {}\nFinished price: {}\nFinished user ID: {}\n" 
-        res += "*** End of Auction Information ***"    
-        return res.format(self.auction_id, self.start_time, self.end_time, self.quantity, 
-                          self.status, self.current_highest_bid, self.finished_price,
-                          self.finished_user)
-
 # specify database configurations
-db_host = "localhost"
+db_host = "auction_db"
 db_port = 3308
 db_user = "root"
 db_pwd = "root_password"
 db_name = "auction_db"
 
-def print_from_db(message: str, table_name: str):
-    # Connect to db and acquire cursor
-    db = mysql.connector.connect(
-        host = db_host,
-        port = db_port,
-        user = db_user,
-        password = db_pwd,
-        database = db_name,
-    )
-    cursor = db.cursor()
-
-    try:
-        cursor.execute("SELECT * FROM " + table_name)
-    except mysql.connector.Error as err:
-        print("Something went wrong: {}".format(err))
-        return
-
-    # Print the provided message
-    print(message)
-    results = cursor.fetchall()
-    for result in results:
-        print(result)
-
-    # Commit changes and close
-    db.commit()
-    cursor.close()
-    db.close()
-
-def print_tables():
-    # Connect to db and acquire cursor
-    db = mysql.connector.connect(
-        host = db_host,
-        port = db_port,
-        user = db_user,
-        password = db_pwd,
-        database = db_name,
-    )
-    cursor = db.cursor()
-
-    cursor.execute("SHOW TABLES")
-    print("Current tables in auction_db:")
-    for x in cursor:
-        print(x)
-
-    # Commit changes and close
-    db.commit()
-    cursor.close()
-    db.close()
-
+'''
+Initializes the database.
+'''
 def init_db():
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
@@ -107,6 +30,9 @@ def init_db():
     cursor.close()
     db.close()
 
+'''
+Creates the three auction-related tables we need.
+'''
 def create_auction_tables():
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
@@ -138,6 +64,10 @@ def create_auction_tables():
     db.close()
 
 
+'''
+The following are functions for testing the initialization. These functions are also in the
+AuctionAccessor and will be used from there in production.
+'''
 def create_new_auction(start_time: datetime, end_time: datetime, quantity: int, item_id: int):
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
@@ -177,7 +107,6 @@ def create_new_auction(start_time: datetime, end_time: datetime, quantity: int, 
 
     return auction_id
 
-
 def update_auction(auction_id: int, field_name: str, new_value):
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
@@ -211,7 +140,6 @@ def update_auction(auction_id: int, field_name: str, new_value):
     db.commit()
     cursor.close()
     db.close()
-
 
 def place_bid(auction_id: int, user_id: int, bid_amount: float, bid_time: datetime):
     # Connect to db and acquire cursor
@@ -280,7 +208,7 @@ def place_bid(auction_id: int, user_id: int, bid_amount: float, bid_time: dateti
 
     return cursor.lastrowid
 
-def get_auction_by_id(auction_id: int):
+def print_from_db(message: str, table_name: str):
     # Connect to db and acquire cursor
     db = mysql.connector.connect(
         host = db_host,
@@ -291,26 +219,44 @@ def get_auction_by_id(auction_id: int):
     )
     cursor = db.cursor()
 
-    select_statement = "SELECT * FROM {} WHERE auction_id = %s"
-    get_auction = select_statement.format("Auction")
-    get_auction_data = [auction_id]
-    cursor.execute(get_auction, get_auction_data)
-    auction_info = cursor.fetchone()
-    get_auction_item = select_statement.format("AuctionItem")
-    get_auction_item_data = [auction_id]
-    cursor.execute(get_auction_item, get_auction_item_data)
-    item_id = cursor.fetchone()[1]
-    auction = Auction(auction_info[0], item_id, auction_info[1],
-                      auction_info[2], auction_info[3],
-                      auction_info[4], auction_info[5],
-                      auction_info[6], auction_info[7])
+    try:
+        cursor.execute("SELECT * FROM " + table_name)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+        return
+
+    # Print the provided message
+    print(message)
+    results = cursor.fetchall()
+    for result in results:
+        print(result)
 
     # Commit changes and close
     db.commit()
     cursor.close()
     db.close()
 
-    return auction
+def print_tables():
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW TABLES")
+    print("Current tables in auction_db:")
+    for x in cursor:
+        print(x)
+
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
 
 def db_test():
     print_tables()
