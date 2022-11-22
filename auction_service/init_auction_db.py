@@ -2,8 +2,8 @@ import mysql.connector
 from datetime import datetime, timedelta
 
 # specify database configurations
-db_host = "localhost"
-db_port = 3308
+db_host = "auction_db"
+db_port = 3306
 db_user = "root"
 db_pwd = "root_password"
 db_name = "auction_db"
@@ -287,5 +287,7 @@ def db_test():
 if __name__ == '__main__':
     init_db()
     create_auction_tables()
+    # The following line creates some test values for auctions and bids
+    # Comment it out to just create the db and tables
     db_test()
 	

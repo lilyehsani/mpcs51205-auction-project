@@ -39,15 +39,12 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 
 ## Auction Service
 
-This will start the container but the code isn't working in there yet.
+Prerequisites: docker and docker compose.
+To start up the auction database and service, run `docker compose up` from the root directory. It usually takes about 30 seconds, because the service container has to wait for the database container to be up and running before it does anything.
 
-- `cd auction_service`
-- `docker image build -t auction_service .`
-- `docker run -p 5002:5002 --name auction_service -d auction_service`
+To use the auction service:
 
-Still a work in progress. The following works locally, after the db has been initialized as detailed below:
-
-- Create auction:
+- Create auction (with example values):
   curl --request POST 'http://127.0.0.1:5002/create_auction' \
   --header 'Content-Type: application/json' \
   --data-raw '{
@@ -60,13 +57,20 @@ Still a work in progress. The following works locally, after the db has been ini
 - Get all auctions:
   curl --location --request GET 'http://127.0.0.1:5002/get_all_auction'
 
-- Get auction by id:
+- Get auction by id (change <id> to the auction's id):
   curl --location --request GET 'http://127.0.0.1:5002/get_auction?id=<id>'
 
-- Start auction:
+- Start auction (change <id> to the auction's id):
   curl --location --request POST 'http://127.0.0.1:5002/start_auction?id=<id>'
 
-- Various end auction commands
+- End auction due to time (change <id> to the auction's id):
+  curl --location --request POST 'http://127.0.0.1:5002/end_auction_by_time?id=<id>'
+
+- End auction due to a "buy now" purchase of the item (change <id> to the auction's id):
+  curl --location --request POST 'http://127.0.0.1:5002/end_auction_by_purchase?id=<id>'
+
+- Cancel an auction (change <id> to the auction's id):
+  curl --location --request POST 'http://127.0.0.1:5002/cancel_auction?id=<id>'
 
 ## For Users DB
 
@@ -130,10 +134,12 @@ item table:
 
 For Auction DB:
 
+(Do not do this anymore. Use docker compose as described above instead.)
+
 - If you have not run the db before, do: `docker run --name=auction_db --env="MYSQL_ROOT_PASSWORD=root_password" -p 3308:3306 -d mysql:latest`
 - If you have run the db before, do: `docker start auction_db`
-- `cd mysql-db`
-- `python3 auction_db.py`
+- `cd auction_service`
+- `python3 init_auction_db.py`
   You should see something like:
 
 ```

@@ -9,7 +9,7 @@ class AuctionAccessor:
     '''
     def __init__(self):
         self.db_host = "auction_db"
-        self.db_port = 3308
+        self.db_port = 3306
         self.db_user = "root"
         self.db_pwd = "root_password"
         self.db_name = "auction_db"

@@ -1,4 +1,5 @@
-Flask==2.0.3
-mysql-connector==2.2.9
-python-dateutil==2.8.2
-requests==2.27.1
+Flask
+mysql-connector
+python-dateutil
+requests
+mysql-connector-python
