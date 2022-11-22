@@ -37,6 +37,37 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
   "quantity":4
   }'
 
+## Auction Service
+
+This will start the container but the code isn't working in there yet.
+
+- `cd auction_service`
+- `docker image build -t auction_service .`
+- `docker run -p 5002:5002 --name auction_service -d auction_service`
+
+Still a work in progress. The following works locally, after the db has been initialized as detailed below:
+
+- Create auction:
+  curl --request POST 'http://127.0.0.1:5002/create_auction' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "start_time":"2022-11-21 18:29:40",
+  "end_time":"2022-11-21 20:29:40",
+  "quantity":1,
+  "item_id": 5
+  }'
+
+- Get all auctions:
+  curl --location --request GET 'http://127.0.0.1:5002/get_all_auction'
+
+- Get auction by id:
+  curl --location --request GET 'http://127.0.0.1:5002/get_auction?id=<id>'
+
+- Start auction:
+  curl --location --request POST 'http://127.0.0.1:5002/start_auction?id=<id>'
+
+- Various end auction commands
+
 ## For Users DB
 
 - Install docker

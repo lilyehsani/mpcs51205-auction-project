@@ -33,32 +33,63 @@ class Auction:
                           self.finished_user)
 
 # specify database configurations
-config = {
-    'host': 'localhost',
-    'port': 3308,
-    'user': 'root',
-    'password': 'root_password',
-}
+db_host = "localhost"
+db_port = 3308
+db_user = "root"
+db_pwd = "root_password"
+db_name = "auction_db"
 
-def print_from_db(cursor, message: str, table_name: str):
-    print(message)
+def print_from_db(message: str, table_name: str):
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
     try:
         cursor.execute("SELECT * FROM " + table_name)
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
         return
+
+    # Print the provided message
+    print(message)
     results = cursor.fetchall()
     for result in results:
         print(result)
 
-def format_time(time: datetime):
-    return time.strftime('%Y-%m-%d %H:%M:%S')
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
+def print_tables():
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    cursor.execute("SHOW TABLES")
+    print("Current tables in auction_db:")
+    for x in cursor:
+        print(x)
+
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
 
 def init_db():
-    db_host = config.get('host')
-    db_port = config.get('port')
-    db_user = config.get('user')
-    db_pwd = config.get('password')
+    # Connect to db and acquire cursor
     db = mysql.connector.connect(
         host= db_host,
         port = db_port,
@@ -66,11 +97,27 @@ def init_db():
         password= db_pwd
     )
     cursor = db.cursor()
+
+    # Create database
     cursor.execute("DROP DATABASE IF EXISTS auction_db")
     cursor.execute("CREATE DATABASE auction_db")
-    cursor.close()
 
-def create_auction_tables(cursor):
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
+def create_auction_tables():
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
     # Create 3 auction-related tables
     create_auction = ("CREATE TABLE Auction (auction_id INT AUTO_INCREMENT PRIMARY KEY, " + 
                       "start_time datetime, end_time datetime, quantity int, status int, " +
@@ -85,78 +132,216 @@ def create_auction_tables(cursor):
     cursor.execute(create_auction_item)
     cursor.execute(create_bids)
 
-    # Test creating tables
-    cursor.execute("SHOW TABLES")
-    print("Current tables in auction_db:")
-    for x in cursor:
-        print(x)
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
 
-def create_new_auction(cursor, start_time: datetime, end_time: datetime, quantity: int, item_id: int):
+
+def create_new_auction(start_time: datetime, end_time: datetime, quantity: int, item_id: int):
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    # Insert the auction
     insert_auction = ("INSERT INTO Auction (start_time, end_time, quantity, status, " + 
-                      "current_highest_bid, finished_price, finished_user) VALUES ('" + 
-                      format_time(start_time) + "', '" + format_time(end_time) +
-                      "', " + str(quantity) + ", 0, null, null, null)")
+                      "current_highest_bid, finished_price, finished_user) VALUES " + 
+                      "(%s, %s, %s, %s, %s, %s, %s)")
+    insert_auction_data = (start_time, end_time, quantity, 0, None, None, None)
+    
     try:
-        cursor.execute(insert_auction)
+        cursor.execute(insert_auction, insert_auction_data)
     except mysql.connector.Error as err:
         raise Exception(err)
     auction_id = cursor.lastrowid
-    insert_auction_item = ("INSERT INTO AuctionItem values (" + str(auction_id) + 
-                        ", " + str(item_id) + ")")
+
+    # Insert the auction-item
+    insert_auction_item = "INSERT INTO AuctionItem values (%s, %s)"
+    insert_auction_item_data = (auction_id, item_id)
+
     try:
-        cursor.execute(insert_auction_item)
+        cursor.execute(insert_auction_item, insert_auction_item_data)
     except mysql.connector.Error as err:
         raise Exception(err)
+
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
     return auction_id
 
-def place_bid(cursor, auction_id: int, user_id: int, bid_amount: float, bid_time: datetime):
-    insert_bid = ("INSERT INTO Bid (auction_id, user_id, bid_amount, bid_time) VALUES (" + 
-                  str(auction_id) + ", " + str(user_id) + ", " + str(bid_amount) + ", '" + 
-                  format_time(bid_time) + "')")
+
+def update_auction(auction_id: int, field_name: str, new_value):
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    # Ensure the auction to be updated exists
+    get_auction = "SELECT * FROM Auction WHERE auction_id = %s"
+    get_auction_data = [auction_id]
+    cursor.execute(get_auction, get_auction_data)
+    auctions = cursor.fetchall()
+    if len(auctions) < 1:
+        raise Exception("Auction does not exist.")
+
+    # Update status of the auction
+    update_statement = "UPDATE Auction SET {} = %s WHERE auction_id = %s"
+    update_auction = update_statement.format(field_name)
+    update_auction_data = (new_value, auction_id)
+
     try:
-        cursor.execute(insert_bid)
+        cursor.execute(update_auction, update_auction_data)
     except mysql.connector.Error as err:
         print("Something went wrong: {}".format(err))
+
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
+
+def place_bid(auction_id: int, user_id: int, bid_amount: float, bid_time: datetime):
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    # Get the auction that the bid is being placed on
+    get_auction = "SELECT * FROM Auction WHERE auction_id = %s"
+    get_auction_data = [auction_id]
+    cursor.execute(get_auction, get_auction_data)
+    auctions = cursor.fetchall()
+    if len(auctions) < 1:
+        raise Exception("Auction does not exist.")
+    
+    # Get each needed piece of auction informtion
+    auction = auctions[0]
+    auction_id = auction[0]
+    status = auction[4]
+    current_highest_bid_id = auction[5]
+    
+    # Cannot place bid if the auction is not online
+    if status != 1:
+        raise Exception("Auction is not online.")
+
+    # Check current highest bid and ensure that new bid is higher
+    if current_highest_bid_id is not None:
+        get_bid = "SELECT * FROM Bid WHERE bid_id = %s"
+        bid_data = [current_highest_bid_id]
+        cursor.execute(get_bid, bid_data)
+        bid = cursor.fetchone()
+        current_highest_bid_amount = bid[3]
+        if current_highest_bid_amount >= bid_amount:
+            raise Exception("Bid is not higher than current highest bid.")
+
+    # Insert bid
+    insert_bid = ("INSERT INTO Bid (auction_id, user_id, bid_amount, bid_time) VALUES " + 
+                  "(%s, %s, %s, %s)")
+    insert_bid_data = (auction_id, user_id, bid_amount, bid_time)
+
+    try:
+        cursor.execute(insert_bid, insert_bid_data)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+
+    new_highest_bid_id = cursor.lastrowid
+
+    # Update current highest bid in Auction table
+    update_auction = "UPDATE Auction SET current_highest_bid = %s WHERE auction_id = %s"
+    update_auction_data = (new_highest_bid_id, auction_id)
+
+    try:
+        cursor.execute(update_auction, update_auction_data)
+    except mysql.connector.Error as err:
+        print("Something went wrong: {}".format(err))
+    
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
     return cursor.lastrowid
 
 def get_auction_by_id(auction_id: int):
-    select_statement = "SELECT * FROM {} WHERE auction_id = '" + str(auction_id) + "'"
+    # Connect to db and acquire cursor
+    db = mysql.connector.connect(
+        host = db_host,
+        port = db_port,
+        user = db_user,
+        password = db_pwd,
+        database = db_name,
+    )
+    cursor = db.cursor()
+
+    select_statement = "SELECT * FROM {} WHERE auction_id = %s"
     get_auction = select_statement.format("Auction")
-    cursor.execute(get_auction)
+    get_auction_data = [auction_id]
+    cursor.execute(get_auction, get_auction_data)
     auction_info = cursor.fetchone()
-    get_item = select_statement.format("AuctionItem")
-    cursor.execute(get_item)
+    get_auction_item = select_statement.format("AuctionItem")
+    get_auction_item_data = [auction_id]
+    cursor.execute(get_auction_item, get_auction_item_data)
     item_id = cursor.fetchone()[1]
     auction = Auction(auction_info[0], item_id, auction_info[1],
                       auction_info[2], auction_info[3],
                       auction_info[4], auction_info[5],
                       auction_info[6], auction_info[7])
-    print(auction)
+
+    # Commit changes and close
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return auction
+
+def db_test():
+    print_tables()
+    now = datetime.now()
+    print(now.strftime('%Y-%m-%d %H:%M:%S'))
+    print((now + timedelta(hours=2)).strftime('%Y-%m-%d %H:%M:%S'))
+    auction_1 = create_new_auction(now, now + timedelta(hours=2), 1, 5)
+    create_new_auction(now + timedelta(hours=2), now + timedelta(hours=4), 4, 6)
+    print_from_db("Current auctions in Auction table:", "Auction")
+    print_from_db("Current auction-item relations in AuctionItem table:", "AuctionItem")
+    update_auction(auction_1, "status", 1)
+    print_from_db("The first of the following auctions should now have status=1:", "Auction")
+    place_bid(1, 1, 20.50, now + timedelta(minutes=2))
+    place_bid(1, 2, 25.50, now + timedelta(minutes=3))
+    place_bid(1, 1, 30.50, now + timedelta(minutes=4))
+    try:
+        place_bid(1, 2, 30.50, now + timedelta(minutes=4))
+    except Exception as err:
+        print("The following error should prevent the bid because it is too low:")
+        print(err)
+    try:
+        place_bid(2, 1, 30.50, now + timedelta(minutes=4))
+    except Exception as err:
+        print("The follow error should prevent the bid because the auction is offline:")
+        print(err)
+    print_from_db("Current bids in Bid table:", "Bid")
+    print(get_auction_by_id(1))
+
 
 if __name__ == '__main__':
     init_db()
-    db_host = config.get('host')
-    db_port = config.get('port')
-    db_user = config.get('user')
-    db_pwd = config.get('password')
-    db = mysql.connector.connect(
-	  host= db_host,
-	  port = db_port,
-	  user= db_user,
-	  password= db_pwd,
-	  database = "auction_db"
-	)
-    cursor = db.cursor()
-    create_auction_tables(cursor)
-    now = datetime.now()
-    create_new_auction(cursor, now, now + timedelta(hours=2), 1, 5)
-    create_new_auction(cursor, now + timedelta(hours=2), now + timedelta(hours=4), 4, 6)
-    print_from_db(cursor, "Current auctions in Auction table:", "Auction")
-    print_from_db(cursor, "Current auction-item relations in AuctionItem table:", "AuctionItem")
-    place_bid(cursor, 1, 1, 20.50, now + timedelta(minutes=2))
-    place_bid(cursor, 1, 2, 25.50, now + timedelta(minutes=3))
-    place_bid(cursor, 1, 1, 30.50, now + timedelta(minutes=4))
-    print_from_db(cursor, "Current bids in Bid table:", "Bid")
-    get_auction_by_id(1)
-    cursor.close()
+    create_auction_tables()
+    db_test()
 	
