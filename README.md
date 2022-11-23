@@ -7,8 +7,7 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 ./run.sh
 
 # test inventory
-
-- run the whole system:
+- run the inventory microservice with db:
   ./run.sh
 
 - home page for test:
@@ -23,19 +22,12 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
   "description":"desc",
   "shipping_cost": 3,
   "is_buy_now": true,
-  "price":222
+  "price":222,
+  "category_id":1
   }'
 
 - get an item (replace an_item_id with a real id)
-  curl --location --request GET 'http://127.0.0.1:5001/get_item?id=an_item_id'
-
-- change item quantity (replace an_item_id with a real id)
-  curl --request POST 'http://127.0.0.1:5001/change_item_cnt' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "id": "an_item_id",
-  "quantity":4
-  }'
+  curl --location --request GET 'http://127.0.0.1:5001/get_items?id=an_item_id'
 
 ## Auction Service
 

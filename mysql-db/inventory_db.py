@@ -66,10 +66,10 @@ def create_category_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS categories")
-    create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255))"
+    create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255), status int)"
     cursor.execute(create_categories)
 
-    insert_categories = "INSERT INTO categories values (1, 'Food')"
+    insert_categories = "INSERT INTO categories values (1, 'Food', 1)"
     cursor.execute(insert_categories)
 
     db.commit()
@@ -90,7 +90,7 @@ def create_category_item_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS category_item")
-    create_category_item = "CREATE TABLE category_item (category_id int, item_id int)"
+    create_category_item = "CREATE TABLE category_item (category_id int, item_id int, FOREIGN KEY (category_id) REFERENCES categories(category_id), FOREIGN KEY (item_id) REFERENCES item(item_id), UNIQUE KEY category_item_id (category_id, item_id))"
     cursor.execute(create_category_item)
 
     insert_category_item = "INSERT INTO category_item values (1, 1)"
