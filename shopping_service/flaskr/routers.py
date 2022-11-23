@@ -17,7 +17,7 @@ shopping_accessor = ShoppingAccessor()
 def home():
     return "shopping service home page"
 
-
+# CreateItemForSale
 @app.route('/create_item/<user_id>', methods=['POST'])
 def create_item(user_id):
     data = request.get_data()
@@ -29,17 +29,57 @@ def create_item(user_id):
     shopping_accessor.add_user_item(user_id=user_id, item_id=item_id)
 
 
-@app.route('/add_item_to_cart/<user_id>/<item_id>', methods=['PUT'])
-def add_item_to_cart(user_id, item_id):
+# AddItemToCart
+@app.route('/add_item_to_cart', methods=['PUT'])
+def add_item_to_cart():
+    user_id = request.args.get('id')
+    item_id = request.args.get('item')
+    quantity = request.args.get('quantity')
     cart_id = shopping_accessor.get_current_cart(user_id=user_id)
-    shopping_accessor.add_item_to_cart(cart_id=cart_id, item_id=item_id)
+    shopping_accessor.add_item_to_cart(cart_id=cart_id, item_id=item_id, quantity=quantity)
+    return pack_success(None)
 
 
+# CheckoutItem
 @app.route('/checkout/<user_id>', methods=['PUT'])
 def checkout(user_id):
     cart_id = shopping_accessor.get_current_cart(user_id=user_id)
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     shopping_accessor.checkout_items(cart_id, current_time)
+
+
+# GetItemsForSaleByOwner
+@app.route('/get_items_for_sale', method=['GET'])
+def get_items_for_sale():
+    user_id = request.args.get('id')
+    item_ids = shopping_accessor.get_items_for_sale_by_user(user_id=user_id)
+    return pack_success(item_ids)
+
+
+# GetItemsInCartByUser
+@app.route('/get_items_in_cart', method=['PUT'])
+def get_items_in_cart():
+    user_id = request.args.get('id')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    item_ids = shopping_accessor.get_items_from_cart(cart_id=cart_id)
+    return pack_success(item_ids)
+
+
+# RemoveItemFromCart
+@app.route('/remove_item_from_cart', method=['DELETE'])
+def remove_item_from_cart():
+    user_id = request.args.get('id')
+    item_id = request.args.get('item')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    shopping_accessor.remove_item_from_cart(cart_id=cart_id, item_id=item_id)
+
+
+def pack_success(data):
+    return jsonify({
+        "status": True,
+        "data": data
+    })
+
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))

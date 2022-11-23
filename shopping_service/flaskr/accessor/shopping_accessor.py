@@ -64,9 +64,9 @@ class ShoppingAccessor:
         cart_id = carts[-1][0]
         return cart_id
 
-    def add_item_to_cart(self, cart_id, item_id):
+    def add_item_to_cart(self, cart_id, item_id, quantity):
         # update cart item table
-        query = "INSERT INTO cart_item (cart_id, item_id) VALUES (" + str(cart_id) + "," + str(item_id) + ")"
+        query = "INSERT INTO cart_item (cart_id, item_id) VALUES (" + str(cart_id) + "," + str(item_id) + "," + str(quantity) + ")"
         try:
             self.cursor.execute(query)
             self.db.commit()
@@ -107,3 +107,12 @@ class ShoppingAccessor:
             self.db.commit()
         except mysql.connector.Error as err:
             raise Exception(err)
+
+    def get_items_for_sale_by_user(self, user_id):
+        query = "SELECT * FROM user_item WHERE user_id = " + str(user_id)
+        try:
+            self.cursor.execute(query)
+        except mysql.connector.Error as err:
+            raise Exception(err)
+        items = self.cursor.fetchall()
+        return items
