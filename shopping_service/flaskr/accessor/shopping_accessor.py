@@ -1,13 +1,11 @@
 import mysql.connector
 from datetime import datetime
-import sys
-sys.path.append("..")
 from common import local_config, docker_config
 
 class ShoppingAccessor:
     def __init__(self):
-        # config = local_config
-        config = docker_config
+        config = local_config
+        # config = docker_config
         db_connection = mysql.connector.connect(
             host=config["db_host"],
             port=config["db_port"],
@@ -68,7 +66,7 @@ class ShoppingAccessor:
 
     def add_item_to_cart(self, cart_id, item_id, quantity):
         # update cart item table
-        query = "INSERT INTO cart_item (cart_id, item_id) VALUES (" + str(cart_id) + "," + str(item_id) + "," + str(quantity) + ")"
+        query = "INSERT INTO cart_item (cart_id, item_id, quantity) VALUES (" + str(cart_id) + "," + str(item_id) + "," + str(quantity) + ")"
         try:
             self.cursor.execute(query)
             self.db.commit()
