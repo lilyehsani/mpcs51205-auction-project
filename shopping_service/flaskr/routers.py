@@ -1,11 +1,15 @@
 from accessor.shopping_accessor import ShoppingAccessor
+from accessor.db_init import DBInit
 from model.item import item_status
 from flask import Flask, request, jsonify
+import os
 import datetime
-import requests
 import json
+import requests
 
 app = Flask(__name__)
+db_init = DBInit()
+db_init.db_init()
 shopping_accessor = ShoppingAccessor()
 
 
@@ -39,6 +43,7 @@ def checkout(user_id):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     shopping_accessor.checkout_items(cart_id, current_time)
 
+<<<<<<< HEAD
 
 # GetItemsInCartByUser
 @app.route('/get_items_in_cart/<user_id>', method=['PUT'])
@@ -65,10 +70,6 @@ def update_item_for_sale():
 def get_items_for_sale(user_id):
 
 
-# GetItemsByCategory
-@app.route('/get_items_by_category', methods=['GET'])
-def get_items_by_category():
-
-
-@app.route('/get_all_categories', methods=['GET'])
-def get_all_categories():
+if __name__ == "__main__":
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
