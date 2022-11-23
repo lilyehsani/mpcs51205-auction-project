@@ -1,5 +1,7 @@
 import mysql.connector
 from datetime import datetime
+import sys
+sys.path.append("..")
 from common import local_config, docker_config
 
 class ShoppingAccessor:
