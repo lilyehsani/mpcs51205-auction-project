@@ -1,21 +1,17 @@
 import mysql.connector
 from datetime import datetime
-
-db_host = "localhost"
-db_port = 3307
-db_user = "root"
-db_pwd = "root_password"
-db_name = "shopping_db"
-
+from common import local_config, docker_config
 
 class ShoppingAccessor:
     def __init__(self):
+        # config = local_config
+        config = docker_config
         db_connection = mysql.connector.connect(
-            host=db_host,
-            port=db_port,
-            user=db_user,
-            password=db_pwd,
-            database=db_name
+            host=config["db_host"],
+            port=config["db_port"],
+            user=config["db_user"],
+            password=config["db_pwd"],
+            database=config["db_name"] 
         )
         self.db = db_connection
         self.cursor = db_connection.cursor()
