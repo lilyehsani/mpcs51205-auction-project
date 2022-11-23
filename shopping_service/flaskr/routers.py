@@ -30,10 +30,14 @@ def create_item(user_id):
 
 
 # AddItemToCart
-@app.route('/add_item_to_cart/<user_id>/<item_id>', methods=['PUT'])
-def add_item_to_cart(user_id, item_id):
+@app.route('/add_item_to_cart', methods=['PUT'])
+def add_item_to_cart():
+    user_id = request.args.get('id')
+    item_id = request.args.get('item')
+    quantity = request.args.get('quantity')
     cart_id = shopping_accessor.get_current_cart(user_id=user_id)
-    shopping_accessor.add_item_to_cart(cart_id=cart_id, item_id=item_id)
+    shopping_accessor.add_item_to_cart(cart_id=cart_id, item_id=item_id, quantity=quantity)
+    return pack_success(None)
 
 
 # CheckoutItem
@@ -43,31 +47,38 @@ def checkout(user_id):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     shopping_accessor.checkout_items(cart_id, current_time)
 
-<<<<<<< HEAD
+
+# GetItemsForSaleByOwner
+@app.route('/get_items_for_sale', method=['GET'])
+def get_items_for_sale():
+    user_id = request.args.get('id')
+    item_ids = shopping_accessor.get_items_for_sale_by_user(user_id=user_id)
+    return pack_success(item_ids)
+
 
 # GetItemsInCartByUser
-@app.route('/get_items_in_cart/<user_id>', method=['PUT'])
-def get_items_in_cart(user_id):
+@app.route('/get_items_in_cart', method=['PUT'])
+def get_items_in_cart():
+    user_id = request.args.get('id')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    item_ids = shopping_accessor.get_items_from_cart(cart_id=cart_id)
+    return pack_success(item_ids)
 
 
 # RemoveItemFromCart
-@app.route('/remove_item_from_cart/<user_id>', method=['DELETE'])
-def remove_item_from_cart(user_id):
+@app.route('/remove_item_from_cart', method=['DELETE'])
+def remove_item_from_cart():
+    user_id = request.args.get('id')
+    item_id = request.args.get('item')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    shopping_accessor.remove_item_from_cart(cart_id=cart_id, item_id=item_id)
 
 
-# RemoveItemForSale
-@app.route('/remove_item_for_sale/<user_id>/<item_id>', method=['DELETE'])
-def remove_item_for_sale(user_id, item_id):
-
-
-# UpdateItemForSale
-@app.route('/update_item_for_sale', method=['POST'])
-def update_item_for_sale():
-
-
-# GetItemsForSaleByOwner
-@app.route('/get_items_for_sale/<user_id>', method=['GET'])
-def get_items_for_sale(user_id):
+def pack_success(data):
+    return jsonify({
+        "status": True,
+        "data": data
+    })
 
 
 if __name__ == "__main__":

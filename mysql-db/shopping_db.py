@@ -92,10 +92,10 @@ def create_cart_item_table():
     )
     cursor = db.cursor()
     cursor.execute("DROP TABLE IF EXISTS cart_item")
-    create_cart_item = "CREATE TABLE cart_item (cart_id int, item_id int)"
+    create_cart_item = "CREATE TABLE cart_item (cart_id int, item_id int, quantity int)"
     cursor.execute(create_cart_item)
 
-    insert_cart_item = "INSERT INTO cart_item values (1, 1)"
+    insert_cart_item = "INSERT INTO cart_item values (1, 1, 2)"
     cursor.execute(insert_cart_item)
 
     db.commit()
