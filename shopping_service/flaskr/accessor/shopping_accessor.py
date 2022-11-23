@@ -22,10 +22,11 @@ class ShoppingAccessor:
 
 
     '''
+    - create item for sale
     Inventory service is responsible to update item table and category table
     Shopping Service only updates user-item table
     '''
-    def update_user_item(self, user_id, item_id):
+    def add_user_item(self, user_id, item_id):
         query = "INSERT INTO user_item (user_id, item_id) VALUES (" + str(user_id) + "," + str(item_id) + ")"
         try:
             self.cursor.execute(query)
@@ -88,6 +89,23 @@ class ShoppingAccessor:
     def checkout_items(self, cart_id, checkout_time):
         # add checkout_time to cart
         query = "UPDATE cart SET checkout_at = '" + checkout_time + "' WHERE cart_id = " + str(cart_id)
+        try:
+            self.cursor.execute(query)
+            self.db.commit()
+        except mysql.connector.Error as err:
+            raise Exception(err)
+
+    def remove_item_from_cart(self, cart_id, item_id):
+        query = "DELETE FROM cart_item WHERE cart_id = " + str(cart_id) + " AND item_id = " + str(item_id)
+        try:
+            self.cursor.execute(query)
+            self.db.commit()
+        except mysql.connector.Error as err:
+            raise Exception(err)
+
+    # remove item for sale
+    def remove_user_item(self, user_id, item_id):
+        query = "DELETE FROM user_item WHERE user_id = " + str(user_id) + " AND item_id = " + str(item_id)
         try:
             self.cursor.execute(query)
             self.db.commit()

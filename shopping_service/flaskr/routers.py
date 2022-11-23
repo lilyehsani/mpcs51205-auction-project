@@ -22,7 +22,7 @@ def create_item(user_id):
     r = requests.post("http://10.1.1.1:5000/create_item", data=data)
     # get item_id from response
     item_id = r.data
-    shopping_accessor.update_user_item(user_id=user_id, item_id=item_id)
+    shopping_accessor.add_user_item(user_id=user_id, item_id=item_id)
 
 
 @app.route('/add_item_to_cart/<user_id>/<item_id>', methods=['PUT'])
