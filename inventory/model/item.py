@@ -13,8 +13,21 @@ class Item:
         self.shipping_cost = shipping_cost
         self.is_buy_now = is_buy_now
         self.price = price
-        self.is_buy_now = is_buy_now
         self.status = status
         self.category_id = category_id
         self.category = category
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name':self.name,
+            'description':self.description,
+            'quantity':self.quantity,
+            'shipping_cost':self.shipping_cost,
+            'is_buy_now':self.is_buy_now,
+            'price':self.price,
+            'status':self.status,
+            'category_id':self.category_id,
+            'category':self.category,
+        }
         

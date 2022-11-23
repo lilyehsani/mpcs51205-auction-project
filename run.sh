@@ -9,4 +9,7 @@ docker rmi randomteam:inventory || true
 docker run --hostname inventorydb --name=InventoryDB --env="MYSQL_ROOT_PASSWORD=root_password" -p 3309:3306 -d mysql:latest
 docker image build -t randomteam:inventory ./inventory
 docker run -p 5001:5000 -dit --hostname inventory --name Inventory --link InventoryDB:inventorydb randomteam:inventory
-
+echo "wait"
+sleep 10
+echo "start"
+docker start Inventory

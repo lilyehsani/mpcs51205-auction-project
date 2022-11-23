@@ -8,3 +8,10 @@ class Category:
         self.id = id
         self.name = name
         self.status = status
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "name":self.name,
+            "status":self.status
+        }
