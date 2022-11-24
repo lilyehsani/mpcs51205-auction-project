@@ -21,6 +21,7 @@ inventory_url = inventory_local_url
 def home():
     return "shopping service home page"
 
+# CreateItem
 @app.route('/create_item', methods=['POST'])
 def create_item():
     data = request.get_data()
@@ -41,7 +42,6 @@ def create_item():
     return pack_success(item)
 
 # GetItemsForSaleByOwner
-# http://127.0.0.1:5000/get_item?id=12345
 @app.route('/get_items_for_sale', methods=['GET'])
 def get_items_for_sale():
     user_id = request.args.get('user_id')
@@ -95,6 +95,33 @@ def add_item_to_cart():
     shopping_accessor.add_item_to_cart(cart_id=cart_id, item_id=item_id, quantity=quantity)
     return pack_success(None)
 
+# GetItemsInCartByUser
+@app.route('/get_items_in_cart', methods=['PUT'])
+def get_items_in_cart():
+    user_id = request.args.get('id')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    records = shopping_accessor.get_items_from_cart(cart_id=cart_id)
+    if len(records) == 0:
+        return pack_success(None)
+    item_ids = [str(record[1]) for record in records]
+    item_id_input = "_".join(item_ids)
+    r = requests.get(url=inventory_url + "/get_items?ids=" + item_id_input)
+    items, err = parse_response(r)  
+    if err:
+        return pack_err(err)  
+    return pack_success(items)
+
+
+# RemoveItemFromCart
+@app.route('/remove_item_from_cart', methods=['DELETE'])
+def remove_item_from_cart():
+    user_id = request.args.get('id')
+    item_id = request.args.get('item')
+    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
+    shopping_accessor.remove_item_from_cart(cart_id=cart_id, item_id=item_id)
+    return pack_success(None)
+
+#Checkout
 @app.route('/checkout', methods=['POST'])
 def checkout():
     data = request.get_data()
@@ -130,23 +157,6 @@ def checkout():
         print(e)
         return pack_err(err_msg['db_err'])
     return pack_success(result)    
-
-# GetItemsInCartByUser
-@app.route('/get_items_in_cart', methods=['PUT'])
-def get_items_in_cart():
-    user_id = request.args.get('id')
-    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
-    item_ids = shopping_accessor.get_items_from_cart(cart_id=cart_id)
-    return pack_success(item_ids)
-
-
-# RemoveItemFromCart
-@app.route('/remove_item_from_cart', methods=['DELETE'])
-def remove_item_from_cart():
-    user_id = request.args.get('id')
-    item_id = request.args.get('item')
-    cart_id = shopping_accessor.get_current_cart(user_id=user_id)
-    shopping_accessor.remove_item_from_cart(cart_id=cart_id, item_id=item_id)
 
 # ---------------- inner function ------------------
 def parse_response(resp):
