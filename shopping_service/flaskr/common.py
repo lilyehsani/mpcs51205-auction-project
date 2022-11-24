@@ -13,3 +13,10 @@ docker_config = {
     "db_pwd" : "root_password",
     "db_name" : "shopping_db"    
 }
+
+err_msg = {
+    "micro_communication_err": "microservice communication failed",
+    "parse_err": "parse microservice return data failed",
+    "db_err": "db err"
+
+}

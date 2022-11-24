@@ -27,8 +27,20 @@ class ShoppingAccessor:
         try:
             self.cursor.execute(query)
             self.db.commit()
-        except mysql.connector.Error as err:
-            raise Exception(err)
+        except Exception as err:
+            print(err)
+            return err.__str__
+        return None
+
+    def get_items_by_user(self, user_id):
+        query = 'select item_id from user_item where user_id = %d' % (int(user_id))
+        try:
+            self.cursor.execute(query)
+            item_id_list = self.cursor.fetchall()
+        except Exception as err:
+            print(err)
+            return None, err.__str__
+        return item_id_list, None
 
     def get_current_cart(self, user_id):
         query = "SELECT * FROM cart WHERE user_id = " + str(user_id)
