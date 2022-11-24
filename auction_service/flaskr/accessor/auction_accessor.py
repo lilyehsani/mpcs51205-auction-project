@@ -268,6 +268,63 @@ class AuctionAccessor:
 
         return auctions
 
+    def get_all_auction_by_status(self, status: int):
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_auction = "SELECT * FROM Auction WHERE status = %s"
+        get_auction_data = [status]
+        cursor.execute(get_auction, get_auction_data)
+        fetched_auctions = cursor.fetchall()
+
+        auctions = []
+
+        for auction_info in fetched_auctions:
+            auction_id = auction_info[0]
+            get_auction_item = "SELECT * FROM AuctionItem WHERE auction_id = %s"
+            get_auction_item_data = [auction_id]
+            cursor.execute(get_auction_item, get_auction_item_data)
+            item_id = cursor.fetchone()[1]
+            auction = Auction(auction_id, item_id, auction_info[1],
+                            auction_info[2], auction_info[3],
+                            auction_info[4], auction_info[5],
+                            auction_info[6], auction_info[7])
+            auctions.append(auction)
+
+        return auctions
+
+    def get_bid_by_id(self, bid_id: int):
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_bid = "SELECT * FROM Auction WHERE auction_id = %s"
+        get_bid_data = [bid_id]
+        cursor.execute(get_bid, get_bid_data)
+        bids = cursor.fetchall()
+        if len(bids) < 1:
+            raise Exception("Bid does not exist.")
+
+        bid_info = bids[0]
+
+        bid = Bid(bid_info[0], bid_info[1], bid_info[2],
+                  bid_info[3], bid_info[4])
+                        
+        return bid
+
     def get_bids_by_auction(self, auction_id: int):
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
@@ -292,3 +349,4 @@ class AuctionAccessor:
             bids.append(bid)
                         
         return bids
+    

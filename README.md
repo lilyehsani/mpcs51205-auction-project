@@ -7,6 +7,7 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 ./run.sh
 
 # test inventory
+
 - run the inventory microservice with db:
   ./run.sh
 
@@ -37,7 +38,7 @@ To start up the auction database and service, run `docker compose up` from the r
 To use the auction service:
 
 - Create auction (with example values):
-  curl --request POST 'http://127.0.0.1:5002/create_auction' \
+  curl --request POST 'http://127.0.0.1:5003/create_auction' \
   --header 'Content-Type: application/json' \
   --data-raw '{
   "start_time":"2022-11-21 18:29:40",
@@ -47,7 +48,7 @@ To use the auction service:
   }'
 
 - Place bid (wih example values):
-  curl --request POST 'http://127.0.0.1:5002/place_bid' \
+  curl --request POST 'http://127.0.0.1:5003/place_bid' \
   --header 'Content-Type: application/json' \
   --data-raw '{
   "auction_id":1,
@@ -56,22 +57,28 @@ To use the auction service:
   }'
 
 - Get all auctions:
-  curl --location --request GET 'http://127.0.0.1:5002/get_all_auction'
+  curl --location --request GET 'http://127.0.0.1:5003/get_all_auction'
+
+- Get all startable auctions (where status = 0):
+  curl --location --request GET 'http://127.0.0.1:5003/get_all_startable_auction'
+
+- Get all endable auctions (where status = 1):
+  curl --location --request GET 'http://127.0.0.1:5003/get_all_endable_auction'
 
 - Get auction by id (change <id> to the auction's id):
-  curl --location --request GET 'http://127.0.0.1:5002/get_auction?id=<id>'
+  curl --location --request GET 'http://127.0.0.1:5003/get_auction?id=<id>'
 
 - Start auction (change <id> to the auction's id):
-  curl --location --request POST 'http://127.0.0.1:5002/start_auction?id=<id>'
+  curl --location --request PATCH 'http://127.0.0.1:5003/start_auction?id=<id>'
 
 - End auction due to time (change <id> to the auction's id):
-  curl --location --request POST 'http://127.0.0.1:5002/end_auction_by_time?id=<id>'
+  curl --location --request PATCH 'http://127.0.0.1:5003/end_auction_by_time?id=<id>'
 
 - End auction due to a "buy now" purchase of the item (change <id> to the auction's id):
-  curl --location --request POST 'http://127.0.0.1:5002/end_auction_by_purchase?id=<id>'
+  curl --location --request PATCH 'http://127.0.0.1:5003/end_auction_by_purchase?id=<id>'
 
 - Cancel an auction (change <id> to the auction's id):
-  curl --location --request POST 'http://127.0.0.1:5002/cancel_auction?id=<id>'
+  curl --location --request PATCH 'http://127.0.0.1:5003/cancel_auction?id=<id>'
 
 ## For Users DB
 

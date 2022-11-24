@@ -1,11 +1,19 @@
 version: "3"
 services:
-  # Builds the auction service using port 5002
+  # Builds the auction service using port 5003
   auction_service:
     build: auction_service
     ports:
-      - "5002:5002"
+      - "5003:5003"
     # Makes the auction service wait until the auction DB is up and running
+    depends_on:
+      auction_db:
+        condition: service_healthy
+
+  auction_queue:
+    build: auction_queue
+    ports:
+      - "5004:5004"
     depends_on:
       auction_db:
         condition: service_healthy

@@ -3,13 +3,25 @@ from flaskr.accessor.auction_accessor import AuctionAccessor
 from datetime import datetime
 import os
 import json
+# from apscheduler.schedulers.background import BackgroundScheduler
+
+
+# -------- job queue ----------
+# def sensor():
+#     """ Function for test purposes. """
+#     print("Scheduler is alive!")
+
+# sched = BackgroundScheduler(daemon=True)
+# soon = datetime.now() + timedelta(seconds=5)
+# sched.add_job(sensor,'interval',seconds=2,start_date=soon)
+# sched.start()
 
 app = Flask(__name__)
 
 # -------- open APIs ----------
 @app.route("/")
 def home():
-    return "auction index page"
+    return "auction routers page"
 
 @app.route("/create_auction",methods=["POST"])
 def create_auction():
@@ -69,6 +81,36 @@ def get_all_auction():
 
     return pack_success(json_auctions)
 
+@app.route("/get_all_startable_auction",methods=["GET"])
+def get_all_startable_auction():
+    accessor = AuctionAccessor()
+
+    try:
+        auctions = accessor.get_all_auction_by_status(0)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_auctions = []
+    for auction in auctions:
+        json_auctions.append(auction.to_json())
+
+    return pack_success(json_auctions)
+
+@app.route("/get_all_endable_auction",methods=["GET"])
+def get_all_endable_auction():
+    accessor = AuctionAccessor()
+
+    try:
+        auctions = accessor.get_all_auction_by_status(1)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_auctions = []
+    for auction in auctions:
+        json_auctions.append(auction.to_json())
+
+    return pack_success(json_auctions)
+
 @app.route("/get_auction",methods=["GET"])
 def get_auction():
     accessor = AuctionAccessor()
@@ -81,7 +123,7 @@ def get_auction():
 
     return pack_success(auction_info.to_json())
 
-@app.route("/start_auction",methods=["POST"])
+@app.route("/start_auction",methods=["PATCH"])
 def start_auction():
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
@@ -93,7 +135,7 @@ def start_auction():
 
     return json_success()
 
-@app.route("/end_auction_by_time",methods=["POST"])
+@app.route("/end_auction_by_time",methods=["PATCH"])
 def end_auction_by_time():
     # TODO: call shopping API and place item in user's cart
     accessor = AuctionAccessor()
@@ -106,7 +148,7 @@ def end_auction_by_time():
 
     return json_success()
 
-@app.route("/end_auction_by_purchase",methods=["POST"])
+@app.route("/end_auction_by_purchase",methods=["PATCH"])
 def end_auction_by_purchase():
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
@@ -118,7 +160,7 @@ def end_auction_by_purchase():
 
     return json_success()
 
-@app.route("/cancel_auction",methods=["POST"])
+@app.route("/cancel_auction",methods=["PATCH"])
 def cancel_auction():
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
@@ -129,6 +171,18 @@ def cancel_auction():
         return pack_err(str(err))
 
     return json_success()
+
+@app.route("/get_bid",methods=["GET"])
+def get_bid():
+    accessor = AuctionAccessor()
+    bid_id = request.args.get("id")
+
+    try:
+        bid_info = accessor.get_bid_by_id(bid_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    return pack_success(bid_info.to_json())
 
 @app.route("/get_bids_by_auction",methods=["GET"])
 def get_bids_by_auction():
@@ -200,5 +254,5 @@ def json_success():
     })
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5002))
+    port = int(os.environ.get("PORT", 5003))
     app.run(debug=True, host="0.0.0.0", port=port)

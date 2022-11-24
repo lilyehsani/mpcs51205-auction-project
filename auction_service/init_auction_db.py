@@ -289,5 +289,5 @@ if __name__ == '__main__':
     create_auction_tables()
     # The following line creates some test values for auctions and bids
     # Comment it out to just create the db and tables
-    db_test()
+    # db_test()
 	
