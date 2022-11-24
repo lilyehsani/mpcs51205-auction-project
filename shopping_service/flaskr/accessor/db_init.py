@@ -1,4 +1,5 @@
 import mysql.connector
+from datetime import datetime, timedelta
 
 from common import local_config, docker_config
 
@@ -49,4 +50,5 @@ class DBInit():
         create_cart_item = "CREATE TABLE cart_item (cart_id int, item_id int, quantity int)"
         cursor.execute(create_cart_item)
         db.commit()
+
         cursor.close()
