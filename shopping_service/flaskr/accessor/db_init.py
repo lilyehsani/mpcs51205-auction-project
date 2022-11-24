@@ -6,7 +6,7 @@ from common import local_config, docker_config
 class DBInit():
     def __init__(self) -> None:
         self.config = local_config
-        #self.config = docker_config
+        # self.config = docker_config
 
     def db_init(self) -> None:
         db_host = self.config.get('db_host')
@@ -35,7 +35,7 @@ class DBInit():
         cursor = db.cursor()
         # user_item
         cursor.execute("DROP TABLE IF EXISTS user_item")
-        create_user_item = "CREATE TABLE user_item (user_id int, item_id int)"
+        create_user_item = "CREATE TABLE user_item (user_id int, item_id int, UNIQUE KEY user_item_id (user_id, item_id))"
         cursor.execute(create_user_item)
         db.commit()
 

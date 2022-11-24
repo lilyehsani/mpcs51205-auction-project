@@ -49,18 +49,37 @@ def get_items():
         return pack_err(err)    
     return pack_success([item.serialize() for item in items])
 
-@app.route('/change_item_quantity',methods=['POST'])
-def change_item_quantity():
+# id_list, list of item ids to consume
+# quantity_list how many quantity want to be consumed for each item, pair with id_list
+@app.route('/comsume_availble_items',methods=['POST'])
+def comsume_availble_items():
     data = request.get_data()
     data = json.loads(data)
-    id = data.get('id')
-    _, err =  item_accessor.update_item_quantity(id, data.get('quantity'))
-    if err:
-        return pack_err(err)
-    item_info, err = item_accessor.get_item_by_ids([id])
-    if err:
-        return pack_err(err)
-    return pack_success(item_info[0].serialize())        
+    id_list = data.get('id_list')
+    quantity_list = data.get('quantity_list')
+    if len(id_list) != len(quantity_list):
+        return pack_err(err_msg['param_err'])
+    items, err = item_accessor.get_item_by_ids(id_list)
+    availble_item_to_quantity = {}
+    result = {}
+    for item in items:
+        availble_item_to_quantity[item.id] = item.quantity
+    for i in range(len(id_list)):
+        cur_id = id_list[i]
+        to_consume_quantity = quantity_list[i]
+        avaible_quantity = availble_item_to_quantity[cur_id] if cur_id in availble_item_to_quantity else 0
+        left_quantity = max(0, avaible_quantity - to_consume_quantity)
+        _, err =  item_accessor.update_item_quantity(cur_id, left_quantity)
+        if err:
+            return pack_err(err)
+        result[cur_id] = {
+            "id": cur_id,
+            "to_consume_quantity": quantity_list[i],
+            "availble_item_to_quantity": availble_item_to_quantity[cur_id],
+            "consumed_quantity" : min(to_consume_quantity, avaible_quantity),
+            "left_quantity": left_quantity
+        }
+    return pack_success(result)        
 
 @app.route('/update_item', methods=['POST'])
 def update_item():
