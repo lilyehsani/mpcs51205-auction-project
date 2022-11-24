@@ -73,6 +73,19 @@ To use the auction service:
 - Cancel an auction (change <id> to the auction's id):
   curl --location --request POST 'http://127.0.0.1:5002/cancel_auction?id=<id>'
 
+## Shopping Service
+To start up the shopping service and database, please run 'run.sh' and 'flaskr/routers.py'
+
+To use the shopping service:
+
+- Create an item for sale: curl --location --request POST 'http://127.0.0.1:5000/create_item'
+- Get items for sale by owner: curl --location --request GET 'http://127.0.0.1:5000/get_items_for_sale?user_id=<user_id>'
+- Remove item for sale: curl --location --request POST 'http://127.0.0.1:5000/remove_item_for_sale'
+- Add an item to cart: curl --location --request PUT 'http://127.0.0.1:5000/add_item_to_cart?id=<user_id>&item=<item_id>&quantity=<quantity>'
+- Get items in cart by user: curl --location --request GET 'http://127.0.0.1:5000/get_items_in_cart?id=<user_id>'
+- Remove an item from cart: curl --location --request DELETE 'http://127.0.0.1:5000/remove_item_from_cart?id=<user_id>&item=<item_id>'
+- Checkout items in cart: curl --location --request POST 'http://127.0.0.1:5000/checkout'
+
 ## For Users DB
 
 - Install docker
