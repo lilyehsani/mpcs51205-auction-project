@@ -75,19 +75,19 @@ class ItemAccessor:
         if not self.check_item_exist(id):
             return False, err_msg["item_not_found"]
         sql = "update item set"
-        if name:
+        if name != None:
             sql += " name = '%s'," %(name)
-        if description:
+        if description != None:
             sql += " description = '%s'," %(description)
-        if quantity and quantity >= 0:
+        if quantity != None and quantity >= 0:
             sql += " quantity = %d," %(quantity)
-        if shipping_cost and shipping_cost >= 0:
+        if shipping_cost != None and shipping_cost >= 0:
             sql += " shipping_cost = %f," % (shipping_cost)
-        if is_buy_now:
+        if is_buy_now != None:
             sql += " is_buy_now = %d," % (is_buy_now)
-        if price:
+        if price != None:
             sql += " purchasing_price = %f," % (price)
-        if status:
+        if status != None:
             sql += " status = %d," % (status)
         sql = sql[:len(sql) - 1]
         sql += " where item_id = %d" % (id)
@@ -98,7 +98,7 @@ class ItemAccessor:
         except Exception as e:
             print("inventory update_item error", e)
             return False, sql
-        return True, None     
+        return True, None   
 
     def search_item_by_category(self, category_id):
         sql = "SELECT i.item_id, i.name,i.description, i.quantity, i.shipping_cost, i.is_buy_now, i.purchasing_price, i.status, categories.category_id, categories.name FROM item as i join category_item on i.item_id = category_item.item_id join categories on categories.category_id = category_item.category_id where categories.category_id = %d"  % (category_id) 
