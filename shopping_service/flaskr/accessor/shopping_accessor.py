@@ -42,7 +42,7 @@ class ShoppingAccessor:
         else:
             cart_id = carts[-1][0]
             checkout_time = carts[-1][-1]
-            if checkout_time is None or checkout_time < datetime.now():
+            if checkout_time is not None and checkout_time < datetime.now():
                 cart_id = self.create_cart(user_id)
         return cart_id
 
@@ -109,7 +109,7 @@ class ShoppingAccessor:
             raise Exception(err)
 
     def get_items_for_sale_by_user(self, user_id):
-        query = "SELECT * FROM user_item WHERE user_id = " + str(user_id)
+        query = "SELECT item_id FROM user_item WHERE user_id = " + str(user_id)
         try:
             self.cursor.execute(query)
         except mysql.connector.Error as err:

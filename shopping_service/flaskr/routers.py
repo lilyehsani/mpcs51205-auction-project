@@ -17,6 +17,7 @@ shopping_accessor = ShoppingAccessor()
 def home():
     return "shopping service home page"
 
+
 # CreateItemForSale
 @app.route('/create_item/<user_id>', methods=['POST'])
 def create_item(user_id):
@@ -29,7 +30,6 @@ def create_item(user_id):
     shopping_accessor.add_user_item(user_id=user_id, item_id=item_id)
 
 
-# AddItemToCart
 # curl --location --request PUT 'http://127.0.0.1:5000/add_item_to_cart?id=1&item=1&quantity=1'
 @app.route('/add_item_to_cart', methods=['PUT'])
 def add_item_to_cart():
@@ -50,6 +50,7 @@ def checkout(user_id):
 
 
 # GetItemsForSaleByOwner
+# curl --location --request GET 'http://127.0.0.1:5000/get_items_for_sale?id=1'
 @app.route('/get_items_for_sale', methods=['GET'])
 def get_items_for_sale():
     user_id = request.args.get('id')
@@ -58,7 +59,8 @@ def get_items_for_sale():
 
 
 # GetItemsInCartByUser
-@app.route('/get_items_in_cart', methods=['PUT'])
+# curl --location --request GET 'http://127.0.0.1:5000/get_items_in_cart?id=1'
+@app.route('/get_items_in_cart', methods=['GET'])
 def get_items_in_cart():
     user_id = request.args.get('id')
     cart_id = shopping_accessor.get_current_cart(user_id=user_id)
@@ -67,12 +69,14 @@ def get_items_in_cart():
 
 
 # RemoveItemFromCart
+# curl --location --request DELETE 'http://127.0.0.1:5000/remove_item_from_cart?id=1&item=1'
 @app.route('/remove_item_from_cart', methods=['DELETE'])
 def remove_item_from_cart():
     user_id = request.args.get('id')
     item_id = request.args.get('item')
     cart_id = shopping_accessor.get_current_cart(user_id=user_id)
     shopping_accessor.remove_item_from_cart(cart_id=cart_id, item_id=item_id)
+    return pack_success(None)
 
 
 def pack_success(data):
