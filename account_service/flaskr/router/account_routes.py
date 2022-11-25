@@ -18,9 +18,14 @@ def create_account(account_service: AccountService = Provide[Module.account_serv
     user_name = request.get_json(force=True).get('user_name')
     user_password = request.get_json(force=True).get('user_password')
 
-    account_service.create_user(name, status, email, seller_rating, user_name, user_password)
+    account_id = account_service.create_user(name, status, email, seller_rating, user_name, user_password)
 
-    return jsonify({"message": "success"}), 200
+    return jsonify(
+        {
+            "message": "success",
+            "id": str(account_id)
+         }
+    ), 200
 
 
 @blueprint.route("/<user_id>", methods=['GET'])
@@ -50,3 +55,9 @@ def update_account(user_id: str, account_service: AccountService = Provide[Modul
 def delete_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
     account_service.delete_user(user_id)
     return jsonify({"message": "success"}), 200
+
+
+@blueprint.route("/ping", methods=['GET'])
+@inject
+def ping():
+    return jsonify({"message": "Ping success"}), 200
