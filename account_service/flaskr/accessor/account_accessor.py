@@ -3,7 +3,7 @@ from bson import ObjectId
 
 from flaskr.model.user import User
 
-db_address: str = "mongodb://localhost:27017/"
+db_address: str = "account_service_db:27017"  # Needs to be the mongo docker container's name
 db_name: str = "accountdb"
 table_name: str = "users"
 
