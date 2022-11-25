@@ -9,7 +9,7 @@ docker run -d --network account-service-network -p 27017:27017 --name account_se
 docker run -d --name account_service --network account-service-network -p 5000:5000 account-service
 
 ## Run Account Service
-try to call the APIs
+Try to call the APIs
 
 ### ping
 GET http://127.0.0.1:5000/account/ping
