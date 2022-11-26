@@ -90,18 +90,16 @@ while result is None:
         result = requests.get(api_url + "get_all_auction")
     except requests.exceptions.ConnectionError as err:
         time.sleep(2)
-        
+
 now = datetime.now()
 a1 = {
   "start_time":format_time(now),
   "end_time":format_time(now + timedelta(minutes=1)),
-  "quantity":1,
   "item_id": 5
   }
 a2 = {
   "start_time":format_time(now + timedelta(minutes=1)),
   "end_time":format_time(now + timedelta(minutes=2)),
-  "quantity":1,
   "item_id": 6
   }
 

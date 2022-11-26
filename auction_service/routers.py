@@ -1,20 +1,9 @@
 from flask import Flask, request, jsonify
 from flaskr.accessor.auction_accessor import AuctionAccessor
+from flaskr.model.auction import auction_status
 from datetime import datetime
 import os
 import json
-# from apscheduler.schedulers.background import BackgroundScheduler
-
-
-# -------- job queue ----------
-# def sensor():
-#     """ Function for test purposes. """
-#     print("Scheduler is alive!")
-
-# sched = BackgroundScheduler(daemon=True)
-# soon = datetime.now() + timedelta(seconds=5)
-# sched.add_job(sensor,'interval',seconds=2,start_date=soon)
-# sched.start()
 
 app = Flask(__name__)
 
@@ -38,7 +27,7 @@ def create_auction():
         end_time = data.get("end_time")
         start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-        auction_id = accessor.create_new_auction(start_time, end_time, data.get("quantity"), data.get("item_id"))
+        auction_id = accessor.create_new_auction(start_time, end_time, data.get("item_id"))
     except Exception as err:
         return pack_err(str(err))
 
@@ -86,7 +75,7 @@ def get_all_startable_auction():
     accessor = AuctionAccessor()
 
     try:
-        auctions = accessor.get_all_auction_by_status(0)
+        auctions = accessor.get_all_auction_by_status(auction_status["created"])
     except Exception as err:
         return pack_err(str(err))
 
@@ -101,7 +90,7 @@ def get_all_endable_auction():
     accessor = AuctionAccessor()
 
     try:
-        auctions = accessor.get_all_auction_by_status(1)
+        auctions = accessor.get_all_auction_by_status(auction_status["online"])
     except Exception as err:
         return pack_err(str(err))
 
@@ -129,7 +118,7 @@ def start_auction():
     auction_id = request.args.get("id")
 
     try:
-        accessor.update_auction(auction_id, "status", 1)
+        accessor.update_auction(auction_id, "status", auction_status["online"])
     except Exception as err:
         return pack_err(str(err))
 
@@ -142,9 +131,33 @@ def end_auction_by_time():
     auction_id = request.args.get("id")
 
     try:
-        accessor.update_auction(auction_id, "status", 2)
+        accessor.update_auction(auction_id, "status", auction_status["ended_by_time"])
     except Exception as err:
         return pack_err(str(err))
+
+    # try:
+    #     auction = accessor.get_auction_by_id(auction_id)
+    # except Exception as err:
+    #     return pack_err(str(err))
+    
+    # winning_bid_id = auction.current_highest_bid_id
+
+    # try:
+    #     winning_bid = accessor.get_bid_by_id(winning_bid_id)
+    # except Exception as err:
+    #     return pack_err(str(err))
+
+    # try:
+    #     winning_bid_amount = winning_bid.bid_amount
+    #     accessor.update_auction(auction_id, "finished_price", winning_bid_amount)
+    # except Exception as err:
+    #     return pack_err(str(err))
+
+    # try:
+    #     winner = winning_bid.user_id
+    #     accessor.update_auction(auction_id, "finished_user", winner)
+    # except Exception as err:
+    #     return pack_err(str(err))
 
     return json_success()
 
@@ -154,7 +167,7 @@ def end_auction_by_purchase():
     auction_id = request.args.get("id")
 
     try:
-        accessor.update_auction(auction_id, "status", 3)
+        accessor.update_auction(auction_id, "status", auction_status["purchased_by_buy_now"])
     except Exception as err:
         return pack_err(str(err))
 
@@ -166,7 +179,7 @@ def cancel_auction():
     auction_id = request.args.get("id")
 
     try:
-        accessor.update_auction(auction_id, "status", 4)
+        accessor.update_auction(auction_id, "status", auction_status["canceled"])
     except Exception as err:
         return pack_err(str(err))
 
@@ -209,9 +222,6 @@ def check_auction_input(data):
         end_time = data.get("end_time")
         assert end_time is not None, "invalid end time"
         assert isinstance(end_time, str), "invalid end time"
-        quantity = data.get("quantity")
-        assert quantity is not None, "invalid quantity"
-        assert isinstance(quantity, int), "invalid quantity"
         item_id = data.get("item_id")
         assert item_id is not None, "invalid item id"
         assert isinstance(item_id, int), "invalid item id"

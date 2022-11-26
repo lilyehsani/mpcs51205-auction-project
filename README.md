@@ -33,7 +33,7 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 ## Auction Service
 
 Prerequisites: docker and docker compose.
-To start up the auction database and service, run `docker compose up` from the root directory. It usually takes about 30 seconds, because the service container has to wait for the database container to be up and running before it does anything.
+To start up the auction database and service, run `docker compose up` or `docker-compose up --force-recreate --build` from the root directory. It usually takes about 30 seconds, because the service container has to wait for the database container to be up and running before it does anything.
 
 To use the auction service:
 
@@ -43,7 +43,6 @@ To use the auction service:
   --data-raw '{
   "start_time":"2022-11-21 18:29:40",
   "end_time":"2022-11-21 20:29:40",
-  "quantity":1,
   "item_id": 5
   }'
 
@@ -81,6 +80,7 @@ To use the auction service:
   curl --location --request PATCH 'http://127.0.0.1:5003/cancel_auction?id=<id>'
 
 ## Shopping Service
+
 To start up the shopping service and database, please run 'run.sh' and 'flaskr/routers.py'
 
 To use the shopping service:

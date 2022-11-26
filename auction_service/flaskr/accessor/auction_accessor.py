@@ -1,7 +1,7 @@
 import mysql.connector
 from flaskr.model.auction import Auction
 from flaskr.model.bid import Bid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class AuctionAccessor:
     '''
@@ -15,6 +15,7 @@ class AuctionAccessor:
         self.db_pwd = "root_password"
         self.db_name = "auction_db"
 
+    #-------- Printing Functions --------#
     def print_from_db(self, message: str, table_name: str):
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
@@ -64,7 +65,64 @@ class AuctionAccessor:
         cursor.close()
         db.close()
     
-    def create_new_auction(self, start_time: datetime, end_time: datetime, quantity: int, item_id: int):
+    #-------- Initialization Functions --------#
+    '''
+    Initializes the database.
+    '''
+    def init_db(self):
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+        )
+        cursor = db.cursor()
+
+        # Create database
+        cursor.execute("DROP DATABASE IF EXISTS auction_db")
+        cursor.execute("CREATE DATABASE auction_db")
+
+        # Commit changes and close
+        db.commit()
+        cursor.close()
+        db.close()
+
+    '''
+    Creates the three auction-related tables we need: Auction, AuctionItem, and Bid.
+    '''
+    def create_auction_tables(self):
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        # Create 3 auction-related tables
+        create_auction = ("CREATE TABLE Auction (auction_id INT AUTO_INCREMENT PRIMARY KEY, " + 
+                        "start_time datetime, end_time datetime, status int, " +
+                        "current_highest_bid_id int, finished_price float, finished_user int)")
+        create_auction_item = "CREATE TABLE AuctionItem (auction_id int, item_id int)"
+        create_bids = ("CREATE TABLE Bid (bid_id INT AUTO_INCREMENT PRIMARY KEY, auction_id int, " +
+                    "user_id int, bid_amount float, bid_time datetime)")
+        cursor.execute("DROP TABLE IF EXISTS Auction")
+        cursor.execute("DROP TABLE IF EXISTS AuctionItem")
+        cursor.execute("DROP TABLE IF EXISTS Bid")
+        cursor.execute(create_auction)
+        cursor.execute(create_auction_item)
+        cursor.execute(create_bids)
+
+        # Commit changes and close
+        db.commit()
+        cursor.close()
+        db.close()
+
+    #-------- Accessor Functions --------#
+    def create_new_auction(self, start_time: datetime, end_time: datetime, item_id: int) -> int:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -76,15 +134,14 @@ class AuctionAccessor:
         cursor = db.cursor()
 
         # Insert the auction
-        insert_auction = ("INSERT INTO Auction (start_time, end_time, quantity, status, " + 
+        insert_auction = ("INSERT INTO Auction (start_time, end_time, status, " + 
                         "current_highest_bid_id, finished_price, finished_user) VALUES " + 
-                        "(%s, %s, %s, %s, %s, %s, %s)")
-        insert_auction_data = (start_time, end_time, quantity, 0, None, None, None)
+                        "(%s, %s, %s, %s, %s, %s)")
+        insert_auction_data = (start_time, end_time, 0, None, None, None)
         
         try:
             cursor.execute(insert_auction, insert_auction_data)
         except mysql.connector.Error as err:
-            print(err)
             raise Exception(err)
         auction_id = cursor.lastrowid
 
@@ -138,7 +195,7 @@ class AuctionAccessor:
         cursor.close()
         db.close()
 
-    def place_bid(self, auction_id: int, user_id: int, bid_amount: float, bid_time: datetime):
+    def place_bid(self, auction_id: int, user_id: int, bid_amount: float, bid_time: datetime) -> int:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -205,7 +262,7 @@ class AuctionAccessor:
 
         return cursor.lastrowid
 
-    def get_auction_by_id(self, auction_id: int):
+    def get_auction_by_id(self, auction_id: int) -> Auction:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -230,14 +287,12 @@ class AuctionAccessor:
         get_auction_item_data = [auction_id]
         cursor.execute(get_auction_item, get_auction_item_data)
         item_id = cursor.fetchone()[1]
-        auction = Auction(auction_info[0], item_id, auction_info[1],
-                        auction_info[2], auction_info[3],
-                        auction_info[4], auction_info[5],
-                        auction_info[6], auction_info[7])
+        auction = Auction(auction_info[0], item_id, auction_info[1], auction_info[2], 
+                          auction_info[3], auction_info[4], auction_info[5], auction_info[6])
                         
         return auction
 
-    def get_all_auction(self):
+    def get_all_auction(self) -> list:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -260,15 +315,13 @@ class AuctionAccessor:
             get_auction_item_data = [auction_id]
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
-            auction = Auction(auction_id, item_id, auction_info[1],
-                            auction_info[2], auction_info[3],
-                            auction_info[4], auction_info[5],
-                            auction_info[6], auction_info[7])
+            auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
+                              auction_info[3], auction_info[4], auction_info[5], auction_info[6])
             auctions.append(auction)
 
         return auctions
 
-    def get_all_auction_by_status(self, status: int):
+    def get_all_auction_by_status(self, status: int) -> list:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -292,15 +345,13 @@ class AuctionAccessor:
             get_auction_item_data = [auction_id]
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
-            auction = Auction(auction_id, item_id, auction_info[1],
-                            auction_info[2], auction_info[3],
-                            auction_info[4], auction_info[5],
-                            auction_info[6], auction_info[7])
+            auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
+                              auction_info[3], auction_info[4], auction_info[5], auction_info[6])
             auctions.append(auction)
 
         return auctions
 
-    def get_bid_by_id(self, bid_id: int):
+    def get_bid_by_id(self, bid_id: int) -> Bid:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -320,12 +371,11 @@ class AuctionAccessor:
 
         bid_info = bids[0]
 
-        bid = Bid(bid_info[0], bid_info[1], bid_info[2],
-                  bid_info[3], bid_info[4])
+        bid = Bid(bid_info[0], bid_info[1], bid_info[2], bid_info[3], bid_info[4])
                         
         return bid
 
-    def get_bids_by_auction(self, auction_id: int):
+    def get_bids_by_auction(self, auction_id: int) -> list:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -344,9 +394,34 @@ class AuctionAccessor:
         bids = []
 
         for bid_info in fetched_bids:
-            bid = Bid(bid_info[0], bid_info[1], bid_info[2],
-                      bid_info[3], bid_info[4])
+            bid = Bid(bid_info[0], bid_info[1], bid_info[2], bid_info[3], bid_info[4])
             bids.append(bid)
                         
         return bids
+
+    def db_test(self):
+        self.print_tables()
+        now = datetime.now()
+        print(now.strftime('%Y-%m-%d %H:%M:%S'))
+        print((now + timedelta(hours=2)).strftime('%Y-%m-%d %H:%M:%S'))
+        auction_1 = self.create_new_auction(now, now + timedelta(hours=2), 1, 5)
+        self.create_new_auction(now + timedelta(hours=2), now + timedelta(hours=4), 4, 6)
+        self.print_from_db("Current auctions in Auction table:", "Auction")
+        self.print_from_db("Current auction-item relations in AuctionItem table:", "AuctionItem")
+        self.update_auction(auction_1, "status", 1)
+        self.print_from_db("The first of the following auctions should now have status=1:", "Auction")
+        self.place_bid(1, 1, 20.50, now + timedelta(minutes=2))
+        self.place_bid(1, 2, 25.50, now + timedelta(minutes=3))
+        self.place_bid(1, 1, 30.50, now + timedelta(minutes=4))
+        try:
+            self.place_bid(1, 2, 30.50, now + timedelta(minutes=4))
+        except Exception as err:
+            print("The following error should prevent the bid because it is too low:")
+            print(err)
+        try:
+            self.place_bid(2, 1, 30.50, now + timedelta(minutes=4))
+        except Exception as err:
+            print("The follow error should prevent the bid because the auction is offline:")
+            print(err)
+        self.print_from_db("Current bids in Bid table:", "Bid")
     

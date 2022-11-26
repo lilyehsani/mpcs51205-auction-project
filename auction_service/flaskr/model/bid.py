@@ -5,10 +5,8 @@ def format_time(time: datetime):
 
 class Bid:
     '''
-    Stores information related to a single auction. Must have an ID, start and end times, a 
-    quantity, and a status. The current highest bid is the bid ID of the bid that is currently
-    winning the auction when the instance of the class is created. The finished price and
-    finished user will only be set after the auction is over.
+    Stores information related to a single bid. Must have a bid ID, auction ID, user ID (bidder),
+    bid amount (float or int), and bid time.
     '''
     def __init__(self, bid_id: int, auction_id: int, user_id: int, bid_amount, bid_time: datetime):
         self.bid_id = bid_id
