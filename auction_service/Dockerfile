@@ -3,4 +3,4 @@ COPY ./requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip install -r requirements.txt
 COPY . /app
-CMD python3 init_auction_db.py; python3 routers.py
+CMD python3 init_auction_db.py; python3 auction_service.py

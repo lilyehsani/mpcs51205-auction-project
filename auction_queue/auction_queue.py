@@ -61,7 +61,7 @@ def end_auctions():
             response = requests.patch(patch)
             response_json = json.loads(response.text)
             if not response_json.get("status"):
-                err_msg = "Unable to start auction with id={} that should be ended at {}".format(
+                err_msg = "Unable to end auction with id={} that should be ended at {}".format(
                     auction_id, end_time_str)
                 raise Exception(err_msg)
 
@@ -91,15 +91,15 @@ while result is None:
     except requests.exceptions.ConnectionError as err:
         time.sleep(2)
 
-now = datetime.now()
+start = datetime.now() + timedelta(seconds=45)
 a1 = {
-  "start_time":format_time(now),
-  "end_time":format_time(now + timedelta(minutes=1)),
+  "start_time":format_time(start),
+  "end_time":format_time(start + timedelta(minutes=1)),
   "item_id": 5
   }
 a2 = {
-  "start_time":format_time(now + timedelta(minutes=1)),
-  "end_time":format_time(now + timedelta(minutes=2)),
+  "start_time":format_time(start + timedelta(minutes=1)),
+  "end_time":format_time(start + timedelta(minutes=2)),
   "item_id": 6
   }
 
@@ -109,7 +109,6 @@ print(res.text, res1.text)
 
 sched = BackgroundScheduler(daemon=True)
 
-start = datetime.now()+timedelta(seconds=3)
 print("Starting: {}".format(start))
 sched.add_job(start_and_end_auctions,'interval',minutes=1,start_date=start)
 # sched.add_job(start_and_end_auctions,'interval',minutes=10,start_date=get_nearest_10_min())

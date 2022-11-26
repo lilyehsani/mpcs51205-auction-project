@@ -135,29 +135,29 @@ def end_auction_by_time():
     except Exception as err:
         return pack_err(str(err))
 
-    # try:
-    #     auction = accessor.get_auction_by_id(auction_id)
-    # except Exception as err:
-    #     return pack_err(str(err))
+    try:
+        auction = accessor.get_auction_by_id(auction_id)
+    except Exception as err:
+        return pack_err(str(err))
     
-    # winning_bid_id = auction.current_highest_bid_id
+    winning_bid_id = auction.current_highest_bid_id
 
-    # try:
-    #     winning_bid = accessor.get_bid_by_id(winning_bid_id)
-    # except Exception as err:
-    #     return pack_err(str(err))
+    try:
+        winning_bid = accessor.get_bid_by_id(winning_bid_id)
+    except Exception as err:
+        return pack_err(str(err))
 
-    # try:
-    #     winning_bid_amount = winning_bid.bid_amount
-    #     accessor.update_auction(auction_id, "finished_price", winning_bid_amount)
-    # except Exception as err:
-    #     return pack_err(str(err))
+    try:
+        winning_bid_amount = winning_bid.bid_amount
+        accessor.update_auction(auction_id, "finished_price", winning_bid_amount)
+    except Exception as err:
+        return pack_err(str(err))
 
-    # try:
-    #     winner = winning_bid.user_id
-    #     accessor.update_auction(auction_id, "finished_user", winner)
-    # except Exception as err:
-    #     return pack_err(str(err))
+    try:
+        winner = winning_bid.user_id
+        accessor.update_auction(auction_id, "finished_user", winner)
+    except Exception as err:
+        return pack_err(str(err))
 
     return json_success()
 

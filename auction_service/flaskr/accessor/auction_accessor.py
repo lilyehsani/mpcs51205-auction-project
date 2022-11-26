@@ -217,12 +217,13 @@ class AuctionAccessor:
         # Get each needed piece of auction informtion
         auction = auctions[0]
         auction_id = auction[0]
-        status = auction[4]
-        current_highest_bid_id = auction[5]
+        status = auction[3]
+        current_highest_bid_id = auction[4]
         
         # Cannot place bid if the auction is not online
         if status != 1:
-            raise Exception("Auction is not online.")
+            print(status)
+            raise Exception("Auction is not online. Status={}".format(status))
 
         # Check current highest bid and ensure that new bid is higher
         if current_highest_bid_id is not None:
@@ -362,7 +363,7 @@ class AuctionAccessor:
         )
         cursor = db.cursor()
 
-        get_bid = "SELECT * FROM Auction WHERE auction_id = %s"
+        get_bid = "SELECT * FROM Bid WHERE bid_id = %s"
         get_bid_data = [bid_id]
         cursor.execute(get_bid, get_bid_data)
         bids = cursor.fetchall()
