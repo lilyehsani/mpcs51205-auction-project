@@ -5,8 +5,8 @@ from common import local_config, docker_config
 
 class DBInit():
     def __init__(self) -> None:
-        self.config = local_config
-        # self.config = docker_config
+        # self.config = local_config
+        self.config = docker_config
 
     def db_init(self) -> None:
         db_host = self.config.get('db_host')

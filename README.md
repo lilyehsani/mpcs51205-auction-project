@@ -4,7 +4,7 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 
 # system setup
 
-./run.sh
+`docker-compose up --force-recreate --build` (this forces the images to recreate themselves in case you have made changes. add `-d` if you don't want the output to show in the terminal.)
 
 # test inventory
 
@@ -33,7 +33,7 @@ MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gon
 ## Auction Service
 
 Prerequisites: docker and docker compose.
-To start up the auction database and service, run `docker compose up` or `docker-compose up --force-recreate --build` from the root directory. It usually takes about 30 seconds, because the service container has to wait for the database container to be up and running before it does anything.
+To start up the auction database and service, run `docker-compose up` or `docker-compose up --force-recreate --build` from the root directory. It usually takes about 30 seconds, because the service container has to wait for the database container to be up and running before it does anything.
 
 To use the auction service:
 
@@ -41,9 +41,9 @@ To use the auction service:
   curl --request POST 'http://127.0.0.1:5003/create_auction' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-  "start_time":"2022-11-21 18:29:40",
-  "end_time":"2022-11-21 20:29:40",
-  "item_id": 5
+  "start_time":"2022-11-26 14:29:40",
+  "end_time":"2022-11-26 20:29:40",
+  "item_id": 1
   }'
 
 - Place bid (wih example values):
@@ -78,6 +78,9 @@ To use the auction service:
 
 - Cancel an auction (change <id> to the auction's id):
   curl --location --request PATCH 'http://127.0.0.1:5003/cancel_auction?id=<id>'
+
+- Get bids by auction:
+  curl --location --request GET 'http://127.0.0.1:5003/get_bids_by_auction?id=<id>'
 
 ## Shopping Service
 

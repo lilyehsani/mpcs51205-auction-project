@@ -14,7 +14,7 @@ db_init.db_init()
 shopping_accessor = ShoppingAccessor()
 inventory_docker_url = 'http://inventory:5000'
 inventory_local_url = 'http://localhost:5001'
-inventory_url = inventory_local_url
+inventory_url = inventory_docker_url
 
 # ------------ open API --------------------
 @app.route('/')

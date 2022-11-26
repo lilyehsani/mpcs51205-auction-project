@@ -4,6 +4,7 @@ from flaskr.model.auction import auction_status
 from datetime import datetime
 import os
 import json
+import requests
 
 app = Flask(__name__)
 
@@ -130,35 +131,47 @@ def end_auction_by_time():
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
 
+    # Update status of auction
     try:
         accessor.update_auction(auction_id, "status", auction_status["ended_by_time"])
     except Exception as err:
         return pack_err(str(err))
 
+    # Get auction information
     try:
         auction = accessor.get_auction_by_id(auction_id)
     except Exception as err:
         return pack_err(str(err))
     
+    # Get ID of winning bid from auction information
     winning_bid_id = auction.current_highest_bid_id
 
+    # Get bid information from ID
     try:
         winning_bid = accessor.get_bid_by_id(winning_bid_id)
     except Exception as err:
         return pack_err(str(err))
 
+    # Update finished price to ending bid amount
     try:
         winning_bid_amount = winning_bid.bid_amount
         accessor.update_auction(auction_id, "finished_price", winning_bid_amount)
     except Exception as err:
         return pack_err(str(err))
 
+    # Update finished user to ending bid user
     try:
         winner = winning_bid.user_id
         accessor.update_auction(auction_id, "finished_user", winner)
     except Exception as err:
         return pack_err(str(err))
 
+    # try:
+    #     item_json = {"ids": str(auction.item_id)}
+    #     response = requests.get("http://inventory_service:5000/get_items", json=item_json)
+    #     return pack_success(response.text)
+    # except Exception as err:
+    #     return pack_err(str(err))
     return json_success()
 
 @app.route("/end_auction_by_purchase",methods=["PATCH"])
