@@ -4,8 +4,8 @@ from common import local_config, docker_config
 
 class ShoppingAccessor:
     def __init__(self):
-        config = local_config
-        # config = docker_config
+        # config = local_config
+        config = docker_config
         db_connection = mysql.connector.connect(
             host=config["db_host"],
             port=config["db_port"],

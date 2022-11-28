@@ -4,14 +4,19 @@ from flaskr.model.auction import auction_status
 from datetime import datetime
 import os
 import json
+import requests
 
 app = Flask(__name__)
+inventory_url = "http://inventory_service:5000/"
+shopping_url = "http://shopping_service:5000/"
 
 # -------- open APIs ----------
 @app.route("/")
 def home():
     return "auction routers page"
 
+# Requires: start_time, end_time (timestamps in %Y-%m-%d %H:%M:%S format); 
+# item_id (int), ID of item that has already been created in inventory service
 @app.route("/create_auction",methods=["POST"])
 def create_auction():
     data = request.get_data()
@@ -21,6 +26,15 @@ def create_auction():
         return pack_err(str(err))
 
     accessor = AuctionAccessor()
+
+    try:
+        check_item = requests.get(inventory_url + "get_items?ids=" + str(data.get("item_id")))
+    except Exception as err:
+        return pack_err(str(err))
+    
+    check_item_success = check_success(check_item)
+    if not check_item_success:
+        return pack_err("Item does not exist.")
 
     try:
         start_time = data.get("start_time")
@@ -37,6 +51,8 @@ def create_auction():
         return pack_err(str(err))
     return pack_success(auction_info.to_json())
 
+# Requires: auction_id (int), ID of existing auction; user_id (int), ID of existing user (bidder); 
+# bid_amount (int or float), amount of the bid being placed
 @app.route("/place_bid",methods=["POST"])
 def place_bid():
     data = request.get_data()
@@ -55,6 +71,7 @@ def place_bid():
         
     return json_success()
 
+# Requires: None
 @app.route("/get_all_auction",methods=["GET"])
 def get_all_auction():
     accessor = AuctionAccessor()
@@ -70,6 +87,7 @@ def get_all_auction():
 
     return pack_success(json_auctions)
 
+# Requires: None
 @app.route("/get_all_startable_auction",methods=["GET"])
 def get_all_startable_auction():
     accessor = AuctionAccessor()
@@ -85,6 +103,7 @@ def get_all_startable_auction():
 
     return pack_success(json_auctions)
 
+# Requires: None
 @app.route("/get_all_endable_auction",methods=["GET"])
 def get_all_endable_auction():
     accessor = AuctionAccessor()
@@ -100,6 +119,7 @@ def get_all_endable_auction():
 
     return pack_success(json_auctions)
 
+# Requires: id (int), ID of existing auction
 @app.route("/get_auction",methods=["GET"])
 def get_auction():
     accessor = AuctionAccessor()
@@ -112,6 +132,7 @@ def get_auction():
 
     return pack_success(auction_info.to_json())
 
+# Requires: id (int), ID of existing auction
 @app.route("/start_auction",methods=["PATCH"])
 def start_auction():
     accessor = AuctionAccessor()
@@ -124,6 +145,7 @@ def start_auction():
 
     return json_success()
 
+# Requires: id (int), ID of existing auction
 @app.route("/end_auction_by_time",methods=["PATCH"])
 def end_auction_by_time():
     # TODO: call shopping API and place item in user's cart
@@ -140,6 +162,7 @@ def end_auction_by_time():
     except Exception as err:
         return pack_err(str(err))
     
+    item_id = auction.item_id
     winning_bid_id = auction.current_highest_bid_id
 
     try:
@@ -159,8 +182,29 @@ def end_auction_by_time():
     except Exception as err:
         return pack_err(str(err))
 
+    try:
+        post_data = {"id": item_id, "price": winning_bid_amount}
+        update_item = requests.post(inventory_url + "update_item", json=post_data)
+    except Exception as err:
+        return pack_err(str(err))
+
+    check_update_item = check_success(update_item)
+    if not check_update_item:
+        return pack_err("Unable to update item price.")
+
+    try:
+        put_data = "add_item_to_cart?id={}&item={}&quantity=1".format(winner, item_id)
+        add_to_cart = requests.put(shopping_url + put_data)
+    except Exception as err:
+        return pack_err(str(err))
+
+    check_add_to_cart = check_success(add_to_cart)
+    if not check_add_to_cart:
+        return pack_err("Unable to add item to cart.")
+
     return json_success()
 
+# Requires: id (int), ID of existing auction
 @app.route("/end_auction_by_purchase",methods=["PATCH"])
 def end_auction_by_purchase():
     accessor = AuctionAccessor()
@@ -173,6 +217,7 @@ def end_auction_by_purchase():
 
     return json_success()
 
+# Requires: id (int), ID of existing auction
 @app.route("/cancel_auction",methods=["PATCH"])
 def cancel_auction():
     accessor = AuctionAccessor()
@@ -185,6 +230,7 @@ def cancel_auction():
 
     return json_success()
 
+# Requires: id (int), ID of existing bid
 @app.route("/get_bid",methods=["GET"])
 def get_bid():
     accessor = AuctionAccessor()
@@ -197,6 +243,7 @@ def get_bid():
 
     return pack_success(bid_info.to_json())
 
+# Requires: id (int), ID of existing auction
 @app.route("/get_bids_by_auction",methods=["GET"])
 def get_bids_by_auction():
     accessor = AuctionAccessor()
@@ -245,6 +292,10 @@ def check_bid_input(data):
         print("place_bid param error %s"%e)
         return False, "Invalid Parameter"
     return True, ""
+
+def check_success(response):
+    response = json.loads(response.text)
+    return response.get("status")
 
 def pack_err(err_msg):
     return jsonify({
