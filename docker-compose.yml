@@ -79,12 +79,12 @@ services:
         condition: service_healthy
 
   #---------- ACCOUNT ----------#
-  # account_service_db:
-  #   image: mongo
-  #   ports:
-  #     - "27017:27017"
+  account_service_db:
+    image: mongo
+    ports:
+      - "27017:27017"
 
-  # account_service:
-  #   build: account_service
-  #   ports:
-  #     - "5005:5000"
+  account_service:
+    build: account_service
+    ports:
+      - "5005:5000"
