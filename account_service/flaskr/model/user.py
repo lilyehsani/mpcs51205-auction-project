@@ -13,7 +13,7 @@ class User:
             "id": str(self.user_id),
             "name": self.name,
             "status": self.status,
-            "email": self.status,
+            "email": self.email,
             "seller_rating": self.seller_rating,
             "user_name": self.user_name
         }
