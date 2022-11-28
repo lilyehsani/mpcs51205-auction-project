@@ -91,7 +91,7 @@ To use the shopping service:
 - Add an item to cart: curl --location --request PUT 'http://127.0.0.1:5000/add_item_to_cart?id=<user_id>&item=<item_id>&quantity=<quantity>'
 - Get items in cart by user: curl --location --request GET 'http://127.0.0.1:5000/get_items_in_cart?id=<user_id>'
 - Remove an item from cart: curl --location --request DELETE 'http://127.0.0.1:5000/remove_item_from_cart?id=<user_id>&item=<item_id>'
-- Checkout items in cart: curl --location --request POST 'http://127.0.0.1:5000/checkout'
+- Checkout items in cart: curl --location --request POST 'http://127.0.0.1:5000/checkout?user_id=<user_id>'
 
 ## For Users DB
 

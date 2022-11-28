@@ -41,7 +41,7 @@ def create_auction():
         end_time = data.get("end_time")
         start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-        auction_id = accessor.create_new_auction(start_time, end_time, data.get("item_id"))
+        auction_id = accessor.create_new_auction(start_time, end_time, float(data.get("start_price")), data.get("item_id"))
     except Exception as err:
         return pack_err(str(err))
 
@@ -269,12 +269,15 @@ def check_auction_input(data):
         end_time = data.get("end_time")
         assert end_time is not None, "invalid end time"
         assert isinstance(end_time, str), "invalid end time"
+        start_price = data.get("start_price")
+        assert start_price is not None, "invalid start price"
+        assert isinstance(start_price, float) or isinstance(start_price, int), "invalid start price"
         item_id = data.get("item_id")
         assert item_id is not None, "invalid item id"
         assert isinstance(item_id, int), "invalid item id"
     except Exception as e:
         print("create_auction param error %s"%e)
-        return False, "Invalid Parameter"
+        return False, "Invalid or missing parameter"
     return True, ""
 
 def check_bid_input(data):
@@ -290,7 +293,7 @@ def check_bid_input(data):
         assert isinstance(bid_amount, float) or isinstance(bid_amount, int), "invalid bid amount"
     except Exception as e:
         print("place_bid param error %s"%e)
-        return False, "Invalid Parameter"
+        return False, "Invalid or missing parameter"
     return True, ""
 
 def check_success(response):

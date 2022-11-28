@@ -104,7 +104,7 @@ class AuctionAccessor:
 
         # Create 3 auction-related tables
         create_auction = ("CREATE TABLE Auction (auction_id INT AUTO_INCREMENT PRIMARY KEY, " + 
-                        "start_time datetime, end_time datetime, status int, " +
+                        "start_time datetime, end_time datetime, start_price float, status int, " +
                         "current_highest_bid_id int, finished_price float, finished_user int)")
         create_auction_item = "CREATE TABLE AuctionItem (auction_id int, item_id int)"
         create_bids = ("CREATE TABLE Bid (bid_id INT AUTO_INCREMENT PRIMARY KEY, auction_id int, " +
@@ -122,7 +122,7 @@ class AuctionAccessor:
         db.close()
 
     #-------- Accessor Functions --------#
-    def create_new_auction(self, start_time: datetime, end_time: datetime, item_id: int) -> int:
+    def create_new_auction(self, start_time: datetime, end_time: datetime, start_price: float, item_id: int) -> int:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -134,10 +134,10 @@ class AuctionAccessor:
         cursor = db.cursor()
 
         # Insert the auction
-        insert_auction = ("INSERT INTO Auction (start_time, end_time, status, " + 
+        insert_auction = ("INSERT INTO Auction (start_time, end_time, start_price, status, " + 
                         "current_highest_bid_id, finished_price, finished_user) VALUES " + 
-                        "(%s, %s, %s, %s, %s, %s)")
-        insert_auction_data = (start_time, end_time, 0, None, None, None)
+                        "(%s, %s, %s, %s, %s, %s, %s)")
+        insert_auction_data = (start_time, end_time, start_price, 0, None, None, None)
         
         try:
             cursor.execute(insert_auction, insert_auction_data)
@@ -217,8 +217,9 @@ class AuctionAccessor:
         # Get each needed piece of auction informtion
         auction = auctions[0]
         auction_id = auction[0]
-        status = auction[3]
-        current_highest_bid_id = auction[4]
+        start_price = auction[3]
+        status = auction[4]
+        current_highest_bid_id = auction[5]
         
         # Cannot place bid if the auction is not online
         if status != 1:
@@ -234,6 +235,10 @@ class AuctionAccessor:
             current_highest_bid_amount = bid[3]
             if current_highest_bid_amount >= bid_amount:
                 raise Exception("Bid is not higher than current highest bid.")
+        else:
+            # Check that the first bid is greater than or equal to starting price.
+            if bid_amount < start_price:
+                raise Exception("Bid is not higher than the starting price.")
 
         # Insert bid
         insert_bid = ("INSERT INTO Bid (auction_id, user_id, bid_amount, bid_time) VALUES " + 
@@ -289,7 +294,8 @@ class AuctionAccessor:
         cursor.execute(get_auction_item, get_auction_item_data)
         item_id = cursor.fetchone()[1]
         auction = Auction(auction_info[0], item_id, auction_info[1], auction_info[2], 
-                          auction_info[3], auction_info[4], auction_info[5], auction_info[6])
+                          auction_info[3], auction_info[4], auction_info[5], 
+                          auction_info[6], auction_info[7])
                         
         return auction
 
@@ -317,7 +323,8 @@ class AuctionAccessor:
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
             auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
-                              auction_info[3], auction_info[4], auction_info[5], auction_info[6])
+                              auction_info[3], auction_info[4], auction_info[5], 
+                              auction_info[6], auction_info[7])
             auctions.append(auction)
 
         return auctions
@@ -347,7 +354,8 @@ class AuctionAccessor:
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
             auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
-                              auction_info[3], auction_info[4], auction_info[5], auction_info[6])
+                              auction_info[3], auction_info[4], auction_info[5], 
+                              auction_info[6], auction_info[7])
             auctions.append(auction)
 
         return auctions

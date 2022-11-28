@@ -18,12 +18,13 @@ class Auction:
     only be set after the auction is over.
     '''
     def __init__(self, auction_id: int, item_id: int, start_time: datetime, end_time: datetime, 
-                 status: int, current_highest_bid_id: int=None, finished_price: float=None, 
-                 finished_user: int=None):
+                 start_price: float, status: int, current_highest_bid_id: int=None, 
+                 finished_price: float=None, finished_user: int=None):
         self.auction_id = auction_id
         self.item_id = item_id
         self.start_time = start_time
         self.end_time = end_time
+        self.start_price = start_price
         self.status = status
         self.current_highest_bid_id = current_highest_bid_id
         self.finished_price = finished_price
@@ -31,17 +32,20 @@ class Auction:
 
     def __repr__(self):
         res = "*** Printing Auction Information ***\n"
-        res += "Auction ID: {}\nStart time: {}\nEnd time: {}\nStatus: {}\nCurrent highest bid ID: "
+        res += "Auction ID: {}\nStart time: {}\nEnd time: {}\nStart price: {}\n"
+        res += "Status: {}\nCurrent highest bid ID: "
         res += "{}\nFinished price: {}\nFinished user ID: {}\n" 
         res += "*** End of Auction Information ***"    
-        return res.format(self.auction_id, self.start_time, self.end_time, self.status, 
-                          self.current_highest_bid_id, self.finished_price, self.finished_user)
+        return res.format(self.auction_id, self.start_time, self.end_time, self.start_price, 
+                          self.status, self.current_highest_bid_id, self.finished_price, 
+                          self.finished_user)
 
     def to_json(self):
         return {
             "id": self.auction_id,
             "start_time": format_time(self.start_time),
             "end_time": format_time(self.end_time),
+            "start_price": self.start_price,
             "status": self.status,
             "current_highest_bid_id": self.current_highest_bid_id,
             "finished_price": self.finished_price,
