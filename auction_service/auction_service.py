@@ -287,7 +287,7 @@ def check_bid_input(data):
         assert isinstance(auction_id, int), "invalid auction id"
         user_id = data.get("user_id")
         assert user_id is not None, "invalid user id"
-        assert isinstance(user_id, int), "invalid user id"
+        assert isinstance(user_id, str), "invalid user id"
         bid_amount = data.get("bid_amount")
         assert bid_amount is not None, "invalid bid amount"
         assert isinstance(bid_amount, float) or isinstance(bid_amount, int), "invalid bid amount"

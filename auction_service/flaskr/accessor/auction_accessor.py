@@ -105,10 +105,10 @@ class AuctionAccessor:
         # Create 3 auction-related tables
         create_auction = ("CREATE TABLE Auction (auction_id INT AUTO_INCREMENT PRIMARY KEY, " + 
                         "start_time datetime, end_time datetime, start_price float, status int, " +
-                        "current_highest_bid_id int, finished_price float, finished_user int)")
+                        "current_highest_bid_id int, finished_price float, finished_user varchar(255))")
         create_auction_item = "CREATE TABLE AuctionItem (auction_id int, item_id int)"
         create_bids = ("CREATE TABLE Bid (bid_id INT AUTO_INCREMENT PRIMARY KEY, auction_id int, " +
-                    "user_id int, bid_amount float, bid_time datetime)")
+                    "user_id varchar(255), bid_amount float, bid_time datetime)")
         cursor.execute("DROP TABLE IF EXISTS Auction")
         cursor.execute("DROP TABLE IF EXISTS AuctionItem")
         cursor.execute("DROP TABLE IF EXISTS Bid")
@@ -195,7 +195,7 @@ class AuctionAccessor:
         cursor.close()
         db.close()
 
-    def place_bid(self, auction_id: int, user_id: int, bid_amount: float, bid_time: datetime) -> int:
+    def place_bid(self, auction_id: int, user_id: str, bid_amount: float, bid_time: datetime) -> int:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -376,7 +376,7 @@ class AuctionAccessor:
         cursor.execute(get_bid, get_bid_data)
         bids = cursor.fetchall()
         if len(bids) < 1:
-            raise Exception("Bid does not exist.")
+            raise Exception("Bid {} does not exist.".format(bid_id))
 
         bid_info = bids[0]
 
