@@ -17,8 +17,8 @@
   "user_name": "ted_wang",
   "user_password": "ted_wang_password"
   }'
-  - Creates an account. Should return the id of the new account. Save this for later. Id: 63852029c55c6662f7b05ed2
-- curl --location --request GET 'http://127.0.0.1:5005/account/63852034c55c6662f7b05ed4'
+  - Creates an account. Should return the id of the new account. Save this for later. Id: 63852bdf87c0fbc5fa2de9f9
+- curl --location --request GET 'http://127.0.0.1:5005/account/63852bdf87c0fbc5fa2de9f9'
   - Shows that the account has been created. Will not show the password.
 
 # Create an item (Inventory Service)
@@ -33,7 +33,7 @@
   "is_buy_now": true,
   "price": 100,
   "category_id": 1,
-  "user_id": 1
+  "user_id": 3
   }'
   - Creates an item being sold by user with id 1. Id: 1
 - curl --location --request POST 'http://127.0.0.1:5001/create_item' \
@@ -65,17 +65,20 @@
   - Creates an item being sold by user with id 1. Id: 3
 
 - curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
-  Gets information about all 3 of our items.
+
+  - Gets information about all 3 of our items.
 
 - curl --location --request GET 'http://127.0.0.1:5001/search_item?keyword=aa'
-  Searches for items with aa in the name.
+
+  - Searches for items with aa in the name.
 
 - curl --location --request POST 'http://127.0.0.1:5001/create_category' \
   --header 'Content-Type: application/json' \
   --data-raw '{
   "name": "Clothes"
   }'
-  Creates the clothes category. Id: 2
+
+  - Creates the clothes category. Id: 2
 
 - curl --location --request POST 'http://127.0.0.1:5001/comsume_availble_items' \
    --header 'Content-Type: application/json' \
@@ -83,10 +86,11 @@
   "id_list": [2, 3],
   "quantity_list": [5, 8]
   }'
-  Consumes the items (like when a user checks out).
+
+  - Consumes the items (like when a user checks out).
 
 - curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
-  Shows that items 2 and 3 now have quantity 1 and 0.
+  - Shows that items 2 and 3 now have quantity 1 and 0.
 
 # Create an auction (Auction Service)
 
@@ -98,37 +102,42 @@
   "start_price": 20.00,
   "item_id": 1
   }'
-  Creates an auction for the item with id 1.
+
+  - Creates an auction for the item with id 1.
 
 - curl --location --request PATCH 'http://127.0.0.1:5003/start_auction?id=1'
-  Manually starts the auction (the queue can do this but it might not be fun for the demo).
+
+  - Manually starts the auction (the queue can do this but it might not be fun for the demo).
 
 - curl --request POST 'http://127.0.0.1:5003/place_bid' \
    --header 'Content-Type: application/json' \
    --data-raw '{
   "auction_id":1,
-  "user_id":"63852029c55c6662f7b05ed2",
+  "user_id":1,
   "bid_amount":19.99
   }'
-  Shows that you can't place a bid below the starting price.
+
+  - Shows that you can't place a bid below the starting price.
 
 - curl --request POST 'http://127.0.0.1:5003/place_bid' \
    --header 'Content-Type: application/json' \
    --data-raw '{
   "auction_id":1,
-  "user_id":"63852029c55c6662f7b05ed2",
+  "user_id":1,
   "bid_amount":30.50
   }'
-  Places a bid of 30.50.
+
+  - Places a bid of 30.50.
 
 - curl --request POST 'http://127.0.0.1:5003/place_bid' \
   --header 'Content-Type: application/json' \
   --data-raw '{
   "auction_id":1,
-  "user_id":"63852034c55c6662f7b05ed4",
+  "user_id":2,
   "bid_amount":35.50
   }'
-  Places a bid of 35.50.
+
+  - Places a bid of 35.50.
 
 - curl --request POST 'http://127.0.0.1:5003/place_bid' \
    --header 'Content-Type: application/json' \
@@ -137,23 +146,38 @@
   "user_id":1,
   "bid_amount":35.00
   }'
-  Tries to place a bid of 35.00, will fail as it's not higher than the current highest bid.
+
+  - Tries to place a bid of 35.00, will fail as it's not higher than the current highest bid.
 
 - curl --location --request PATCH 'http://127.0.0.1:5003/end_auction_by_time?id=1'
-  Manually ends the auction (the queue can do this but it might not be fun for the demo).
+
+  - Manually ends the auction (the queue can do this but it might not be fun for the demo).
+
+- curl --request POST 'http://127.0.0.1:5003/place_bid' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+  "auction_id":1,
+  "user_id":1,
+  "bid_amount":36.00
+  }'
+
+  - Tries to place a bid of 36.00, will fail as the auction is over.
 
 - curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1'
-  Shows that the price has been set by the winning of the auction as the winning bid amount.
+
+  - Shows that the price has been set by the winning of the auction as the winning bid amount.
 
 - curl --location --request GET 'http://127.0.0.1:5002/get_items_in_cart?id=2'
-  Shows that the item is in the winning user's cart.
+
+  - Shows that the item is in the winning user's cart.
 
 - curl --location --request POST 'http://127.0.0.1:5002/checkout' \
    --header 'Content-Type: application/json' \
    --data-raw '{
   "user_id":2
   }'
-  Checks out the user's cart.
+
+  - Checks out the user's cart.
 
 - curl --location --request GET 'http://127.0.0.1:5002/get_items_in_cart?id=2'
-  Shows that the item is no longer in winning user's cart.
+  - Shows that the item is no longer in winning user's cart.
