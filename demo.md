@@ -1,7 +1,7 @@
 # Set up
 
-- `docker-compose up --force-recreate --build`
-  Wait for the command to finish. It will take around 30 seconds. You will know it's finished when the three MySQL Flask services display as up and running.
+- docker-compose up --force-recreate --build
+  - Wait for the command to finish. It will take around 30 seconds. You will know it's finished when the three MySQL Flask services display as up and running.
 
 # Create users (Account Service)
 
@@ -18,7 +18,7 @@
   "user_password": "ted_wang_password"
   }'
   - Creates an account. Should return the id of the new account. Save this for later. Id: 63852bdf87c0fbc5fa2de9f9
-- curl --location --request GET 'http://127.0.0.1:5005/account/63852bdf87c0fbc5fa2de9f9'
+- curl --location --request GET 'http://127.0.0.1:5005/account/638532faac31660c30282fcd'
   - Shows that the account has been created. Will not show the password.
 
 # Create an item (Inventory Service)
@@ -207,8 +207,8 @@
 - curl --request POST 'http://127.0.0.1:5003/create_auction' \
    --header 'Content-Type: application/json' \
    --data-raw '{
-  "start_time":"2022-11-28 16:00:00",
-  "end_time":"2022-11-28 16:01:00",
+  "start_time":"2022-11-28 16:28:00",
+  "end_time":"2022-11-28 16:29:00",
   "start_price": 20.00,
   "item_id": 1
   }'
