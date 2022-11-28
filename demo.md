@@ -92,7 +92,7 @@
 - curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
   - Shows that items 2 and 3 now have quantity 1 and 0.
 
-# Create an auction (Auction Service)
+# Create an auction (Auction and Shopping Services)
 
 - curl --request POST 'http://127.0.0.1:5003/create_auction' \
    --header 'Content-Type: application/json' \
