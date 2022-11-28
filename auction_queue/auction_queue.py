@@ -7,6 +7,7 @@ import json
 api_url_if_docker = "http://auction_service:5003/"
 api_url_if_local = "http://127.0.0.1:5003/"
 api_url = api_url_if_docker
+
 #-------- inner functions ----------
 # Gets the soonest exact 10 minute time (i.e., time ends in 00, 10, 20, 30...)
 # Adds a 5 second buffer just in case
@@ -70,19 +71,8 @@ def format_time(time: datetime):
 
 #-------- job queue ----------
 def start_and_end_auctions():
-    print("Running: {}".format(datetime.now()))
-    print("*********** BEFORE ***********")
-    res1 = requests.get(api_url + "get_all_startable_auction")
-    res2 = requests.get(api_url + "get_all_endable_auction")
-    print(res1.text)
-    print(res2.text)
     start_auctions()
     end_auctions()
-    print("*********** AFTER ***********")
-    res1 = requests.get(api_url + "get_all_startable_auction")
-    res2 = requests.get(api_url + "get_all_endable_auction")
-    print(res1.text)
-    print(res2.text)
 
 result = None
 while result is None:
@@ -91,29 +81,28 @@ while result is None:
     except requests.exceptions.ConnectionError as err:
         time.sleep(2)
 
-start = datetime.now() + timedelta(seconds=45)
-a1 = {
-  "start_time":format_time(start),
-  "end_time":format_time(start + timedelta(minutes=1)),
-  "item_id": 5
-  }
-a2 = {
-  "start_time":format_time(start + timedelta(minutes=1)),
-  "end_time":format_time(start + timedelta(minutes=2)),
-  "item_id": 6
-  }
-
-res = requests.post(api_url + "create_auction", json=a1)
-res1 = requests.post(api_url + "create_auction", json=a2)
-print(res.text, res1.text)
-
 sched = BackgroundScheduler(daemon=True)
 
-print("Starting: {}".format(start))
-sched.add_job(start_and_end_auctions,'interval',minutes=1,start_date=start)
+sched.add_job(start_and_end_auctions,'interval',minutes=1)
 # sched.add_job(start_and_end_auctions,'interval',minutes=10,start_date=get_nearest_10_min())
 sched.start()
 
 while True:
     time.sleep(10)
 sched.shutdown()
+
+# start = datetime.now() + timedelta(seconds=45)
+# a1 = {
+#   "start_time":format_time(start),
+#   "end_time":format_time(start + timedelta(minutes=1)),
+#   "item_id": 1
+#   }
+# a2 = {
+#   "start_time":format_time(start + timedelta(minutes=1)),
+#   "end_time":format_time(start + timedelta(minutes=2)),
+#   "item_id": 2
+#   }
+
+# res = requests.post(api_url + "create_auction", json=a1)
+# res1 = requests.post(api_url + "create_auction", json=a2)
+# print(res.text, res1.text)

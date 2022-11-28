@@ -181,3 +181,39 @@
 
 - curl --location --request GET 'http://127.0.0.1:5002/get_items_in_cart?id=2'
   - Shows that the item is no longer in winning user's cart.
+
+# Auction queue
+
+- Uncomment auction queue service in docker-compose.yml
+
+  - Explain that it works as a cron job that runs every 10 minutes checking if any auctions need to be started or ended. It will run for the first time on the nearest 10 minute mark.
+  - Running it right now just for the demo, it will run every minute instead.
+
+- curl --location --request POST 'http://127.0.0.1:5001/create_item' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+  "name": "Pants",
+  "quantity": 1,
+  "description": "Cozy warm pants!",
+  "shipping_cost": 3,
+  "is_buy_now": true,
+  "price": 100,
+  "category_id": 1,
+  "user_id": 3
+  }'
+
+  - Creates an item being sold by user with id 1. Id: 1
+
+- curl --request POST 'http://127.0.0.1:5003/create_auction' \
+   --header 'Content-Type: application/json' \
+   --data-raw '{
+  "start_time":"2022-11-28 16:00:00",
+  "end_time":"2022-11-28 16:01:00",
+  "start_price": 20.00,
+  "item_id": 1
+  }'
+
+  - Creates an auction for the item with id 1. Change the times so that it will start in a minute and end a minute after that.
+
+- curl --location --request GET 'http://127.0.0.1:5003/get_all_auction'
+  - Repeat this command while the queue is working to see how the auction's status changes.
