@@ -6,7 +6,7 @@
 # Create users (Account Service)
 
 - curl --location --request GET 'http://127.0.0.1:5005/account/ping'
-  Checks on the service. Should just return "message": "Ping success".
+  - Checks on the service. Should just return "message": "Ping success".
 - curl --location --request POST 'http://127.0.0.1:5005/account' \
   --header 'Content-Type: application/json' \
   --data-raw '{
@@ -17,31 +17,9 @@
   "user_name": "ted_wang",
   "user_password": "ted_wang_password"
   }'
-  Creates an account. Should return the id of the new account. Save this for later. Id: 63852029c55c6662f7b05ed2
-- curl --location --request POST 'http://127.0.0.1:5005/account' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "name": "test2",
-  "status": 0,
-  "email": "test2",
-  "seller_rating": "3.9",
-  "user_name": "lily_ehsani",
-  "user_password": "lily_ehsani_password"
-  }'
-  Creates another account. Should return the id of the new account. Save this for later. Id: 63852034c55c6662f7b05ed4
-
-- curl --location --request POST 'http://127.0.0.1:5005/account' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-  "name": "test3",
-  "status": 0,
-  "email": "test3",
-  "seller_rating": "4.1",
-  "user_name": "rupert",
-  "user_password": "rupert_password"
-  }'
-  Creates another account. Should return the id of the new account. Save this for later. Id: 6385203bc55c6662f7b05ed6
+  - Creates an account. Should return the id of the new account. Save this for later. Id: 63852029c55c6662f7b05ed2
 - curl --location --request GET 'http://127.0.0.1:5005/account/63852034c55c6662f7b05ed4'
+  - Shows that the account has been created. Will not show the password.
 
 # Create an item (Inventory Service)
 
@@ -55,9 +33,9 @@
   "is_buy_now": true,
   "price": 100,
   "category_id": 1,
-  "user_id": "6385203bc55c6662f7b05ed6"
+  "user_id": 1
   }'
-  Creates an item being sold by our user named rupert. Id: 1
+  - Creates an item being sold by user with id 1. Id: 1
 - curl --location --request POST 'http://127.0.0.1:5001/create_item' \
   --header 'Content-Type: application/json' \
   --data-raw '{
@@ -68,9 +46,9 @@
   "is_buy_now": true,
   "price":222,
   "category_id":1,
-  "user_id": "6385203bc55c6662f7b05ed6"
+  "user_id": 1
   }'
-  Creates an item being sold by our user named rupert. Id: 2
+  - Creates an item being sold by user with id 1. Id: 2
 - curl --location --request POST 'http://127.0.0.1:5001/create_item' \
   --header 'Content-Type: application/json' \
   --data-raw '{
@@ -83,7 +61,8 @@
   "category_id":1,
   "user_id": "6385203bc55c6662f7b05ed6"
   }'
-  Creates an item being sold by our user named rupert. Id: 3
+
+  - Creates an item being sold by user with id 1. Id: 3
 
 - curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
   Gets information about all 3 of our items.
