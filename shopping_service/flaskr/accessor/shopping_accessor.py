@@ -45,7 +45,7 @@ class ShoppingAccessor:
         return item_id_list, None
 
     def get_current_cart(self, user_id):
-        query = "SELECT item_id FROM user_item WHERE user_id = %s"
+        query = "SELECT * FROM cart WHERE user_id = %s"
         query_data = [user_id]
         try:
             self.cursor.execute(query, query_data)
