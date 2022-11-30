@@ -169,7 +169,7 @@ def parse_response(resp):
     if resp.status_code != 200:
         return None, err_msg['micro_communication_err']
     try:
-        data = json.loads(resp.text)
+        data = json.loads(str(resp.text))
         if data['status'] != True:
             return None, data['err_msg']
         return data['data'], None
@@ -188,7 +188,7 @@ def pack_err(err_msg):
 def pack_success(data):
     return jsonify({
         "status": True,
-        "data": data
+        "data": str(data)
     })
 
 
