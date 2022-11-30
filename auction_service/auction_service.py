@@ -55,20 +55,41 @@ def create_auction():
 # bid_amount (int or float), amount of the bid being placed
 @app.route("/place_bid",methods=["POST"])
 def place_bid():
+    # Get and check the input from the request
     data = request.get_data()
     data = json.loads(data)
     check_result, err = check_bid_input(data)
     if not check_result:
         return pack_err(str(err))
 
+    # Create an auction accessor
     accessor = AuctionAccessor()
+    auction_id = data.get("auction_id")
+
+    # Get the auction being bid on
+    try:
+        auction = accessor.get_auction_by_id(auction_id)
+    except Exception as err:
+        return pack_err(str(err))
+    
+    # Get the current winning bid ID
+    winning_bid_id = auction.current_highest_bid_id
+
+    # If there is currently a winning bid, save that user's ID
+    if winning_bid_id is not None:
+        try:
+            winning_bid = accessor.get_bid_by_id(winning_bid_id)
+        except Exception as err:
+            return pack_err(str(err))
+        losing_user = winning_bid.user_id
 
     try:
         bid_time = datetime.now()
-        accessor.place_bid(data.get("auction_id"), data.get("user_id"), data.get("bid_amount"), bid_time)
+        accessor.place_bid(auction_id, data.get("user_id"), data.get("bid_amount"), bid_time)
     except Exception as err:
         return pack_err(str(err))
         
+    # Notify losing_user
     return json_success()
 
 # Requires: None
@@ -164,6 +185,10 @@ def end_auction_by_time():
     
     item_id = auction.item_id
     winning_bid_id = auction.current_highest_bid_id
+
+    if winning_bid_id is None:
+        # Notify seller that nobody bid
+        return json_success()
 
     try:
         winning_bid = accessor.get_bid_by_id(winning_bid_id)
