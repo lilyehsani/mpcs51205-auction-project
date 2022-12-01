@@ -35,13 +35,13 @@ class DBInit():
         cursor = db.cursor()
         # user_item
         cursor.execute("DROP TABLE IF EXISTS user_item")
-        create_user_item = "CREATE TABLE user_item (user_id int, item_id int, UNIQUE KEY user_item_id (user_id, item_id))"
+        create_user_item = "CREATE TABLE user_item (user_id varchar(255), item_id int, UNIQUE KEY user_item_id (user_id, item_id))"
         cursor.execute(create_user_item)
         db.commit()
 
         # cart 
         cursor.execute("DROP TABLE IF EXISTS cart")
-        create_cart = "CREATE TABLE cart (cart_id int AUTO_INCREMENT PRIMARY KEY, user_id int, create_at datetime, checkout_at datetime)"
+        create_cart = "CREATE TABLE cart (cart_id int AUTO_INCREMENT PRIMARY KEY, user_id varchar(255), create_at datetime, checkout_at datetime)"
         cursor.execute(create_cart)
         db.commit()
 
@@ -49,6 +49,12 @@ class DBInit():
         cursor.execute("DROP TABLE IF EXISTS cart_item")
         create_cart_item = "CREATE TABLE cart_item (cart_id int, item_id int, quantity int)"
         cursor.execute(create_cart_item)
+        db.commit()
+
+        # watchlist
+        cursor.execute("DROP TABLE IF EXISTS watch_list")
+        create_watch_list = "CREATE TABLE watch_list (id int AUTO_INCREMENT PRIMARY KEY, user_id varchar(255), category_id int, max_price float)"
+        cursor.execute(create_watch_list)
         db.commit()
 
         cursor.close()

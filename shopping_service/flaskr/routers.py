@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 import json
 import requests
+import _thread
 
 app = Flask(__name__)
 db_init = DBInit()
@@ -15,6 +16,7 @@ shopping_accessor = ShoppingAccessor()
 inventory_docker_url = 'http://inventory_service:5000'
 inventory_local_url = 'http://localhost:5001'
 inventory_url = inventory_docker_url
+account_url = "http://account_service:5000/account/"
 
 # ------------ open API --------------------
 @app.route('/')
@@ -34,14 +36,29 @@ def create_item():
     r = requests.post(inventory_url + "/create_item", data=inventory_input)
     item, err = parse_response(r)
     if err:
-        return pack_err(err)
+        return pack_err(str(err))
+    print(item)
     # create user_item info
-    err = shopping_accessor.add_user_item(user_id=user_id, item_id=item['id'])
-    if err:
-        return pack_err(err)
+    try:
+        shopping_accessor.add_user_item(user_id=user_id, item_id=item['id'])
+    except Exception as e:
+        raise Exception(e)      
     item['user_id'] = user_id 
+    # send email to users in watch list
+    category_id = data.get('category_id')
+    price = data.get('price')
+    if category_id != None and price != None:
+        try:
+            watch_list = shopping_accessor.get_target_watch_list(category_id, price)
+        except Exception as e:
+            print(e)
+            return pack_err(err_msg['db_err'])
+        try:
+            _thread.start_new_thread(send_watch_list_notification, (watch_list,) )
+        except:
+            print ("Error: cannot start thread for notification")
+            return pack_err(err_msg['micro_communication_err'])
     return pack_success(item)
-
 
 # GetItemsForSaleByOwner
 @app.route('/get_items_for_sale', methods=['GET'])
@@ -164,7 +181,68 @@ def checkout():
         return pack_err(err_msg['db_err'])
     return pack_success(result)    
 
+@app.route('/create_watch_list', methods=['POST'])
+def create_watch_list():
+    data = request.get_data()
+    data = json.loads(data)
+    user_id = data.get('user_id')
+    category_id = data.get('category_id')
+    max_price = data.get('max_price')    
+    if user_id == None or category_id == None or max_price == None or max_price < 0 or category_id < 0:
+        return pack_err(err_msg["param_err"])
+    try:
+        shopping_accessor.create_watch_list(user_id, category_id, max_price)
+    except Exception as e:
+        print(e)
+        return pack_err(err_msg['db_err'])
+    return pack_success(None) 
+
+@app.route('/get_user_watch_list', methods=['GET'])
+def get_user_watch_list():
+    user_id = request.args.get('user_id')
+    try:
+        watch_list = shopping_accessor.get_watch_list_by_user(str(user_id))
+    except Exception as e:
+        print(e)
+        return pack_err(err_msg['db_err'])
+    print(watch_list)
+    return pack_success([w.to_json() for w in watch_list])         
+   
+@app.route('/delete_watch_list', methods=['POST'])
+def delete_watch_list():
+    data = request.get_data()
+    data = json.loads(data)
+    id = data.get('id')
+    try:
+        shopping_accessor.delete_watch_list(int(id))
+    except Exception as e:
+        print(e)
+        return pack_err(err_msg['db_err'])  
+    return pack_success(None)
+    
+
 # ---------------- inner function ------------------
+def send_watch_list_notification(watch_list):
+    email_list = []
+    email_response = []
+    for w in watch_list:
+        # get email by user
+        try:
+            response = requests.get(account_url + w.user_id)
+            response = json.loads(response.text)
+            user_email = response.get("email")
+            email_list.append(user_email)
+        except Exception as err:
+            return pack_err(str(err))
+    for email in email_list:
+        post_data = {"subject": "Watch list notification!", "body": "New item in your watch list is created!", "to": email}
+        try:
+            response = requests.post("https://zvhfeuzz3m.execute-api.us-east-1.amazonaws.com/Prod/mail/", json=post_data)
+            email_response.append(response.text)
+        except Exception as err:
+            return pack_err(str(err))
+    return email_response
+
 def parse_response(resp):
     if resp.status_code != 200:
         return None, err_msg['micro_communication_err']

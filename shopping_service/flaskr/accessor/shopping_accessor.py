@@ -1,6 +1,7 @@
 import mysql.connector
 from datetime import datetime
 from common import local_config, docker_config
+from model.watch_list import WatchList
 
 class ShoppingAccessor:
     def __init__(self):
@@ -23,14 +24,12 @@ class ShoppingAccessor:
     Shopping Service only updates user-item table
     '''
     def add_user_item(self, user_id, item_id):
-        query = "INSERT INTO user_item (user_id, item_id) VALUES (" + str(user_id) + "," + str(item_id) + ")"
+        query = "INSERT INTO user_item (user_id, item_id) VALUES ('%s', %d)" % (user_id, item_id)
         try:
             self.cursor.execute(query)
             self.db.commit()
         except Exception as err:
-            print(err)
-            return err.__str__
-        return None
+            raise Exception(err)
 
     def get_items_by_user(self, user_id):
         query = 'select item_id from user_item where user_id = %d' % (int(user_id))
@@ -128,3 +127,47 @@ class ShoppingAccessor:
             raise Exception(err)
         items = self.cursor.fetchall()
         return items
+
+
+    def create_watch_list(self, user_id, category_id, max_price):
+        query = "insert into watch_list values (NULL, '%s', %d, %f)" % (user_id, category_id, max_price)
+        try:
+            self.cursor.execute(query)
+            self.db.commit()
+        except mysql.connector.Error as err:
+            print(err)
+            raise Exception(err)   
+
+    def get_watch_list_by_user(self, user_id):
+        query = "SELECT * FROM watch_list WHERE user_id ='%s';" % (str(user_id))
+        try:
+            self.cursor.execute(query)
+        except mysql.connector.Error as err:
+            raise Exception(err)
+        watch_list = self.cursor.fetchall()
+        return self.pack_watch_list(watch_list)     
+
+    def pack_watch_list(self, watch_list):
+        result = []
+        for watch in watch_list:
+            if not watch:
+                continue
+            result.append(WatchList(watch[0], watch[1], watch[2], watch[3]))
+        return result
+
+    def delete_watch_list(self, id):
+        query = "DELETE FROM watch_list WHERE id = %d" % (id) 
+        try:
+            self.cursor.execute(query)
+            self.db.commit()
+        except mysql.connector.Error as err:
+            raise Exception(err)  
+
+    def get_target_watch_list(self, category_id: int, price: float):
+        query = "SELECT * FROM watch_list WHERE category_id = %d and max_price >= %f" % (category_id, price)
+        try:
+            self.cursor.execute(query)
+        except mysql.connector.Error as err:
+            raise Exception(err)
+        watch_list = self.cursor.fetchall()
+        return self.pack_watch_list(watch_list)        
