@@ -17,6 +17,6 @@ docker_config = {
 err_msg = {
     "micro_communication_err": "microservice communication failed",
     "parse_err": "parse microservice return data failed",
-    "db_err": "db err"
-
+    "db_err": "db err",
+    "param_err": "input param invalid"
 }
