@@ -9,6 +9,7 @@ import requests
 app = Flask(__name__)
 inventory_url = "http://inventory_service:5000/"
 shopping_url = "http://shopping_service:5000/"
+account_url = "http://account_service:5000/account/"
 
 # -------- open APIs ----------
 @app.route("/")
@@ -51,7 +52,7 @@ def create_auction():
         return pack_err(str(err))
     return pack_success(auction_info.to_json())
 
-# Requires: auction_id (int), ID of existing auction; user_id (int), ID of existing user (bidder); 
+# Requires: auction_id (int), ID of existing auction; user_id (str), ID of existing user (bidder); 
 # bid_amount (int or float), amount of the bid being placed
 @app.route("/place_bid",methods=["POST"])
 def place_bid():
@@ -90,6 +91,27 @@ def place_bid():
         return pack_err(str(err))
         
     # Notify losing_user
+    # subject = "You've been outbid."
+    # body = "Someone else just bid higher than you on an auction."
+    
+    # if winning_bid_id is not None:
+    #     try:
+    #         response = requests.get(account_url + losing_user)
+    #     except Exception as err:
+    #         return pack_err(str(err))
+
+    #     response = json.loads(response.text)
+    #     user_email = response.get("email")
+
+    #     post_data = {"subject": subject, "body": body, "to": user_email}
+    #     try:
+    #         response = requests.post("https://zvhfeuzz3m.execute-api.us-east-1.amazonaws.com/Prod/mail/", json=post_data)
+    #     except Exception as err:
+    #         return pack_err(str(err))
+
+    #     # response = json.loads(response.json())
+    #     return pack_success(response.text)
+
     return json_success()
 
 # Requires: None
@@ -312,7 +334,7 @@ def check_bid_input(data):
         assert isinstance(auction_id, int), "invalid auction id"
         user_id = data.get("user_id")
         assert user_id is not None, "invalid user id"
-        assert isinstance(user_id, int), "invalid user id"
+        assert isinstance(user_id, str), "invalid user id"
         bid_amount = data.get("bid_amount")
         assert bid_amount is not None, "invalid bid amount"
         assert isinstance(bid_amount, float) or isinstance(bid_amount, int), "invalid bid amount"

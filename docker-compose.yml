@@ -20,6 +20,8 @@ services:
     build: auction_service
     ports:
       - "5003:5003"
+    volumes:
+      - /etc/localtime:/etc/localtime
     # Makes the auction service wait until the auction DB is up and running
     depends_on:
       auction_db:
@@ -53,6 +55,8 @@ services:
     build: inventory
     ports:
       - "5001:5000"
+    volumes:
+      - /etc/localtime:/etc/localtime
     depends_on:
       inventorydb:
         condition: service_healthy
@@ -74,6 +78,8 @@ services:
     build: shopping_service
     ports:
       - "5002:5000"
+    volumes:
+      - /etc/localtime:/etc/localtime
     depends_on:
       shoppingdb:
         condition: service_healthy
@@ -88,3 +94,18 @@ services:
     build: account_service
     ports:
       - "5005:5000"
+    volumes:
+      - /etc/localtime:/etc/localtime
+
+  #---------- ADMIN ----------#
+  admin_db:
+    image: mongo
+    ports:
+      - "27018:27017"
+
+  admin_service:
+    build: admin_service
+    ports:
+      - "5006:5006"
+    volumes:
+      - /etc/localtime:/etc/localtime

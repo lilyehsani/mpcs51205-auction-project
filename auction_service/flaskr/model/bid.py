@@ -8,7 +8,7 @@ class Bid:
     Stores information related to a single bid. Must have a bid ID, auction ID, user ID (bidder),
     bid amount (float or int), and bid time.
     '''
-    def __init__(self, bid_id: int, auction_id: int, user_id: int, bid_amount, bid_time: datetime):
+    def __init__(self, bid_id: int, auction_id: int, user_id: str, bid_amount, bid_time: datetime):
         self.bid_id = bid_id
         self.auction_id = auction_id
         self.user_id = user_id
