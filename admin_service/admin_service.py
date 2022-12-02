@@ -46,6 +46,7 @@ def get_all_email():
 
     return pack_success(json_emails)
 
+# Requires: id (str)
 @app.route("/get_email",methods=["GET"])
 def get_email():
     accessor = AdminAccessor()
@@ -58,11 +59,12 @@ def get_email():
     
     return pack_success(email.to_json())
 
+# Requires: id (str)
 @app.route("/register_response",methods=["PATCH"])
 def register_response():
     accessor = AdminAccessor()
     email_id = request.args.get("id")
-    
+
     try:
         accessor.update_email(email_id, "responded_time", format_time(datetime.now()))
     except Exception as err:
