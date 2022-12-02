@@ -10,8 +10,8 @@ class User:
 
     def to_json(self):
         return {
-            "id": self.user_id,
-            "name": str(self.name),
+            "id": str(self.user_id),
+            "name": self.name,
             "status": self.status,
             "email": self.email,
             "seller_rating": self.seller_rating,
