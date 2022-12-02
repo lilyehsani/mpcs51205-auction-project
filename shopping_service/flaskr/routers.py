@@ -3,6 +3,7 @@ from accessor.db_init import DBInit
 from common import err_msg
 from model.item import item_status
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 from datetime import datetime
 import json
@@ -272,4 +273,5 @@ def pack_success(data):
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    cors = CORS(app)
     app.run(debug=True, host='0.0.0.0', port=port)
