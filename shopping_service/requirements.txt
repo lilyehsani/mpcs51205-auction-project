@@ -1,3 +1,4 @@
 Flask
 mysql-connector-python
 requests
+Flask_Cors==3.0.10
