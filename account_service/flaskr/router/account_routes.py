@@ -18,11 +18,19 @@ def create_account(account_service: AccountService = Provide[Module.account_serv
     user_name = request.get_json(force=True).get('user_name')
     user_password = request.get_json(force=True).get('user_password')
 
-    account_id = account_service.create_user(name, status, email, seller_rating, user_name, user_password)
+    try:
+        account_id = account_service.create_user(name, status, email, seller_rating, user_name, user_password)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
 
     return jsonify(
         {
-            "message": "success",
+            "status": "success",
             "id": str(account_id)
          }
     ), 200
@@ -31,7 +39,15 @@ def create_account(account_service: AccountService = Provide[Module.account_serv
 @blueprint.route("/<user_id>", methods=['GET'])
 @inject
 def get_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
-    user: User = account_service.get_user_by_id(user_id)
+    try:
+        user: User = account_service.get_user_by_id(user_id)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
 
     return jsonify(user.to_json()), 200
 
@@ -46,18 +62,36 @@ def update_account(user_id: str, account_service: AccountService = Provide[Modul
     user_name = request.get_json(force=True).get('user_name')
     user_password = request.get_json(force=True).get('user_password')
 
-    account_service.update_user(user_id, name, status, email, seller_rating, user_name, user_password)
-    return jsonify({"message": "success"}), 200
+    try:
+        account_service.update_user(user_id, name, status, email, seller_rating, user_name, user_password)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
+
+    return jsonify({"status": "success"}), 200
 
 
 @blueprint.route("/<user_id>", methods=['DELETE'])
 @inject
 def delete_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
-    account_service.delete_user(user_id)
-    return jsonify({"message": "success"}), 200
+    try:
+        account_service.delete_user(user_id)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
+
+    return jsonify({"status": "success"}), 200
 
 
 @blueprint.route("/ping", methods=['GET'])
 @inject
 def ping():
-    return jsonify({"message": "Ping success"}), 200
+    return jsonify({"status": "Ping success"}), 200
