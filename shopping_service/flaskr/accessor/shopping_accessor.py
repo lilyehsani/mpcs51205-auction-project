@@ -32,9 +32,11 @@ class ShoppingAccessor:
             raise Exception(err)
 
     def get_items_by_user(self, user_id):
-        query = 'select item_id from user_item where user_id = %d' % (int(user_id))
+        user_id = str(user_id)
+        query = "SELECT item_id FROM user_item WHERE user_id = %s"
+        query_data = [user_id]
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, query_data)
             item_id_list = self.cursor.fetchall()
         except Exception as err:
             print(err)
@@ -42,9 +44,10 @@ class ShoppingAccessor:
         return item_id_list, None
 
     def get_current_cart(self, user_id):
-        query = "SELECT * FROM cart WHERE user_id = " + str(user_id)
+        query = "SELECT * FROM cart WHERE user_id = %s"
+        query_data = [user_id]
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, query_data)
         except mysql.connector.Error as err:
             raise Exception(err)
         carts = self.cursor.fetchall()
@@ -58,17 +61,20 @@ class ShoppingAccessor:
         return cart_id
 
     def create_cart(self, user_id):
+        user_id = str(user_id)
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        query = "INSERT INTO cart (user_id, create_at) VALUES (" + str(user_id) + ", '" + current_time + "')"
+        query = "INSERT INTO cart (user_id, create_at) VALUES (%s, %s)"
+        query_data = (user_id, current_time)
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, query_data)
             self.db.commit()
         except mysql.connector.Error as err:
             raise Exception(err)
         # get this cart id by iterating again
-        query = "SELECT * FROM cart WHERE user_id = " + str(user_id)
+        query = "SELECT * FROM cart WHERE user_id = %s"
+        query_data = [user_id]
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, query_data)
         except mysql.connector.Error as err:
             raise Exception(err)
         carts = self.cursor.fetchall()
