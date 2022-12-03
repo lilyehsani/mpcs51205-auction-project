@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 import json
 import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
 inventory_url = "http://inventory_service:5000/"
@@ -366,4 +367,5 @@ def json_success():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5003))
+    cors = CORS(app)
     app.run(debug=True, host="0.0.0.0", port=port)

@@ -109,7 +109,7 @@ const handleSubmit = (event) => {
             type="text"
             placeholder="Email"
             required
-            nChange={handleEmailChange}
+            onChange={handleEmailChange}
           />
         </Form.Group>
       </Col>
