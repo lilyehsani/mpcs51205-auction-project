@@ -29,16 +29,30 @@ def create_auction():
         return pack_err(str(err))
 
     accessor = AuctionAccessor()
+    item_id = data.get("item_id")
 
+    # Get the item that is about to have an auction created for it
     try:
-        check_item = requests.get(inventory_url + "get_items?ids=" + str(data.get("item_id")))
+        response = requests.get(inventory_url + "get_items?ids=" + str(item_id))
     except Exception as err:
         return pack_err(str(err))
     
-    check_item_success = check_success(check_item)
-    if not check_item_success:
+    # Error if the item does not exist
+    response = json.loads(response.text)
+    if not response.get("status"):
         return pack_err("Item does not exist.")
 
+    # Get the active auctions for this item
+    try:
+        auctions = accessor.get_active_auctions_by_item_id(item_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    quantity = response.get("data")[0].get("quantity")
+    # Error if there are already as many auctions for the item as there is quantity
+    if len(auctions) >= quantity:
+        return pack_err("Not enough quantity of item to create auction.")
+    
     try:
         start_time = data.get("start_time")
         end_time = data.get("end_time")
@@ -188,6 +202,23 @@ def get_auction():
         return pack_err(str(err))
 
     return pack_success(auction_info.to_json())
+
+# Requires: id (int), ID of existing item
+@app.route("/get_auctions_by_item_id",methods=["GET"])
+def get_auctions_by_item_id():
+    accessor = AuctionAccessor()
+    item_id = request.args.get("id")
+
+    try:
+        auctions = accessor.get_auctions_by_item_id(item_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_auctions = []
+    for auction in auctions:
+        json_auctions.append(auction.to_json())
+
+    return pack_success(json_auctions)
 
 # Requires: id (int), ID of existing auction
 @app.route("/start_auction",methods=["PATCH"])
