@@ -10,7 +10,7 @@ app = Flask(__name__)
 # -------- open APIs ----------
 @app.route("/")
 def home():
-    return "auction routers page"
+    return "admin routers page"
 
 # Requires: sender (str), body (str)
 @app.route("/create_email",methods=["POST"])

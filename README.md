@@ -41,8 +41,8 @@ To use the auction service:
   curl --request POST 'http://127.0.0.1:5003/create_auction' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-  "start_time":"2022-11-21 18:29:40",
-  "end_time":"2022-11-21 20:29:40",
+  "start_time": "2022-11-21 18:29:40",
+  "end_time": "2022-11-21 20:29:40",
   "item_id": 5
   }'
 
@@ -50,8 +50,8 @@ To use the auction service:
   curl --request POST 'http://127.0.0.1:5003/place_bid' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-  "auction_id":1,
-  "user_id":2,
+  "auction_id": 1,
+  "user_id": "123454135",
   "bid_amount":40.50
   }'
 
@@ -78,6 +78,22 @@ To use the auction service:
 
 - Cancel an auction (change <id> to the auction's id):
   curl --location --request PATCH 'http://127.0.0.1:5003/cancel_auction?id=<id>'
+
+## Admin service
+
+- Create complaint email
+  curl --location --request POST 'http://127.0.0.1:5006/create_email' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "sender": "sender@gmail.com",
+  "body": "Bad website!"
+  }'
+
+- Get all complaint emails
+  curl --location --request GET 'http://127.0.0.1:5006/get_all_email'
+
+- Get complaint email by ID
+  curl --location --request GET 'http://127.0.0.1:5006/get_email?id=<id>'
 
 ## Shopping Service
 
