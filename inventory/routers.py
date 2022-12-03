@@ -8,6 +8,7 @@ from accessor.item_accessor import ItemAccessor
 from accessor.db_init import DBInit
 from model.item import item_status
 from common import err_msg
+from flask_cors import CORS
 
 app = Flask(__name__)
 db_init = DBInit()
@@ -220,4 +221,5 @@ def pack_success(data):
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    cors = CORS(app)
     app.run(debug=True, host='0.0.0.0', port=port)

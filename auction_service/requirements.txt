@@ -3,3 +3,4 @@ mysql-connector
 python-dateutil
 requests
 mysql-connector-python
+Flask_Cors==3.0.10
