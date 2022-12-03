@@ -9,4 +9,5 @@ export const APP_ROUTES = {
   SIGN_UP: '/signup',
   SIGN_IN: '/signin',
   DASHBOARD: '/dashboard',
+  CREATE_ITEM: '/createitem',
 }
