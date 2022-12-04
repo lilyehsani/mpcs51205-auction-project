@@ -15,7 +15,7 @@ function App() {
         <Route path={APP_ROUTES.SIGN_UP} exact element={<SignUp />} />
         <Route path={APP_ROUTES.SIGN_IN} element={<SignIn />} />
         <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
-        <Route path={APP_ROUTES.CREATE_ITEM} element={<CreateItem />} />
+        {/* <Route path={APP_ROUTES.CREATE_ITEM} element={<CreateItem />} /> */}
         <Route path={APP_ROUTES.ITEM_LIST} element={<ItemList />} />
       </Routes>
     </BrowserRouter>
