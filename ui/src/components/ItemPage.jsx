@@ -11,6 +11,7 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
 import AuctionRow from "./AuctionRow";
+import { getAuthenticatedUser } from "../lib/common";
 
 const ItemPage = () => {
   // const navigate = useNavigate();
@@ -20,6 +21,8 @@ const ItemPage = () => {
   // } else {
   //   console.log(user, authenticated);
   // }
+  const user = getAuthenticatedUser();
+  console.log(user);
 
   let { itemId } = useParams();
 

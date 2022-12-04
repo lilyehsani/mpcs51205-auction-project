@@ -1,11 +1,11 @@
-import { API_ROUTES } from '../utils/constants';
-import axios from 'axios';
+import { API_ROUTES } from "../utils/constants";
+import axios from "axios";
 export function storeTokenInLocalStorage(token) {
-  localStorage.setItem('token', token);
+  localStorage.setItem("token", token);
 }
 
 export function getTokenFromLocalStorage() {
-  return localStorage.getItem('token');
+  return localStorage.getItem("token");
 }
 
 export async function getAuthenticatedUser() {
@@ -16,17 +16,15 @@ export async function getAuthenticatedUser() {
       return defaultReturnObject;
     }
     const response = await axios({
-      method: 'GET',
-      url: "http://127.0.0.1:5000/account/auth",
+      method: "GET",
+      url: "http://127.0.0.1:5005/account/auth",
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
-    const { authenticated = false } = response.data;
-    return authenticated ? response.data : false;
-  }
-  catch (err) {
-    console.log('getAuthenticatedUser, Something Went Wrong', err);
+    return response.data;
+  } catch (err) {
+    console.log("getAuthenticatedUser, Something Went Wrong", err);
     return defaultReturnObject;
   }
 }
