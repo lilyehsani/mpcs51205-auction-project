@@ -46,8 +46,6 @@ const AuctionRow = (props) => {
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setItemLoading(false);
     }
   };
 
