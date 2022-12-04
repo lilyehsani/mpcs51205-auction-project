@@ -34,7 +34,7 @@ const CreateItem = () => {
     };
 
     const createItem = async () => {
-        axios.post("http://127.0.0.1:5001/create_item/", {
+        axios.post("http://127.0.0.1:5001/create_item", {
             name: itemname,
             description: description,
             quantity: quantity,
@@ -80,7 +80,6 @@ const CreateItem = () => {
     }
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Col className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationCustom01">
@@ -147,7 +146,6 @@ const CreateItem = () => {
             </Col>
             <Button type="submit">Submit form</Button>
         </Form>
-        </div>
     );
 }
 
