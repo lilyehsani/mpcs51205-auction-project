@@ -10,20 +10,22 @@
 - curl --location --request POST 'http://127.0.0.1:5005/account' \
   --header 'Content-Type: application/json' \
   --data-raw '{
-  "name": "test1",
+  "name": "Lily",
   "status": 0,
-  "email": "test1",
+  "email": "lilytehsani@gmail.com",
   "seller_rating": "4.5",
-  "user_name": "ted_wang",
-  "user_password": "ted_wang_password"
+  "user_name": "lily_ehsani",
+  "user_password": "lily_ehsani_password"
   }'
-  - Creates an account. Should return the id of the new account. Save this for later. Id: 63852bdf87c0fbc5fa2de9f9
-- curl --location --request GET 'http://127.0.0.1:5005/account/638532faac31660c30282fcd'
+  - Creates an account. Should return the id of the new account. Save this for later. Id: 638ba7ca7e52823ef25a7db5
+- curl --location --request GET 'http://127.0.0.1:5005/account/638ba7ca7e52823ef25a7db5'
   - Shows that the account has been created. Will not show the password.
 
 # Create an item (Inventory Service)
 
-- curl --location --request POST 'http://127.0.0.1:5001/create_item' \
+curl --location --request POST 'http://127.0.0.1:5000/create_item'
+
+- curl --location --request POST 'http://127.0.0.1:5000/create_item' \
    --header 'Content-Type: application/json' \
    --data-raw '{
   "name": "Pants",
@@ -33,7 +35,7 @@
   "is_buy_now": true,
   "price": 100,
   "category_id": 1,
-  "user_id": 3
+  "user_id": "3"
   }'
   - Creates an item being sold by user with id 1. Id: 1
 - curl --location --request POST 'http://127.0.0.1:5001/create_item' \
@@ -123,7 +125,7 @@
    --header 'Content-Type: application/json' \
    --data-raw '{
   "auction_id":1,
-  "user_id":1,
+  "user_id":"638ba7ca7e52823ef25a7db5",
   "bid_amount":30.50
   }'
 
@@ -133,7 +135,7 @@
   --header 'Content-Type: application/json' \
   --data-raw '{
   "auction_id":1,
-  "user_id":2,
+  "user_id":"1",
   "bid_amount":35.50
   }'
 
