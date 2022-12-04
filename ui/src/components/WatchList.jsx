@@ -48,7 +48,7 @@ const WatchList = () => {
             return;
         }
         console.log("addWatchList")
-        axios.post("http://localhost:5002/create_watch_list", {
+        axios.post("http://127.0.0.1:5002/create_watch_list", {
             user_id:"test101",
             category_id: categoryID,
             max_price: maxPrice
