@@ -82,6 +82,22 @@ def get_items_for_sale():
         ret_items.append(item)   
     return pack_success(ret_items)
 
+# get item information with uid
+@app.route('/get_item_info', methods=['GET'])
+def get_item_info():
+    item_id = request.args.get('item_id')
+    r = requests.get(url=inventory_url + "/get_items?ids=" + item_id)
+    items, err = parse_response(r)
+    if err:
+        return pack_err(err)
+    if len(items) <= 0:
+        return pack_err(err_msg['db_not_found'])
+    item = items[0]
+    uid, err = shopping_accessor.get_user_by_item(item_id)
+    if err:
+        return pack_err(err) 
+    item['user_id'] = str(uid[0])      
+    return pack_success(item)
 
 # RemoveItemForSale
 @app.route('/remove_item_for_sale', methods=['POST'])
