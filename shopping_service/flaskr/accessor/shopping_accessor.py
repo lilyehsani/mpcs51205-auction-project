@@ -131,7 +131,7 @@ class ShoppingAccessor:
 
     # remove item for sale
     def remove_user_item(self, user_id, item_id):
-        query = "DELETE FROM user_item WHERE user_id = " + str(user_id) + " AND item_id = " + str(item_id)
+        query = "DELETE FROM user_item WHERE user_id = '%s' and item_id = %d" % (str(user_id), item_id)
         try:
             self.cursor.execute(query)
             self.db.commit()

@@ -13,5 +13,6 @@ export const APP_ROUTES = {
   CREATE_ITEM: "/createitem",
   ITEM_LIST: "/item_list",
   ITEM_PAGE: "/item/:itemId",
-  WATCH_LIST: "/watchlist",
+  WATCH_LIST: '/watchlist',
+  SALE_ITEMS: "/saleitems",
 };

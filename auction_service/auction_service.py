@@ -166,6 +166,8 @@ def get_all_auction_items():
         auctions = accessor.get_all_auction()
     except Exception as err:
         return pack_err(str(err))
+    if len(auctions) == 0:
+        return pack_success([])
     item_id_list = []
     for auction in auctions:
         item_id_list.append(str(auction.item_id))
