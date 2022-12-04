@@ -5,6 +5,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../lib/customHooks";
 import axios from "axios";
 import "./index.css";
+import moment from "moment";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Table from "react-bootstrap/Table";
+import AuctionRow from "./AuctionRow";
 
 const ItemPage = () => {
   //   const navigate = useNavigate();
@@ -38,6 +44,7 @@ const ItemPage = () => {
       setItemLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5001/get_items?ids=" + itemId);
+        console.log(response);
         var data = response.data.data[0];
         setName(data.name);
         setDescription(data.description);
@@ -47,8 +54,11 @@ const ItemPage = () => {
         setQuantity(data.quantity);
         setShippingCost(numToPrice(data.shipping_cost));
       } catch (error) {
-        console.error(error);
-        setName("No item found.");
+        if (error instanceof TypeError) {
+          setName("No item found.");
+        } else {
+          setName("Unable to connect to backend.");
+        }
       } finally {
         setItemLoading(false);
       }
@@ -65,7 +75,6 @@ const ItemPage = () => {
         );
         var data = auctionResponse.data.data;
         setAuctions(data);
-        console.log(data.current_highest_bid_id);
       } catch (error) {
         console.error(error);
       } finally {
@@ -77,35 +86,29 @@ const ItemPage = () => {
 
   return (
     <div>
-      <h1>{name}</h1>
+      <h1>Name: {name}</h1>
       {itemLoading && <div>Loading...</div>}
       <div>Description: {description}</div>
       <div>Category: {category}</div>
       <div>Quantity: {quantity}</div>
       <div>Shipping cost: {shippingCost}</div>
       {auctionLoading && <div>Loading...</div>}
-      <div> Auctions:</div>
-      {/* <div>Auctions: {renderAuctions()}</div> */}
-      <table className="auctionTable">
+      <h2>Auctions:</h2>
+      <Table striped bordered>
         <tbody>
           <tr>
+            <th>Status</th>
+            <th>Starting price</th>
             <th>Current highest bid</th>
+            <th>Place bid</th>
             <th>Start time</th>
-            <th>End time</th>
+            <th>End time (Refresh page for up-to-date times)</th>
           </tr>
           {auctions.map((auction) => (
-            <tr key={auction.id}>
-              <td className="auctionTd">
-                {auction.current_highest_bid_amount
-                  ? numToPrice(auction.current_highest_bid_amount)
-                  : "No bids yet"}
-              </td>
-              <td className="auctionTd">{auction.start_time}</td>
-              <td className="auctionTd">{auction.end_time}</td>
-            </tr>
+            <AuctionRow key={auction.id} auction={auction} />
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

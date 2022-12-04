@@ -234,11 +234,11 @@ class AuctionAccessor:
             bid = cursor.fetchone()
             current_highest_bid_amount = bid[3]
             if current_highest_bid_amount >= bid_amount:
-                raise Exception("Bid is not higher than current highest bid.")
+                raise Exception("Bid of {} is not higher than current highest bid.".format(bid_amount))
         else:
             # Check that the first bid is greater than or equal to starting price.
             if bid_amount < start_price:
-                raise Exception("Bid is not higher than the starting price.")
+                raise Exception("Bid of {} is not higher than the starting price.".format(bid_amount))
 
         # Insert bid
         insert_bid = ("INSERT INTO Bid (auction_id, user_id, bid_amount, bid_time) VALUES " + 
