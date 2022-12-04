@@ -10,4 +10,5 @@ export const APP_ROUTES = {
   SIGN_IN: '/signin',
   DASHBOARD: '/dashboard',
   CREATE_ITEM: '/createitem',
+  ITEM_LIST: '/item_list',
 }
