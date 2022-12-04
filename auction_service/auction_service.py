@@ -159,6 +159,27 @@ def get_all_auction():
     return pack_success(json_auctions)
 
 # Requires: None
+@app.route("/get_all_auction_items",methods=["GET"])
+def get_all_auction_items():
+    accessor = AuctionAccessor()
+    try:
+        auctions = accessor.get_all_auction()
+    except Exception as err:
+        return pack_err(str(err))
+    item_id_list = []
+    for auction in auctions:
+        item_id_list.append(str(auction.item_id))
+    item_id_input = ",".join(item_id_list)
+    try:
+        response = requests.get(inventory_url + "get_items?ids=" + str(item_id_input))
+    except Exception as err:
+        return pack_err(str(err))
+    response = json.loads(response.text)
+    if not response.get("status"):
+        return pack_err("Item does not exist.")
+    return pack_success(response.get("data"))
+
+# Requires: None
 @app.route("/get_all_startable_auction",methods=["GET"])
 def get_all_startable_auction():
     accessor = AuctionAccessor()
