@@ -96,7 +96,7 @@ def get_item_info():
     uid, err = shopping_accessor.get_user_by_item(item_id)
     if err:
         return pack_err(err) 
-    item['user_id'] = str(uid)      
+    item['user_id'] = str(uid[0])      
     return pack_success(item)
 
 # RemoveItemForSale
