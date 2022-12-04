@@ -293,8 +293,25 @@ class AuctionAccessor:
         get_auction_item_data = [auction_id]
         cursor.execute(get_auction_item, get_auction_item_data)
         item_id = cursor.fetchone()[1]
+
+        bid_id = auction_info[5]
+        bidder = None
+        bid_amount = None
+
+        if bid_id is not None:
+            get_bid = "SELECT * FROM Bid WHERE bid_id = %s"
+            get_bid_data = [bid_id]
+            cursor.execute(get_bid, get_bid_data)
+            bids = cursor.fetchall()
+            if len(bids) < 1:
+                raise Exception("Bid {} does not exist.".format(bid_id))
+
+            bid_info = bids[0]
+            bidder = bid_info[2]
+            bid_amount = bid_info[3]
+
         auction = Auction(auction_info[0], item_id, auction_info[1], auction_info[2], 
-                          auction_info[3], auction_info[4], auction_info[5], 
+                          auction_info[3], auction_info[4], bid_id, bidder, bid_amount,
                           auction_info[6], auction_info[7])
                         
         return auction
@@ -371,9 +388,26 @@ class AuctionAccessor:
             get_auction_item_data = [auction_id]
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
-            auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
-                              auction_info[3], auction_info[4], auction_info[5], 
-                              auction_info[6], auction_info[7])
+            
+            bid_id = auction_info[5]
+            bidder = None
+            bid_amount = None
+
+            if bid_id is not None:
+                get_bid = "SELECT * FROM Bid WHERE bid_id = %s"
+                get_bid_data = [bid_id]
+                cursor.execute(get_bid, get_bid_data)
+                bids = cursor.fetchall()
+                if len(bids) < 1:
+                    raise Exception("Bid {} does not exist.".format(bid_id))
+
+                bid_info = bids[0]
+                bidder = bid_info[2]
+                bid_amount = bid_info[3]
+
+            auction = Auction(auction_info[0], item_id, auction_info[1], auction_info[2], 
+                            auction_info[3], auction_info[4], bid_id, bidder, bid_amount,
+                            auction_info[6], auction_info[7])
             auctions.append(auction)
 
         return auctions
@@ -402,9 +436,26 @@ class AuctionAccessor:
             get_auction_item_data = [auction_id]
             cursor.execute(get_auction_item, get_auction_item_data)
             item_id = cursor.fetchone()[1]
-            auction = Auction(auction_id, item_id, auction_info[1], auction_info[2], 
-                              auction_info[3], auction_info[4], auction_info[5], 
-                              auction_info[6], auction_info[7])
+            
+            bid_id = auction_info[5]
+            bidder = None
+            bid_amount = None
+
+            if bid_id is not None:
+                get_bid = "SELECT * FROM Bid WHERE bid_id = %s"
+                get_bid_data = [bid_id]
+                cursor.execute(get_bid, get_bid_data)
+                bids = cursor.fetchall()
+                if len(bids) < 1:
+                    raise Exception("Bid {} does not exist.".format(bid_id))
+
+                bid_info = bids[0]
+                bidder = bid_info[2]
+                bid_amount = bid_info[3]
+
+            auction = Auction(auction_info[0], item_id, auction_info[1], auction_info[2], 
+                            auction_info[3], auction_info[4], bid_id, bidder, bid_amount,
+                            auction_info[6], auction_info[7])
             auctions.append(auction)
 
         return auctions

@@ -64,7 +64,10 @@ To use the auction service:
 - Get all endable auctions (where status = 1):
   curl --location --request GET 'http://127.0.0.1:5003/get_all_endable_auction'
 
-- Get auction by id (change <id> to the auction's id):
+- Get auctions by item id (change <id> to the auction's id):
+  curl --location --request GET 'http://127.0.0.1:5003/get_auctions_by_item_id?id=<id>'
+
+- Get auction by auction id (change <id> to the auction's id):
   curl --location --request GET 'http://127.0.0.1:5003/get_auction?id=<id>'
 
 - Start auction (change <id> to the auction's id):

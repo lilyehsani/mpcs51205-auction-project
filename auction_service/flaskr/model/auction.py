@@ -19,6 +19,7 @@ class Auction:
     '''
     def __init__(self, auction_id: int, item_id: int, start_time: datetime, end_time: datetime, 
                  start_price: float, status: int, current_highest_bid_id: int=None, 
+                 current_highest_bidder: str=None, current_highest_bid_amount: float=None,
                  finished_price: float=None, finished_user: int=None):
         self.auction_id = auction_id
         self.item_id = item_id
@@ -27,17 +28,20 @@ class Auction:
         self.start_price = start_price
         self.status = status
         self.current_highest_bid_id = current_highest_bid_id
+        self.current_highest_bidder = current_highest_bidder
+        self.current_highest_bid_amount = current_highest_bid_amount
         self.finished_price = finished_price
         self.finished_user = finished_user
 
     def __repr__(self):
         res = "*** Printing Auction Information ***\n"
         res += "Auction ID: {}\nStart time: {}\nEnd time: {}\nStart price: {}\n"
-        res += "Status: {}\nCurrent highest bid ID: "
-        res += "{}\nFinished price: {}\nFinished user ID: {}\n" 
+        res += "Status: {}\nCurrent highest bid ID: {}\nCurrent highest bidder: {}\n"
+        res += "Current highest bid amount: {}\nFinished price: {}\nFinished user ID: {}\n" 
         res += "*** End of Auction Information ***"    
         return res.format(self.auction_id, self.start_time, self.end_time, self.start_price, 
-                          self.status, self.current_highest_bid_id, self.finished_price, 
+                          self.status, self.current_highest_bid_id, self.current_highest_bidder,
+                          self.current_highest_bid_amount, self.finished_price, 
                           self.finished_user)
 
     def to_json(self):
@@ -48,6 +52,8 @@ class Auction:
             "start_price": self.start_price,
             "status": self.status,
             "current_highest_bid_id": self.current_highest_bid_id,
+            "current_highest_bidder": self.current_highest_bidder,
+            "current_highest_bid_amount": self.current_highest_bid_amount,
             "finished_price": self.finished_price,
             "finished_user": self.finished_user
         }
