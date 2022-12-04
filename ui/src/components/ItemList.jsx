@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const ItemList = () => {
     const [keyword, setKeyword] = useState('');
@@ -38,12 +39,24 @@ const ItemList = () => {
                     console.log("search error");
                     return;
                 }
-                console.log(response.data.data);
+                if (!response.data.status) {
+                    console.log(response.data);
+                    return;
+                }
                 let resp_items = response.data.data;
+                if (resp_items.length == 0) {
+                    alert("no items found");
+                    return;
+                }
                 let array = [];
                 for (let i = 0; i < resp_items.length; i++) {
+                    let cur_url = "/item/" + resp_items[i].id;
                     array.push(
-                        <div key={resp_items[i].id}>{resp_items[i].id} - {resp_items[i].name} - {resp_items[i].description}</div>
+                        <div key={resp_items[i].id}>
+                            <div>{resp_items[i].id} - {resp_items[i].name} - {resp_items[i].description}</div>
+                            <Link to={cur_url}>see details</Link>
+                        </div>
+
                     );
                 }
                 setItems(array);
@@ -63,10 +76,18 @@ const ItemList = () => {
                 }
                 console.log(response.data.data);
                 let resp_category_items = response.data.data;
+                if (resp_category_items.length == 0) {
+                    alert("no items found");
+                    return;
+                }
                 let cate_item_array = [];
                 for (let i = 0; i < resp_category_items.length; i++) {
+                    let cur_url = "/item/" + resp_category_items[i].id;
                     cate_item_array.push(
-                        <div key={resp_category_items[i].id}>{resp_category_items[i].id} - {resp_category_items[i].name} - {resp_category_items[i].description}</div>
+                        <div key={resp_category_items[i].id}>
+                            <div>{resp_category_items[i].id} - {resp_category_items[i].name} - {resp_category_items[i].description}</div>
+                            <Link to={cur_url}>see details</Link>
+                        </div>
                     );
                 }
                 setItems(cate_item_array);
@@ -77,24 +98,36 @@ const ItemList = () => {
 
     const getItemByCurrentAuction = async () => {
         axios.get("http://localhost:5003/get_all_auction_items")
-        .then((response) => {
-            console.log(response);
-            if (response?.status != 200) {
-                console.log("get_all_auction_items error");
-                return;
-            }
-            console.log(response.data);
-            let resp_auction_items = response.data.data;
-            let auction_item_array = [];
-            for (let i = 0; i < resp_auction_items.length; i++) {
-                auction_item_array.push(
-                    <div key={resp_auction_items[i].id}>{resp_auction_items[i].id} - {resp_auction_items[i].name} - {resp_auction_items[i].description}</div>
-                );
-            }
-            setItems(auction_item_array);
-        }, (error) => {
-            console.log(error);
-        });       
+            .then((response) => {
+                console.log(response);
+                if (response?.status != 200) {
+                    console.log("get_all_auction_items error");
+                    return;
+                }
+                console.log(response.data);
+                if (!response.data.status) {
+                    console.log(response.data);
+                    return;
+                }
+                let resp_auction_items = response.data.data;
+                if (resp_auction_items.length == 0) {
+                    alert("no items found");
+                    return;
+                }
+                let auction_item_array = [];
+                for (let i = 0; i < resp_auction_items.length; i++) {
+                    let cur_url = "/item/" + resp_auction_items[i].id;
+                    auction_item_array.push(
+                        <div key={resp_auction_items[i].id}>
+                            <div>{resp_auction_items[i].id} - {resp_auction_items[i].name} - {resp_auction_items[i].description}</div>
+                            <Link to={cur_url}>see details</Link>
+                        </div>
+                    );
+                }
+                setItems(auction_item_array);
+            }, (error) => {
+                console.log(error);
+            });
     }
 
 
@@ -117,13 +150,13 @@ const ItemList = () => {
                 <div>Method2: search items with by category
                     (enter category ID into the input for search)</div>
                 <div className="p-3 bg-light border">
-                <button
-                    onClick={() => { (getAllCategories()) }}>
-                    Get all the categories
-                </button>
-                <div>
-                {categories}
-                </div>
+                    <button
+                        onClick={() => { (getAllCategories()) }}>
+                        Get all the categories
+                    </button>
+                    <div>
+                        {categories}
+                    </div>
                 </div>
                 <div>
                     <input
@@ -132,18 +165,18 @@ const ItemList = () => {
                         value={categoryID}
                         onChange={(e) => { setcategoryID(e.target.value); }} />
                     <button
-                            onClick={() => { (searchByCategoryID(keyword)) }}>
-                            Search by category ID
-                        </button>
+                        onClick={() => { (searchByCategoryID(keyword)) }}>
+                        Search by category ID
+                    </button>
                 </div>
             </div>
 
             <div className="p-5 bg-light border">
                 <div>Method3: See items of current auctions</div>
-                <button  onClick={() => { (getItemByCurrentAuction(keyword)) }}>Get it</button>
+                <button onClick={() => { (getItemByCurrentAuction(keyword)) }}>Get it</button>
             </div>
 
-            <div  className="p-5 bg-light border">
+            <div className="p-5 bg-light border">
                 <h1>Result Item List</h1>
                 <h3>(Empty if no items satisfied requirements or no filter is selected)</h3>
                 {items}
