@@ -18,5 +18,6 @@ err_msg = {
     "micro_communication_err": "microservice communication failed",
     "parse_err": "parse microservice return data failed",
     "db_err": "db err",
+    "db_not_found": "not found in db",
     "param_err": "input param invalid"
 }

@@ -40,11 +40,11 @@ def create_item():
     return pack_success(item_info[0].serialize())
 
 # http://10.1.1.1:5000/get_item?id=12345
-# http://10.1.1.1:5000/get_item?id=12345_23456
+# http://10.1.1.1:5000/get_item?id=12345,23456
 @app.route('/get_items',methods=['GET'])
 def get_items():
     ids = request.args.get('ids')
-    id_list = ids.split("_")
+    id_list = ids.split(",")
     items, err = item_accessor.get_item_by_ids(id_list)
     if err:
         return pack_err(err)    
@@ -221,5 +221,7 @@ def pack_success(data):
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    app.config['CORS_HEADERS'] = 'Content-Type'
     cors = CORS(app)
+    app.config['SECRET_KEY'] = 'super-secret'
     app.run(debug=True, host='0.0.0.0', port=port)

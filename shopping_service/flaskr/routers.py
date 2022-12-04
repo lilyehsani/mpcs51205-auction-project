@@ -71,7 +71,7 @@ def get_items_for_sale():
     if err:
         return pack_err(err)
     item_ids = [str(item_id[0]) for item_id in item_ids]
-    item_id_input = "_".join(item_ids)
+    item_id_input = ",".join(item_ids)
     r = requests.get(url=inventory_url + "/get_items?ids=" + item_id_input)
     items, err = parse_response(r)
     if err:
@@ -82,6 +82,22 @@ def get_items_for_sale():
         ret_items.append(item)   
     return pack_success(ret_items)
 
+# get item information with uid
+@app.route('/get_item_info', methods=['GET'])
+def get_item_info():
+    item_id = request.args.get('item_id')
+    r = requests.get(url=inventory_url + "/get_items?ids=" + item_id)
+    items, err = parse_response(r)
+    if err:
+        return pack_err(err)
+    if len(items) <= 0:
+        return pack_err(err_msg['db_not_found'])
+    item = items[0]
+    uid, err = shopping_accessor.get_user_by_item(item_id)
+    if err:
+        return pack_err(err) 
+    item['user_id'] = str(uid[0])      
+    return pack_success(item)
 
 # RemoveItemForSale
 @app.route('/remove_item_for_sale', methods=['POST'])
@@ -126,7 +142,7 @@ def get_items_in_cart():
     if len(records) == 0:
         return pack_success(None)
     item_ids = [str(record[1]) for record in records]
-    item_id_input = "_".join(item_ids)
+    item_id_input = ",".join(item_ids)
     r = requests.get(url=inventory_url + "/get_items?ids=" + item_id_input)
     items, err = parse_response(r)  
     if err:
@@ -273,5 +289,7 @@ def pack_success(data):
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
+    app.config['CORS_HEADERS'] = 'Content-Type'
     cors = CORS(app)
+    app.config['SECRET_KEY'] = 'super-secret'
     app.run(debug=True, host='0.0.0.0', port=port)

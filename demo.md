@@ -66,7 +66,7 @@ curl --location --request POST 'http://127.0.0.1:5000/create_item'
 
   - Creates an item being sold by user with id 1. Id: 3
 
-- curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
+- curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1,2,3'
 
   - Gets information about all 3 of our items.
 
@@ -91,7 +91,7 @@ curl --location --request POST 'http://127.0.0.1:5000/create_item'
 
   - Consumes the items (like when a user checks out).
 
-- curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1_2_3'
+- curl --location --request GET 'http://127.0.0.1:5001/get_items?ids=1,2,3'
   - Shows that items 2 and 3 now have quantity 1 and 0.
 
 # Create an auction (Auction and Shopping Services)
