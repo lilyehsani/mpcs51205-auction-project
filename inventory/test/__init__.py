@@ -17,7 +17,7 @@ class Test(unittest.TestCase):
     #     shipping_cost = 2.2
     #     is_buy_now = True
     #     id = self.accessor.create_item(name, "item one desc", 2, shipping_cost, is_buy_now, 3.4, 1)
-    #     new_items = self.accessor.get_item_by_ids([id])
+    #     new_items, _ = self.accessor.get_item_by_ids([id])
     #     self.assertEqual(len(new_items), 1)
     #     new_item = new_items[0]
     #     self.assertEqual(new_item.name, name)
