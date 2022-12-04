@@ -29,10 +29,7 @@ const ItemPage = () => {
   const [auctionLoading, setAuctionLoading] = useState(false);
 
   function numToPrice(num) {
-    var strNum = num.toString();
-    if (Number.isInteger(num)) {
-      strNum += ".00";
-    }
+    var strNum = num.toFixed(2);
     return "$" + strNum;
   }
 
@@ -99,8 +96,8 @@ const ItemPage = () => {
           {auctions.map((auction) => (
             <tr key={auction.id}>
               <td className="auctionTd">
-                {auction.current_highest_bid_id
-                  ? getCurrentHighestBid(auction.current_highest_bid_id)
+                {auction.current_highest_bid_amount
+                  ? numToPrice(auction.current_highest_bid_amount)
                   : "No bids yet"}
               </td>
               <td className="auctionTd">{auction.start_time}</td>
