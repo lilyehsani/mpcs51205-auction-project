@@ -437,5 +437,7 @@ def json_success():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5003))
+    app.config['CORS_HEADERS'] = 'Content-Type'
     cors = CORS(app)
+    app.config['SECRET_KEY'] = 'super-secret'
     app.run(debug=True, host="0.0.0.0", port=port)

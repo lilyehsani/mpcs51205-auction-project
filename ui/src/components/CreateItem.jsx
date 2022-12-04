@@ -34,34 +34,21 @@ const CreateItem = () => {
     };
 
     const createItem = async () => {
-        try {
-            const response = await axios({
-                method: 'POST',
-                url: "http://127.0.0.1:5001/create_item/",
-                // inventory_input = {'name': data.get('name'), 'description': data.get('description'), 'quantity' : data.get('quantity'), 'shipping_cost' :data.get('shipping_cost'), 'is_buy_now' : data.get('is_buy_now'), 'price' : data.get('price'), 'category_id': data.get('category_id')}
-                data: {
-                    'name': itemname,
-                    'description': description,
-                    'quantity': quantity,
-                    'shipping_cost': shipping,
-                    'is_buy_now': isBuyNow,
-                    'price': price,
-                    'category_id': categoryId,
-                    'user_id': 1
-                }
-                // todo: get user_id in session
-            });
-            if (!response?.data?.token) {
-                console.log('Something went wrong during creating item: ', response);
-                return;
-            }
-            console.log(response)
-            // todo: navigate to seller page after creating items
-            // navigate(APP_ROUTES.SELLER);
-        }
-        catch (err) {
-            console.log('Some error occurred during creating item: ', err);
-        }
+        axios.post("http://127.0.0.1:5001/create_item/", {
+            name: itemname,
+            description: description,
+            quantity: quantity,
+            shipping_cost: shipping,
+            is_buy_now: isBuyNow,
+            price: price,
+            category_id: categoryId,
+            user_id: 1
+            // todo: get user_id in session
+        }, {
+            headers: {}
+        }).then(resp => console.log(resp.data))
+        // todo: navigate to seller page after creating items
+        // navigate(APP_ROUTES.SELLER);
     };
 
     const handleItemnameChange = (value) => {
@@ -93,6 +80,7 @@ const CreateItem = () => {
     }
 
     return (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Col className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationCustom01">
@@ -159,6 +147,7 @@ const CreateItem = () => {
             </Col>
             <Button type="submit">Submit form</Button>
         </Form>
+        </div>
     );
 }
 
