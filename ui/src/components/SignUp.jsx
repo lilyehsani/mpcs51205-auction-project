@@ -131,6 +131,7 @@ const getAccount = async () => {
             placeholder="Email"
             required
             style={{ width: '300px'}}
+            onChange={handleEmailChange}
           />
         </Form.Group>
       </Col>
