@@ -11,4 +11,5 @@ export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
   CREATE_ITEM: '/createitem',
   ITEM_LIST: '/item_list',
+  ITEM_PAGE: '/item',
 }

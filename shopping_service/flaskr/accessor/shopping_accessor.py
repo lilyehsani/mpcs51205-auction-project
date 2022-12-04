@@ -1,7 +1,9 @@
+from logging import raiseExceptions
 import mysql.connector
 from datetime import datetime
 from common import local_config, docker_config
 from model.watch_list import WatchList
+from common import err_msg
 
 class ShoppingAccessor:
     def __init__(self):
@@ -42,6 +44,17 @@ class ShoppingAccessor:
             print(err)
             return None, err.__str__
         return item_id_list, None
+
+    def get_user_by_item(self, item_id):
+        query = "SELECT user_id FROM user_item WHERE item_id = %d" % (int(item_id))
+        try:
+            self.cursor.execute(query)
+            user_id_list = self.cursor.fetchall()
+        except Exception as err:
+            raiseExceptions(err)
+        if len(user_id_list) == 0:
+            return None, err_msg["db_not_found"]
+        return user_id_list[0], None
 
     def get_current_cart(self, user_id):
         query = "SELECT * FROM cart WHERE user_id = %s"
