@@ -34,18 +34,22 @@ const CreateItem = () => {
     };
 
     const createItem = async () => {
-        axios.post("http://127.0.0.1:5001/create_item", {
+        axios.post("http://127.0.0.1:5002/create_item", {
             name: itemname,
             description: description,
-            quantity: quantity,
-            shipping_cost: shipping,
+            quantity: parseInt(quantity),
+            shipping_cost: parseFloat(shipping),
             is_buy_now: isBuyNow,
-            price: price,
+            price: parseFloat(price),
             category_id: categoryId,
-            user_id: 1
+            user_id: 2
             // todo: get user_id in session
         }, {
-            headers: {}
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type':  'application/json',
+                'accept': "application/json",
+            }
         }).then(resp => console.log(resp.data))
         // todo: navigate to seller page after creating items
         // navigate(APP_ROUTES.SELLER);
