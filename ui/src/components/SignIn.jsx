@@ -4,93 +4,79 @@ import { useState } from 'react';
 import { API_ROUTES, APP_ROUTES } from '../utils/constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../lib/customHooks';
-import { storeTokenInLocalStorage } from '../lib/common';
+import { storeTokenInLocalStorage, getAuthenticatedUser } from '../lib/common';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 const SignIn = () => {
   const navigate = useNavigate();
-  const { user, authenticated } = useUser();
-  if (user || authenticated) {
-    navigate(APP_ROUTES.DASHBOARD)
-  }
-
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [validated, setValidated] = useState(false);
 
-  const signIn = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios({
-        method: 'post',
-        url: API_ROUTES.SIGN_IN,
-        data: {
-          email,
-          password
-        }
-      });
-      if (!response?.data?.token) {
-        console.log('Something went wrong during signing in: ', response);
-        return;
-      }
-      storeTokenInLocalStorage(response.data.token);
-      navigate(APP_ROUTES.DASHBOARD)
+  const handleSubmit = (event) => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
     }
-    catch (err) {
-      console.log('Some error occured during signing in: ', err);
-    }
-    finally {
-      setIsLoading(false);
-    }
+    setValidated(true);
+    login();
+    event.preventDefault();
+    event.stopPropagation();
   };
+
+  const login = async () => {
+    axios.post("http://127.0.0.1:5000/account/login/", {
+      user_name: username,
+      user_password: password,
+    }, {
+      headers: {}
+    }).then(resp => {
+      storeTokenInLocalStorage(resp.data.access_token);
+      console.log(getAuthenticatedUser());
+    })
+  }
+
+  const handleUsernameChange = (value) => {
+    setUsername(value.target.value);
+  }
+
+  const handlePasswordChange = (value) => {
+    setPassword(value.target.value);
+  }
 
 
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-gray-800">
-      <div className="w-1/2 h-1/2 shadow-lg rounded-md bg-white p-8 flex flex-col">
-        <h2 className="text-center font-medium text-2xl mb-4">
-          Sign in
-        </h2>
-        <div className="flex flex-1 flex-col justify-evenly">
-          <input
-            className="border-2 outline-none p-2 rounded-md"
-            type="email"
-            placeholder="Enter Your Email"
-            value={email}
-            onChange={(e) => { setEmail(e.target.value); }}
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
+    <Form noValidate validated={validated} onSubmit={handleSubmit}>
+      <Col className="mb-3">
+        <Form.Group as={Col} md="4" controlId="validationCustom02">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Username"
+            required
+            style={{ width: '300px'}}
+            onChange={handleUsernameChange}
           />
-          <input
-            className="border-2 outline-none p-2 rounded-md"
-            type="password"
-            placeholder="*******" value={password}
-            onChange={(e) => { setPassword(e.target.value); }}
+        </Form.Group>
+        <Form.Group as={Col} md="4" controlId="validationCustom03">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Password"
+            required
+            style={{ width: '300px'}}
+            onChange={handlePasswordChange}
           />
-
-          <button
-            className="
-            flex justify-center
-            p-2 rounded-md w-1/2 self-center
-            bg-gray-800  text-white hover:bg-gray-800"
-            onClick={signIn}
-          >
-            {
-              isLoading ?
-                <div className="mr-2 w-5 h-5 border-l-2 rounded-full animate-spin" /> : null
-            }
-            <span>
-              SIGN IN
-            </span>
-          </button>
-        </div>
-        <div className="text-center text-sm">
-          Not a User?
-          <Link to="/signup">
-            <span className="font-medium text-gray-800 ml-1">
-              Sign Up
-            </span>
-          </Link>
-        </div>
-      </div>
-    </div >
+        </Form.Group>
+      </Col>
+      <Button type="submit">Submit form</Button>
+    </Form>
+    </div>
   );
 }
 

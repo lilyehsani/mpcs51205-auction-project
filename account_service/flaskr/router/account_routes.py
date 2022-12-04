@@ -8,6 +8,7 @@ from flaskr.service.account_service import AccountService
 
 blueprint = Blueprint('account_service_routes', __name__)
 
+
 @blueprint.route("/", methods=['POST'])
 @inject
 def create_account(account_service: AccountService = Provide[Module.account_service]):
@@ -52,6 +53,23 @@ def get_account(user_id: str, account_service: AccountService = Provide[Module.a
     return jsonify(user.to_json()), 200
 
 
+@blueprint.route("/auth", methods=['GET'])
+@inject
+@jwt_required()
+def get_account_jwt(account_service: AccountService = Provide[Module.account_service]):
+    user_id = str(get_jwt_identity())
+    try:
+        user: User = account_service.get_user_by_id(user_id)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
+
+    return jsonify(user.to_json()), 200
+
 @blueprint.route("/<user_id>", methods=['PUT'])
 @inject
 def update_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
@@ -95,7 +113,11 @@ def delete_account(user_id: str, account_service: AccountService = Provide[Modul
 @inject
 @jwt_required()
 def ping():
-    return jsonify({"status": "Ping success"}), 200
+    current_user_id = get_jwt_identity()
+    return jsonify({
+        "status": "Ping success",
+        "user_id": str(current_user_id)
+    }), 200
 
 
 @blueprint.route("/login", methods=['POST'])
@@ -106,7 +128,7 @@ def login(account_service: AccountService = Provide[Module.account_service]):
     user = account_service.get_user_by_username_password(user_name, user_password)
 
     if user:
-        access_token = create_access_token(identity=user_name)  # create jwt token
+        access_token = create_access_token(identity=str(user.user_id))  # create jwt token
         return jsonify(access_token=access_token), 200
 
     return jsonify({'msg': 'The username or password is incorrect'}), 401
