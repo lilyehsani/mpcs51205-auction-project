@@ -1,3 +1,4 @@
+from logging import raiseExceptions
 from accessor.shopping_accessor import ShoppingAccessor
 from accessor.db_init import DBInit
 from common import err_msg
@@ -18,11 +19,12 @@ inventory_docker_url = 'http://inventory_service:5000'
 inventory_local_url = 'http://localhost:5001'
 inventory_url = inventory_docker_url
 account_url = "http://account_service:5000/account/"
+auction_url = "http://auction_service:5003"
 
 # ------------ open API --------------------
 @app.route('/')
 def home():
-    return "shopping service home page"
+    return "shopping service home page1"
 
 
 # CreateItem
@@ -59,6 +61,22 @@ def create_item():
             print ("Error: cannot start thread for notification")
             return pack_err(err_msg['micro_communication_err'])
     return pack_success(item)
+
+@app.route('/add_watch_list', methods=['POST'])
+def add_watch_list():
+    data = request.get_data()
+    data = json.loads(data)
+    user_id = data.get('user_id')
+    category_id = int(data.get('category_id'))
+    max_price = float(data.get('max_price'))    
+    if user_id == None or category_id == None or max_price == None or max_price < 0 or category_id < 0:
+        return pack_err(err_msg["param_err"])
+    try:
+        shopping_accessor.create_watch_list(user_id, category_id, max_price)
+    except Exception as e:
+        print(e)
+        return pack_err(err_msg['db_err'])
+    return pack_success(None) 
 
 # GetItemsForSaleByOwner
 @app.route('/get_items_for_sale', methods=['GET'])
@@ -105,11 +123,18 @@ def remove_item_for_sale():
     data = json.loads(data)
     user_id = data.get('user_id')
     item_id = data.get('item_id')
+    # cannot delete if there is auction of the item
+    try:
+        r = requests.get(url=auction_url + "/get_auctions_by_item_id?id=" + str(item_id))
+        items, err = parse_response(r)
+        if len(items) > 0:
+            return pack_err(err_msg["cannot_delete_auction_item"])
+    except Exception as e:
+        raise Exception(e)
     try:
         shopping_accessor.remove_user_item(user_id=user_id, item_id=item_id)    
     except Exception as e:
-        print(e)
-        return pack_err(err_msg['db_err'])
+        raise Exception(e)
     inventory_input = {
         'id':item_id
     }
@@ -197,22 +222,6 @@ def checkout():
         return pack_err(err_msg['db_err'])
     return pack_success(result)    
 
-@app.route('/create_watch_list', methods=['POST'])
-def create_watch_list():
-    data = request.get_data()
-    data = json.loads(data)
-    user_id = data.get('user_id')
-    category_id = data.get('category_id')
-    max_price = data.get('max_price')    
-    if user_id == None or category_id == None or max_price == None or max_price < 0 or category_id < 0:
-        return pack_err(err_msg["param_err"])
-    try:
-        shopping_accessor.create_watch_list(user_id, category_id, max_price)
-    except Exception as e:
-        print(e)
-        return pack_err(err_msg['db_err'])
-    return pack_success(None) 
-
 @app.route('/get_user_watch_list', methods=['GET'])
 def get_user_watch_list():
     user_id = request.args.get('user_id')
@@ -278,13 +287,11 @@ def pack_err(err_msg):
        "err_msg": err_msg
     })
 
-
 def pack_success(data):
     return jsonify({
         "status": True,
         "data": data
     })
-
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))

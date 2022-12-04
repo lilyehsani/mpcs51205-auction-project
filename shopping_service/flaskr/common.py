@@ -19,5 +19,6 @@ err_msg = {
     "parse_err": "parse microservice return data failed",
     "db_err": "db err",
     "db_not_found": "not found in db",
-    "param_err": "input param invalid"
+    "param_err": "input param invalid",
+    "cannot_delete_auction_item": "cannot delete the item since there is an auction ongoing"
 }
