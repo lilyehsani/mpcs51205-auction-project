@@ -52,6 +52,12 @@ const WatchList = () => {
             user_id:"test101",
             category_id: categoryID,
             max_price: maxPrice
+        }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type':  'application/json',
+                'accept': "application/json",
+            }            
         })
             .then((response) => {
                 console.log(response);
