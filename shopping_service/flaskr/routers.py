@@ -50,10 +50,9 @@ def create_item():
     price = data.get('price')
     if category_id != None and price != None:
         try:
-            watch_list = shopping_accessor.get_target_watch_list(category_id, price)
+            watch_list = shopping_accessor.get_target_watch_list(int(category_id), float(price))
         except Exception as e:
-            print(e)
-            return pack_err(err_msg['db_err'])
+            raise Exception(e) 
         try:
             _thread.start_new_thread(send_watch_list_notification, (watch_list,) )
         except:

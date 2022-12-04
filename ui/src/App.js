@@ -5,6 +5,7 @@ import ItemList from "./components/ItemList";
 import ItemPage from "./components/ItemPage";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
+import WatchList from './components/WatchList';
 import { APP_ROUTES } from "./utils/constants";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -19,6 +20,7 @@ function App() {
         <Route path={APP_ROUTES.CREATE_ITEM} element={<CreateItem />} />
         <Route path={APP_ROUTES.ITEM_LIST} element={<ItemList />} />
         <Route path={APP_ROUTES.ITEM_PAGE} element={<ItemPage />} />
+        <Route path={APP_ROUTES.WATCH_LIST} element={<WatchList />} />
       </Routes>
     </BrowserRouter>
   );

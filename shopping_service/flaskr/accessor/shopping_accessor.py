@@ -186,7 +186,7 @@ class ShoppingAccessor:
         query = "SELECT * FROM watch_list WHERE category_id = %d and max_price >= %f" % (category_id, price)
         try:
             self.cursor.execute(query)
+            watch_list = self.cursor.fetchall()
         except mysql.connector.Error as err:
             raise Exception(err)
-        watch_list = self.cursor.fetchall()
         return self.pack_watch_list(watch_list)        
