@@ -145,7 +145,10 @@ const ItemList = () => {
 
             <div  className="p-5 bg-light border">
                 <h1>Result Item List</h1>
+<<<<<<< HEAD
                 <h3>(Empty if no items satisfied requirements or no filter is selected)</h3>
+=======
+>>>>>>> 6cac4a4d780d6e00273f247bb32c5b26d2dada2d
                 {items}
             </div>
 
