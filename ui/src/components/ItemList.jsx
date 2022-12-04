@@ -76,22 +76,22 @@ const ItemList = () => {
     };
 
     const getItemByCurrentAuction = async () => {
-        axios.get("http://localhost:5003/get_all_endable_auction")
+        axios.get("http://localhost:5003/get_all_auction_items")
         .then((response) => {
             console.log(response);
             if (response?.status != 200) {
-                console.log("get_all_endable_auction error");
+                console.log("get_all_auction_items error");
                 return;
             }
             console.log(response.data);
-            // let resp_category_items = response.data.data;
-            // let cate_item_array = [];
-            // for (let i = 0; i < resp_category_items.length; i++) {
-            //     cate_item_array.push(
-            //         <div key={resp_category_items[i].id}>{resp_category_items[i].id} - {resp_category_items[i].name} - {resp_category_items[i].description}</div>
-            //     );
-            // }
-            // setItems(cate_item_array);
+            let resp_auction_items = response.data.data;
+            let auction_item_array = [];
+            for (let i = 0; i < resp_auction_items.length; i++) {
+                auction_item_array.push(
+                    <div key={resp_auction_items[i].id}>{resp_auction_items[i].id} - {resp_auction_items[i].name} - {resp_auction_items[i].description}</div>
+                );
+            }
+            setItems(auction_item_array);
         }, (error) => {
             console.log(error);
         });       
@@ -145,6 +145,7 @@ const ItemList = () => {
 
             <div  className="p-5 bg-light border">
                 <h1>Result Item List</h1>
+                <h3>(Empty if no items satisfied requirements or no filter is selected)</h3>
                 {items}
             </div>
 
