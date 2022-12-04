@@ -71,7 +71,7 @@ def get_items_for_sale():
     if err:
         return pack_err(err)
     item_ids = [str(item_id[0]) for item_id in item_ids]
-    item_id_input = "_".join(item_ids)
+    item_id_input = ",".join(item_ids)
     r = requests.get(url=inventory_url + "/get_items?ids=" + item_id_input)
     items, err = parse_response(r)
     if err:
@@ -126,7 +126,7 @@ def get_items_in_cart():
     if len(records) == 0:
         return pack_success(None)
     item_ids = [str(record[1]) for record in records]
-    item_id_input = "_".join(item_ids)
+    item_id_input = ",".join(item_ids)
     r = requests.get(url=inventory_url + "/get_items?ids=" + item_id_input)
     items, err = parse_response(r)  
     if err:
