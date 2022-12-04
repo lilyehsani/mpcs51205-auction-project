@@ -24,9 +24,28 @@ const handleSubmit = (event) => {
     event.preventDefault();
     event.stopPropagation();
   }
-  console.log(email);
   setValidated(true);
+  createAccount();
 };
+
+const ping = async () => {
+  axios.get("http://127.0.0.1:5000/account/ping").then(resp => console.log(resp.data));
+}
+
+const createAccount = async () => {
+  axios.post("http://127.0.0.1:5000/account/", {
+    name: name,
+    user_name: username,
+    user_password: password,
+    email: email
+  }, {
+    headers: {}
+  }).then(resp => console.log(resp.data))
+}
+
+const getAccount = async () => {
+  axios.get("http://127.0.0.1:5000/account/63898cf3a06e8a583f00899c").then(resp => console.log(resp.data));
+}
 
   const signUp = async () => {
     try {
@@ -59,6 +78,7 @@ const handleSubmit = (event) => {
 
   const handleUsernameChange = (value) => {
     setUsername(value.target.value);
+    ping();
   }
 
   const handlePasswordChange = (value) => {
@@ -70,51 +90,57 @@ const handleSubmit = (event) => {
   }
 
   return (
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px'}}>
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
       <Col className="mb-3">
         <Form.Group as={Col} md="4" controlId="validationCustom01">
-          <Form.Label>Name</Form.Label>
+          <Form.Label style={{ display: 'flex', justifyContent: 'center'}}>Name</Form.Label>
           <Form.Control
-            required
             type="text"
             placeholder="Name"
             required
+            style={{ width: '300px'}}
             onChange={handleNameChange}
           />
+          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom02">
           <Form.Label>Username</Form.Label>
           <Form.Control
-            required
             type="text"
             placeholder="Username"
             required
+            style={{ width: '300px'}}
             onChange={handleUsernameChange}
           />
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom03">
           <Form.Label>Password</Form.Label>
           <Form.Control
-            required
             type="text"
             placeholder="Password"
             required
+            style={{ width: '300px'}}
             onChange={handlePasswordChange}
           />
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom04">
           <Form.Label>Email</Form.Label>
           <Form.Control
-            required
             type="text"
             placeholder="Email"
             required
+<<<<<<< HEAD
+            style={{ width: '300px'}}
+=======
+>>>>>>> 8c710d98c6d261578bcb3243588dbf20d247ec6f
             onChange={handleEmailChange}
           />
         </Form.Group>
       </Col>
       <Button type="submit">Submit form</Button>
     </Form>
+    </div>
   );
 }
 
