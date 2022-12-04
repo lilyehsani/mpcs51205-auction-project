@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request
 from dependency_injector.wiring import inject, Provide
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 from flaskr.container.dependency_container import Module
 from flaskr.model.user import User
 from flaskr.service.account_service import AccountService
 
 blueprint = Blueprint('account_service_routes', __name__)
-
 
 @blueprint.route("/", methods=['POST'])
 @inject
@@ -93,5 +93,20 @@ def delete_account(user_id: str, account_service: AccountService = Provide[Modul
 
 @blueprint.route("/ping", methods=['GET'])
 @inject
+@jwt_required()
 def ping():
     return jsonify({"status": "Ping success"}), 200
+
+
+@blueprint.route("/login", methods=['POST'])
+@inject
+def login(account_service: AccountService = Provide[Module.account_service]):
+    user_name = request.get_json(force=True).get('user_name')
+    user_password = request.get_json(force=True).get('user_password')
+    user = account_service.get_user_by_username_password(user_name, user_password)
+
+    if user:
+        access_token = create_access_token(identity=user_name)  # create jwt token
+        return jsonify(access_token=access_token), 200
+
+    return jsonify({'msg': 'The username or password is incorrect'}), 401

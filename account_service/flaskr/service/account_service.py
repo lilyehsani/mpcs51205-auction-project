@@ -15,6 +15,9 @@ class AccountService:
     def get_user_by_id(self, user_id: str) -> User:
         return self._account_accessor.get_user_by_id(user_id)
 
+    def get_user_by_username_password(self, username, password) -> User:
+        return self._account_accessor.get_user(username, password)
+
     def update_user(self, user_id: str, name: str, status: int, email: str, seller_rating: str, user_name: str,
                     user_password: str):
         return self._account_accessor.update_user(user_id, name, status, email, seller_rating, user_name, user_password)
