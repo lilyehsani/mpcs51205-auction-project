@@ -118,7 +118,7 @@ const ItemList = () => {
                     (enter category ID into the input for search)</div>
                 <div className="p-3 bg-light border">
                 <button
-                    onClick={() => { (getAllCategories(keyword)) }}>
+                    onClick={() => { (getAllCategories()) }}>
                     Get all the categories
                 </button>
                 <div>
@@ -127,7 +127,7 @@ const ItemList = () => {
                 </div>
                 <div>
                     <input
-                        type="text"
+                        type="number"
                         placeholder="categoryID to search, e.g. 1"
                         value={categoryID}
                         onChange={(e) => { setcategoryID(e.target.value); }} />
