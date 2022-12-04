@@ -12,11 +12,6 @@ import Form from "react-bootstrap/Form";
 
 // Props: id (auction id), auction (auction)
 const AuctionRow = (props) => {
-  //   const navigate = useNavigate();
-  //   const { user, authenticated } = useUser();
-  //   if (!(user || authenticated)) {
-  //     navigate(APP_ROUTES.SIGN_IN);
-  //   }
   const [bidInput, setLastBid] = useState("");
 
   const placeBid = async (bidAmount) => {

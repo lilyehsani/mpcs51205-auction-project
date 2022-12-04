@@ -13,11 +13,13 @@ import Table from "react-bootstrap/Table";
 import AuctionRow from "./AuctionRow";
 
 const ItemPage = () => {
-  //   const navigate = useNavigate();
-  //   const { user, authenticated } = useUser();
-  //   if (!(user || authenticated)) {
-  //     navigate(APP_ROUTES.SIGN_IN);
-  //   }
+  // const navigate = useNavigate();
+  // const { user, authenticated } = useUser();
+  // if (!(user || authenticated)) {
+  //   navigate(APP_ROUTES.SIGN_IN);
+  // } else {
+  //   console.log(user, authenticated);
+  // }
 
   let { itemId } = useParams();
 
