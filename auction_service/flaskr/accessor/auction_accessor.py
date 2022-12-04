@@ -299,6 +299,55 @@ class AuctionAccessor:
                         
         return auction
 
+    def get_active_auctions_by_item_id(self, item_id: int) -> list:
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_auction = "SELECT * FROM AuctionItem WHERE item_id = %s"
+        get_auction_data = [item_id]
+        cursor.execute(get_auction, get_auction_data)
+        fetched_auctions = cursor.fetchall()
+        
+        auctions = []
+        for auction_info in fetched_auctions:
+            auction_id = auction_info[0]
+            auction = self.get_auction_by_id(auction_id)
+            if auction.status == 1:
+                auctions.append(auction)
+
+        return auctions
+
+    def get_auctions_by_item_id(self, item_id: int) -> list:
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_auction = "SELECT * FROM AuctionItem WHERE item_id = %s"
+        get_auction_data = [item_id]
+        cursor.execute(get_auction, get_auction_data)
+        fetched_auctions = cursor.fetchall()
+        
+        auctions = []
+        for auction_info in fetched_auctions:
+            auction_id = auction_info[0]
+            auction = self.get_auction_by_id(auction_id)
+            auctions.append(auction)
+
+        return auctions
+
     def get_all_auction(self) -> list:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(

@@ -5,6 +5,7 @@ services:
   # Auction DB using port 3308 allows other SQL DBs to use other ports
   auction_db:
     image: mysql:latest
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
     ports:
@@ -107,5 +108,13 @@ services:
     build: admin_service
     ports:
       - "5006:5006"
+    volumes:
+      - /etc/localtime:/etc/localtime
+
+  #---------- EMAIL ----------#
+  email_service:
+    build: email_service
+    ports:
+      - "5007:5007"
     volumes:
       - /etc/localtime:/etc/localtime

@@ -1,3 +1,4 @@
 Flask
 pymongo
 mysql-connector-python
+Flask_Cors==3.0.10

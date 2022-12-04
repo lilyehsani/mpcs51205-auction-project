@@ -130,7 +130,10 @@ const getAccount = async () => {
             type="text"
             placeholder="Email"
             required
+<<<<<<< HEAD
             style={{ width: '300px'}}
+=======
+>>>>>>> 8c710d98c6d261578bcb3243588dbf20d247ec6f
             onChange={handleEmailChange}
           />
         </Form.Group>

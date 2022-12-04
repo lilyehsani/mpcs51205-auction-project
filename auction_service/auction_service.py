@@ -5,11 +5,13 @@ from datetime import datetime
 import os
 import json
 import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
 inventory_url = "http://inventory_service:5000/"
 shopping_url = "http://shopping_service:5000/"
 account_url = "http://account_service:5000/account/"
+email_url = "http://email_service:5007/"
 
 # -------- open APIs ----------
 @app.route("/")
@@ -27,16 +29,30 @@ def create_auction():
         return pack_err(str(err))
 
     accessor = AuctionAccessor()
+    item_id = data.get("item_id")
 
+    # Get the item that is about to have an auction created for it
     try:
-        check_item = requests.get(inventory_url + "get_items?ids=" + str(data.get("item_id")))
+        response = requests.get(inventory_url + "get_items?ids=" + str(item_id))
     except Exception as err:
         return pack_err(str(err))
     
-    check_item_success = check_success(check_item)
-    if not check_item_success:
+    # Error if the item does not exist
+    response = json.loads(response.text)
+    if not response.get("status"):
         return pack_err("Item does not exist.")
 
+    # Get the active auctions for this item
+    try:
+        auctions = accessor.get_active_auctions_by_item_id(item_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    quantity = response.get("data")[0].get("quantity")
+    # Error if there are already as many auctions for the item as there is quantity
+    if len(auctions) >= quantity:
+        return pack_err("Not enough quantity of item to create auction.")
+    
     try:
         start_time = data.get("start_time")
         end_time = data.get("end_time")
@@ -74,43 +90,55 @@ def place_bid():
         return pack_err(str(err))
     
     # Get the current winning bid ID
+    # Will be used later to notify the outbid user
     winning_bid_id = auction.current_highest_bid_id
-
-    # If there is currently a winning bid, save that user's ID
-    if winning_bid_id is not None:
-        try:
-            winning_bid = accessor.get_bid_by_id(winning_bid_id)
-        except Exception as err:
-            return pack_err(str(err))
-        losing_user = winning_bid.user_id
+    bid_amount = data.get("bid_amount")
 
     try:
         bid_time = datetime.now()
-        accessor.place_bid(auction_id, data.get("user_id"), data.get("bid_amount"), bid_time)
+        accessor.place_bid(auction_id, data.get("user_id"), bid_amount, bid_time)
     except Exception as err:
         return pack_err(str(err))
         
     # Notify losing_user
-    # subject = "You've been outbid."
-    # body = "Someone else just bid higher than you on an auction."
-    
-    # if winning_bid_id is not None:
-    #     try:
-    #         response = requests.get(account_url + losing_user)
-    #     except Exception as err:
-    #         return pack_err(str(err))
+    if winning_bid_id is not None:
+        err = try_notify_bidder(accessor, winning_bid_id)
+        if err:
+            return pack_err(err)
 
+    # Notify seller
+    # item_id = auction.item_id
+
+    # try:
+    #     response = requests.get(inventory_url + "get_items?ids=" + item_id)
+    # except Exception as err:
+    #     return pack_err(str(err))
+        
+    # try:
     #     response = json.loads(response.text)
-    #     user_email = response.get("email")
+    # except json.decoder.JSONDecodeError as err:
+    #     return pack_err(str(err))
+        
+    # subject = "Someone placed a bid!"
+    # body = "Someone just placed a bid of ${} on your auction.".format(bid_amount)
 
-    #     post_data = {"subject": subject, "body": body, "to": user_email}
-    #     try:
-    #         response = requests.post("https://zvhfeuzz3m.execute-api.us-east-1.amazonaws.com/Prod/mail/", json=post_data)
-    #     except Exception as err:
-    #         return pack_err(str(err))
+    # try:
+    #     response = requests.get(account_url + str(losing_user))
+    # except Exception as err:
+    #     return pack_err(str(err))
 
-    #     # response = json.loads(response.json())
-    #     return pack_success(response.text)
+    # try:
+    #     response = json.loads(response.text)
+    # except json.decoder.JSONDecodeError as err:
+    #     return pack_err(str(err))
+
+    # losing_user_email = response.get("email")
+    # post_data = {"subject": subject, "body": body, "to": losing_user_email}
+    
+    # # We should still allow bid even if email fails
+    # requests.post(email_url + "send_email", json=post_data)
+
+    # seller_id = response["data"][0].get("")
 
     return json_success()
 
@@ -174,6 +202,23 @@ def get_auction():
         return pack_err(str(err))
 
     return pack_success(auction_info.to_json())
+
+# Requires: id (int), ID of existing item
+@app.route("/get_auctions_by_item_id",methods=["GET"])
+def get_auctions_by_item_id():
+    accessor = AuctionAccessor()
+    item_id = request.args.get("id")
+
+    try:
+        auctions = accessor.get_auctions_by_item_id(item_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_auctions = []
+    for auction in auctions:
+        json_auctions.append(auction.to_json())
+
+    return pack_success(json_auctions)
 
 # Requires: id (int), ID of existing auction
 @app.route("/start_auction",methods=["PATCH"])
@@ -347,6 +392,32 @@ def check_success(response):
     response = json.loads(response.text)
     return response.get("status")
 
+def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int):
+    try:
+        winning_bid = accessor.get_bid_by_id(winning_bid_id)
+    except Exception as err:
+        return str(err)
+    losing_user = winning_bid.user_id
+
+    subject = "You've been outbid."
+    body = "Someone else just bid higher than you on an auction."
+
+    try:
+        response = requests.get(account_url + str(losing_user))
+    except Exception as err:
+        return str(err)
+
+    try:
+        response = json.loads(response.text)
+    except json.decoder.JSONDecodeError as err:
+        return str(err)
+
+    losing_user_email = response.get("email")
+    post_data = {"subject": subject, "body": body, "to": losing_user_email}
+    
+    # We should still allow bid even if email fails
+    requests.post(email_url + "send_email", json=post_data)
+
 def pack_err(err_msg):
     return jsonify({
        "status": False,
@@ -366,4 +437,5 @@ def json_success():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5003))
+    cors = CORS(app)
     app.run(debug=True, host="0.0.0.0", port=port)
