@@ -40,11 +40,11 @@ def create_item():
     return pack_success(item_info[0].serialize())
 
 # http://10.1.1.1:5000/get_item?id=12345
-# http://10.1.1.1:5000/get_item?id=12345_23456
+# http://10.1.1.1:5000/get_item?id=12345,23456
 @app.route('/get_items',methods=['GET'])
 def get_items():
     ids = request.args.get('ids')
-    id_list = ids.split("_")
+    id_list = ids.split(",")
     items, err = item_accessor.get_item_by_ids(id_list)
     if err:
         return pack_err(err)    
