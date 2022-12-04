@@ -118,3 +118,9 @@ services:
       - "5007:5007"
     volumes:
       - /etc/localtime:/etc/localtime
+
+  #---------- FRONTEND ----------#
+  frontend:
+    build: ui
+    ports:
+      - "3000:3000"
