@@ -90,7 +90,6 @@ const SignUp = () => {
 
   const handleUsernameChange = (value) => {
     setUsername(value.target.value);
-    ping();
   };
 
   const handlePasswordChange = (value) => {
