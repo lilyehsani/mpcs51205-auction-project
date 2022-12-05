@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
 import { getAuthenticatedUser } from "../lib/common";
+import { Link } from "react-router-dom";
 
 const WatchList = () => {
     const [maxPrice, setMaxPrice] = useState(0);
@@ -129,6 +129,7 @@ const WatchList = () => {
 
     return (
         <div>
+            <Link to="/dashboard">Back to dashboard</Link>
             <h1>welcome WatchList</h1>
             <div>Notifications will be sent through email autometically when an item satisfied the watchlist requirement is created</div>
             <div className="p-5 bg-light border">

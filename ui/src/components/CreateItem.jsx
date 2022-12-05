@@ -61,7 +61,15 @@ const CreateItem = () => {
           },
         }
       )
-      .then((resp) => console.log(resp.data));
+      .then((resp) => {
+        if (resp.data.status) {
+          alert("Item creation successful!");
+          navigate(`/item/${resp.data.data.id}`, { state: { itemId: resp.data.data.id } });
+        } else {
+          alert("Item could not be created. Reason: " + resp.data.err_msg);
+        }
+        console.log(resp.data);
+      });
   };
 
   const handleItemnameChange = (value) => {
@@ -94,6 +102,7 @@ const CreateItem = () => {
 
   return (
     <div>
+      <Link to="/dashboard">Back to dashboard</Link>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Col className="mb-3">
           <Form.Group as={Col} md="4" controlId="validationCustom01">

@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { APP_ROUTES } from "../utils/constants";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../lib/customHooks";
 import axios from "axios";
 import "./index.css";
@@ -15,7 +15,7 @@ import { getAuthenticatedUser } from "../lib/common";
 
 const ItemPage = () => {
   const [user, setUser] = useState({});
-  // console.log(user);
+  const navigate = useNavigate();
 
   let { itemId } = useParams();
 
@@ -86,10 +86,31 @@ const ItemPage = () => {
     getAuthenticatedUser().then((value) => setUser(value));
   }, []);
 
+  const addToCart = async () => {
+    try {
+      const url =
+        "http://127.0.0.1:5002/add_item_to_cart?id=" +
+        user.id +
+        "&item=" +
+        itemId +
+        "&quantity=" +
+        quantityToBuy;
+      const response = await axios.put(url);
+      if (response.data.status) {
+        alert("Add to cart successful!");
+        navigate(APP_ROUTES.CART_PAGE);
+      } else {
+        alert("Item could not be added to cart. Reason: " + response.data.err_msg);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // todo: add to card
+    addToCart();
   };
 
   const handleQuantityToBuyChange = (value) => {
@@ -98,6 +119,7 @@ const ItemPage = () => {
 
   return (
     <div>
+      <Link to="/dashboard">Back to dashboard</Link>
       <h1>Name: {name}</h1>
       {itemLoading && <div>Loading...</div>}
       <div>Description: {description}</div>

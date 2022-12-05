@@ -158,6 +158,7 @@ const SaleItems = () => {
 
     return (
         <div>
+            <Link to="/dashboard">Back to dashboard</Link>
             <div>Your items currently selling</div>
             <div className="p-5 bg-light border">
             <button onClick={() => { (getSaleItems()) }}>Refresh</button>

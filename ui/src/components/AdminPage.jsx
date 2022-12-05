@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { APP_ROUTES } from "../utils/constants";
-import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../lib/customHooks";
 import axios from "axios";
 import "./index.css";
@@ -12,11 +11,12 @@ import Form from "react-bootstrap/Form";
 import Table from "react-bootstrap/Table";
 import AuctionRow from "./AuctionRow";
 import { getAuthenticatedUser } from "../lib/common";
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const [user, setUser] = useState({});
   const [validated, setValidated] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState("");
 
   useEffect(() => {
     getAuthenticatedUser().then((value) => setUser(value));
@@ -83,16 +83,14 @@ const AdminPage = () => {
     }
     setValidated(true);
 
-    axios.put(
-        "http://127.0.0.1:5005/account/suspend/" + selectedUserId,
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-            accept: "application/json",
-          },
-        }
-      )
+    axios
+      .put("http://127.0.0.1:5005/account/suspend/" + selectedUserId, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      })
       .then((resp) => console.log(resp.data));
 
     event.preventDefault();
@@ -106,23 +104,24 @@ const AdminPage = () => {
   if (user.user_name === "admin") {
     return (
       <div>
+        <Link to="/dashboard">Back to dashboard</Link>
         <h1>Admin Page</h1>
         <h3>Suspend User</h3>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Col className="mb-3">
-          <Form.Group as={Col} md="4" controlId="form1">
-            <Form.Label>User ID</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="User ID"
-              required
-              style={{ width: "300px" }}
-              onChange={handleUserIdChange}
-            />
-          </Form.Group>
-        </Col>
-        <Button type="submit">Suspend User</Button>
-      </Form>
+          <Col className="mb-3">
+            <Form.Group as={Col} md="4" controlId="form1">
+              <Form.Label>User ID</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="User ID"
+                required
+                style={{ width: "300px" }}
+                onChange={handleUserIdChange}
+              />
+            </Form.Group>
+          </Col>
+          <Button type="submit">Suspend User</Button>
+        </Form>
         <h3>Support Emails:</h3>
         {emailsLoading && <div>Loading support emails...</div>}
         <Table striped bordered>
@@ -157,9 +156,14 @@ const AdminPage = () => {
         </Table>
       </div>
     );
-    } else {
-        return <div>You are not the admin! Come back when your username is "admin"!</div>;
-    }
+  } else {
+    return (
+      <div>
+        <Link to="/dashboard">Back to dashboard</Link>
+        <div>You are not the admin! Come back when your username is "admin"!</div>
+      </div>
+    );
+  }
 };
 
 export default AdminPage;

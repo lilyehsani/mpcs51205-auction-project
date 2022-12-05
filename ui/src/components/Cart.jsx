@@ -46,8 +46,6 @@ const Cart = () => {
 
   const checkout = async () => {
     data["id"] = user.id;
-    // This is undefined, not sure why
-    console.log(data);
     axios
       .post("http://127.0.0.1:5002/checkout", data, {
         headers: {
@@ -61,6 +59,7 @@ const Cart = () => {
 
   return (
     <div>
+      <Link to="/dashboard">Back to dashboard</Link>
       <div className="p-5 bg-light border">
         <h1>Shopping Cart</h1>
         <ul>

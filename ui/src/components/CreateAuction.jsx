@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import { getAuthenticatedUser } from "../lib/common";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const CreateAuction = () => {
   const [user, setUser] = useState({});
@@ -102,18 +103,17 @@ const CreateAuction = () => {
       })
       .finally(() => {
         const getItemsForSale = () => {
-          //   console.log(user.id);
           axios
             .get("http://127.0.0.1:5002/get_items_for_sale?user_id=" + user.id)
             .then((response) => {
               if (response.data.data !== null) {
                 setItemsForSale(response.data.data);
                 setItemLoading(false);
+              } else {
+                alert(
+                  "You have no items for sale. Navigate to createitem page to create items for sale, then you can create auctions for them."
+                );
               }
-              //   setItemsForSale(response.data.data);
-              //   setItemLoading(false);
-              //   console.log(itemsForSale);
-              //   console.log(response);
             })
             .catch((error) => console.error(error));
         };
@@ -122,53 +122,60 @@ const CreateAuction = () => {
   }, [userLoading]);
 
   if (itemLoading) {
-    return <div>Loading...</div>;
+    return <Link to="/dashboard">Back to dashboard</Link>;
   } else {
     return (
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Col className="mb-3">
-          <Form.Group as={Col} md="4">
-            <Form.Label>Item Name</Form.Label>
-            <Form.Select required onChange={handleItemSelect}>
-              {itemLoading && <div>Loading...</div>}
-              <option>Choose an existing item for sale.</option>
-              {itemsForSale.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>Start time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              placeholder="YYYY-MM-DD HH:MM:SS"
-              onChange={handleStartTimeChange}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>End time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
-            <Form.Control
-              required
-              type="text"
-              placeholder="YYYY-MM-DD HH:MM:SS"
-              onChange={handleEndTimeChange}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4">
-            <Form.Label>Start price</Form.Label>
-            <Form.Control
-              required
-              type="number"
-              placeholder="0"
-              onChange={handleStartPriceChange}
-            />
-          </Form.Group>
-        </Col>
-        <Button type="submit">Submit form</Button>
-      </Form>
+      <div>
+        <Link to="/dashboard">Back to dashboard</Link>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Col className="mb-3">
+            <Form.Group as={Col} md="4">
+              <Form.Label>Item Name</Form.Label>
+              <Form.Select required onChange={handleItemSelect}>
+                {itemLoading && <div>Loading...</div>}
+                <option>Choose an existing item for sale.</option>
+                {itemsForSale.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <div>
+              Auctions are started and ended every 10 minutes, so times should be provided to the
+              nearest 10 minutes (i.e., 12:30:00 or 18:10:00).
+            </div>
+            <Form.Group as={Col} md="4">
+              <Form.Label>Start time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
+              <Form.Control
+                required
+                type="text"
+                placeholder="YYYY-MM-DD HH:MM:SS"
+                onChange={handleStartTimeChange}
+              />
+            </Form.Group>
+            <Form.Group as={Col} md="4">
+              <Form.Label>End time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
+              <Form.Control
+                required
+                type="text"
+                placeholder="YYYY-MM-DD HH:MM:SS"
+                onChange={handleEndTimeChange}
+              />
+            </Form.Group>
+            <Form.Group as={Col} md="4">
+              <Form.Label>Start price</Form.Label>
+              <Form.Control
+                required
+                type="number"
+                placeholder="0"
+                onChange={handleStartPriceChange}
+              />
+            </Form.Group>
+          </Col>
+          <Button type="submit">Submit form</Button>
+        </Form>
+      </div>
     );
   }
 };
