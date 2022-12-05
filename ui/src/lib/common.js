@@ -1,5 +1,6 @@
 import { API_ROUTES } from "../utils/constants";
 import axios from "axios";
+
 export function storeTokenInLocalStorage(token) {
   localStorage.setItem("token", token);
 }
@@ -30,5 +31,10 @@ export async function getAuthenticatedUser() {
 }
 
 export function destroyToken() {
-    localStorage.removeItem('token');
+    if (localStorage.getItem('token') === null) {
+        console.log("No token");
+    } else {
+        localStorage.removeItem('token');
+        console.log("Token deleted.");
+    }
 }
