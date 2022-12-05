@@ -64,7 +64,7 @@ const Dashboard = () => {
           </tr>
           <tr>
             <td>8</td>
-            <td>Item Page</td>
+            <td>Item Page(only a place holder here. You can see the real page link under the item list page)</td>
             <td><a href="http://localhost:3000/item/:itemId"> Item page link </a> </td>
           </tr>
           <tr>

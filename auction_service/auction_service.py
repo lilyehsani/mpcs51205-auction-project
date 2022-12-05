@@ -149,7 +149,7 @@ def get_all_auction():
 def get_all_auction_items():
     accessor = AuctionAccessor()
     try:
-        auctions = accessor.get_all_auction()
+        auctions = accessor.get_all_auction(False)
     except Exception as err:
         return pack_err(str(err))
     if len(auctions) == 0:
