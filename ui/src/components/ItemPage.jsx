@@ -2,10 +2,8 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { APP_ROUTES } from "../utils/constants";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useUser } from "../lib/customHooks";
 import axios from "axios";
 import "./index.css";
-import moment from "moment";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -110,11 +108,47 @@ const ItemPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (quantityToBuy > quantity) {
+      alert("Cannot buy more than the item's quantity.");
+      return;
+    }
     addToCart();
   };
 
   const handleQuantityToBuyChange = (value) => {
     setQuantityToBuy(value.target.value);
+  };
+
+  // This is not working
+  const flagItem = async () => {
+    try {
+      const response = axios.post(
+        "http://127.0.0.1:5001/red_flag_item/",
+        {
+          id: itemId,
+        },
+        {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
+        }
+      );
+      if (response.data.status) {
+        alert("Red flag of item successful!");
+      } else {
+        alert("Item could not be red flagged. Reason: " + response.data.err_msg);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFlagItem = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    flagItem();
   };
 
   return (
@@ -128,22 +162,33 @@ const ItemPage = () => {
       <div>Shipping cost: {shippingCost}</div>
       <div>
         {isBuyNow === 1 && (
-          <Form noValidate onSubmit={handleSubmit}>
-            <Col className="mb-3">
-              <Form.Group as={Col} md="4">
-                <Form.Label>Quantity to buy:</Form.Label>
-                <Form.Control
-                  required
-                  type="number"
-                  placeholder="0"
-                  onChange={handleQuantityToBuyChange}
-                />
-              </Form.Group>
-            </Col>
-            <Button type="submit">Submit form</Button>
-          </Form>
+          <div>
+            <h3>Buy it now!</h3>
+            <Form noValidate onSubmit={handleSubmit}>
+              <Col className="mb-3">
+                <Form.Group as={Col} md="4">
+                  <Form.Label>Quantity to buy:</Form.Label>
+                  <Form.Control
+                    required
+                    type="number"
+                    placeholder="0"
+                    onChange={handleQuantityToBuyChange}
+                  />
+                </Form.Group>
+              </Col>
+              <Button type="submit">Add to cart</Button>
+            </Form>
+          </div>
         )}
       </div>
+      {name !== "No item found." && (
+        <div>
+          <h3>Flag this item as inappropriate or counterfeit:</h3>
+          <Button type="button" variant="danger" onClick={handleFlagItem}>
+            Flag this item
+          </Button>
+        </div>
+      )}
       {auctionsLoading && <div>Loading...</div>}
       <h2>Auctions:</h2>
       <Table striped bordered>
