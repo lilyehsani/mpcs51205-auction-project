@@ -28,3 +28,7 @@ export async function getAuthenticatedUser() {
     return defaultReturnObject;
   }
 }
+
+export function destroyToken() {
+    localStorage.removeItem('token');
+}

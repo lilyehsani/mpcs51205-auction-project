@@ -14,14 +14,7 @@ import AuctionRow from "./AuctionRow";
 import { getAuthenticatedUser } from "../lib/common";
 
 const ItemPage = () => {
-  // const navigate = useNavigate();
-  // const { user, authenticated } = useUser();
-  // if (!(user || authenticated)) {
-  //   navigate(APP_ROUTES.SIGN_IN);
-  // } else {
-  //   console.log(user, authenticated);
-  // }
-  const user = getAuthenticatedUser();
+  const [user, setUser] = useState({});
   console.log(user);
 
   let { itemId } = useParams();
@@ -88,6 +81,10 @@ const ItemPage = () => {
     };
     getAuctionInfo();
   }, [itemId]);
+
+  useEffect(() => {
+    getAuthenticatedUser().then((value) => setUser(value));
+  }, []);
 
   return (
     <div>

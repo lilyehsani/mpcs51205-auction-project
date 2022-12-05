@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+import { getAuthenticatedUser } from "../lib/common";
 
 const WatchList = () => {
     const [maxPrice, setMaxPrice] = useState(0);
@@ -8,7 +9,12 @@ const WatchList = () => {
     const [watchList, setWatchList] = useState([]);
     const [categories, setCategories] = useState([]);
     const [categoryIDList, setCategoryIDList] = useState([]);
+    const [user, setUser] = useState({});
     const testUID = "test101";
+
+    useEffect(() => {
+        getAuthenticatedUser().then((value) => setUser(value));
+      }, []);
 
     const getAllCategories = async () => {
         axios.get("http://localhost:5001/get_all_categories")
@@ -36,7 +42,8 @@ const WatchList = () => {
     }
 
     const getWatchList = async () => {
-        axios.get("http://localhost:5002/get_user_watch_list?user_id=" + testUID)
+        console.log(user['id']);
+        axios.get("http://localhost:5002/get_user_watch_list?user_id=" + user['id'])
             .then((response) => {
                 console.log(response);
                 if (response?.status != 200) {
@@ -98,7 +105,7 @@ const WatchList = () => {
         }
         console.log("addWatchList")
         axios.post("http://127.0.0.1:5002/add_watch_list", {
-            user_id: testUID,
+            user_id: user['id'],
             category_id: categoryID,
             max_price: maxPrice
         }, {
