@@ -12,7 +12,9 @@ class CategoryAccessor:
     def pack_category(self, rows):
         result = []
         try:
-            for row in rows: 
+            for row in rows:
+                if row[2] != category_status['normal']:
+                    continue
                 result.append(Category(id = row[0],name=row[1], status = row[2]))
         except Exception as e:
             print(e)
