@@ -8,7 +8,16 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Hi {userName}</h1>
-      <button onClick={() => { getAuthenticatedUser().then((value) => { setuserName(value['name']); }); }}>Click to refresh changing user status</button>
+      <button onClick={() => {
+        getAuthenticatedUser().then((value) => {
+          let curName = "Guest";
+          if (value && value['name'] && value['name'] != "") {
+            curName = value['name'];
+          }
+          console.log(curName);
+          setuserName(curName);
+        });
+      }}>Click to refresh changing user status</button>
       <Table striped bordered hover>
         <thead>
           <tr>
