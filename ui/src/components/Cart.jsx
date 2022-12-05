@@ -28,11 +28,13 @@ const Cart = () => {
             })
             .then((response) => {
               var resp_items = response.data.data;
+              console.log(resp_items)
               setItems(resp_items);
             })
             .catch((error) => console.error(error));
         };
         getItemsInCart();
+        console.log(user)
       });
   }, [userLoading]);
 
@@ -45,7 +47,8 @@ const Cart = () => {
   };
 
   const checkout = async () => {
-    data["id"] = user.id;
+    data["user_id"] = user.id;
+    console.log(data)
     axios
       .post("http://127.0.0.1:5002/checkout", data, {
         headers: {
@@ -55,6 +58,7 @@ const Cart = () => {
         },
       })
       .then((resp) => console.log(resp.data));
+    window.location.reload();
   };
 
   return (
