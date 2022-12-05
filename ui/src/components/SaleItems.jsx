@@ -1,14 +1,100 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
+import {getAuthenticatedUser} from "../lib/common";
 
 const SaleItems = () => {
-    const testUID = "test101";
     const [items, setItems] = useState([]);
+    const [data, setData] = useState({});
+    const [user, setUser] = useState({});
+
+    useEffect(() => {
+        getAuthenticatedUser().then((value) => setUser(value));
+    }, []);
+
+    const updateItemForSale = (event) => {
+        const form = event.currentTarget;
+        event.preventDefault();
+        console.log(data);
+        axios.post("http://127.0.0.1:5001/update_item", data, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type':  'application/json',
+                'accept': "application/json",
+            }
+        }).then(resp => console.log(resp.data))
+    }
+
+    const handleItemIdChange = (value) => {
+        data["id"] = parseInt(value.target.value);
+        // data.push({
+        //     key: "id",
+        //     value: parseInt(value.target.value)
+        // });
+    }
+
+    const handleItemnameChange = (value) => {
+        data["name"] = value.target.value;
+        // data.push({
+        //     key: "name",
+        //     value: value.target.value
+        // });
+    }
+
+    const handleDescriptionChange = (value) => {
+        data["description"] = value.target.value;
+        // data.push({
+        //     key: "description",
+        //     value: value.target.value
+        // });
+    }
+
+    const handleQuantityChange = (value) => {
+        data["quantity"] = parseInt(value.target.value);
+        // data.push({
+        //     key: "quantity",
+        //     value: parseInt(value.target.value)
+        // });
+    }
+
+    const handleShippingCostChange = (value) => {
+        data["shipping_cost"] = parseFloat(value.target.value);
+        // data.push({
+        //     key: "shipping_cost",
+        //     value: parseFloat(value.target.value)
+        // });
+    }
+
+    const handleIsBuyNowChange = (value) => {
+        data["is_buy_now"] = (value.target.value === true)
+        // data.push({
+        //     key: "is_buy_now",
+        //     value: (value.target.value === true)
+        // });
+    }
+
+    const handlePriceChange = (value) => {
+        data["price"] = parseFloat(value.target.value);
+        // data.push({
+        //     key: "price",
+        //     value: parseFloat(value.target.value)
+        // });
+    }
+
+    const handleCategoryIdChange = (value) => {
+        data["category_id"] = parseInt(value.target.value);
+        // data.push({
+        //     key: "category_id",
+        //     value: parseInt(value.target.value)
+        // });
+    }
 
     const removeItemForSale = async (itemID) => {
         axios.post("http://127.0.0.1:5002/remove_item_for_sale", {
-            user_id: testUID,
+            user_id: user['id'],
             item_id: parseInt(itemID),
         }, {
             headers: {
@@ -35,7 +121,7 @@ const SaleItems = () => {
     }
 
     const getSaleItems = async () => {
-        axios.get("http://localhost:5002/get_items_for_sale?user_id=" + testUID)
+        axios.get("http://localhost:5002/get_items_for_sale?user_id=" + user['id'])
             .then((response) => {
                 console.log(response);
                 if (response?.status != 200) {
@@ -80,6 +166,76 @@ const SaleItems = () => {
                 {items}
                 </div>  
             </div>
+            <div>Update item information here!</div>
+            <Form onSubmit={updateItemForSale}>
+                <Col className="mb-3">
+                    <Form.Group as={Col} md="4" controlId="validationCustom01">
+                        <Form.Label>Item ID</Form.Label>
+                        <Form.Control
+                            type="number"
+                            placeholder="0"
+                            onChange={handleItemIdChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom01">
+                        <Form.Label>Item Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Item Name"
+                            onChange={handleItemnameChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom02">
+                        <Form.Label>Description</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Description"
+                            onChange={handleDescriptionChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom03">
+                        <Form.Label>Quantity</Form.Label>
+                        <Form.Control
+                            type="number"
+                            placeholder="0"
+                            onChange={handleQuantityChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom04">
+                        <Form.Label>Shipping Cost</Form.Label>
+                        <Form.Control
+                            type="number"
+                            placeholder="0"
+                            onChange={handleShippingCostChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom05">
+                        <Form.Label>Price</Form.Label>
+                        <Form.Control
+                            type="number"
+                            placeholder="0"
+                            onChange={handlePriceChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom06">
+                        <Form.Label>Is Buy Now</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="true"
+                            onChange={handleIsBuyNowChange}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col} md="4" controlId="validationCustom07">
+                        <Form.Label>Category ID</Form.Label>
+                        <Form.Control
+                            type="number"
+                            placeholder="0"
+                            onChange={handleCategoryIdChange}
+                        />
+                    </Form.Group>
+                </Col>
+                <Button type="submit">Submit change</Button>
+            </Form>
             <div>
                 <Link to="/createitem">Create an item</Link>
             </div>
@@ -87,7 +243,6 @@ const SaleItems = () => {
                 <Link to="/dashboard">Back to dashboard</Link>
             </div>
         </div>
-
     );
 }
 
