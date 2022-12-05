@@ -283,7 +283,7 @@ def pack_err(err_msg):
 def pack_success(data):
     return jsonify({
         "status": True,
-        "data": str(data)
+        "data": data
     })
 
 

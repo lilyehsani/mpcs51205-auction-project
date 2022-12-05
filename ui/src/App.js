@@ -7,7 +7,7 @@ import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
 import { APP_ROUTES } from "./utils/constants";
 import "bootstrap/dist/css/bootstrap.min.css";
-import CreateItem from "./components/CreateItem";
+import Cart from "./components/Cart";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route path={APP_ROUTES.CREATE_ITEM} element={<CreateItem />} />
         <Route path={APP_ROUTES.ITEM_LIST} element={<ItemList />} />
         <Route path={APP_ROUTES.ITEM_PAGE} element={<ItemPage />} />
+        <Route path={APP_ROUTES.CART_PAGE} element={<Cart />} />
       </Routes>
     </BrowserRouter>
   );
