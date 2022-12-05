@@ -8,6 +8,7 @@ export const API_ROUTES = {
 export const APP_ROUTES = {
   SIGN_UP: "/signup",
   SIGN_IN: "/signin",
+  SING_OUT: "/signout",
   DASHBOARD: "/dashboard",
   CREATE_AUCTION: "create_auction",
   CREATE_ITEM: "/createitem",
