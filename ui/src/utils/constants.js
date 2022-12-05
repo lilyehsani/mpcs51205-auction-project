@@ -15,4 +15,5 @@ export const APP_ROUTES = {
   ITEM_PAGE: "/item/:itemId",
   WATCH_LIST: '/watchlist',
   SALE_ITEMS: "/saleitems",
+  CART_PAGE: "/cart",
 };

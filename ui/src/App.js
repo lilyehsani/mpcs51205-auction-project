@@ -10,6 +10,8 @@ import WatchList from "./components/WatchList";
 import { APP_ROUTES } from "./utils/constants";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SaleItems from "./components/SaleItems";
+import Cart from "./components/Cart";
+
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
         <Route path={APP_ROUTES.ITEM_PAGE} element={<ItemPage />} />
         <Route path={APP_ROUTES.WATCH_LIST} element={<WatchList />} />
         <Route path={APP_ROUTES.SALE_ITEMS} element={<SaleItems />} />
+        <Route path={APP_ROUTES.CART_PAGE} element={<Cart />} />
       </Routes>
     </BrowserRouter>
   );

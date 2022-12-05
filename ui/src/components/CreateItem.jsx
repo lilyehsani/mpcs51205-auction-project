@@ -39,7 +39,7 @@ const CreateItem = () => {
             description: description,
             quantity: parseInt(quantity),
             shipping_cost: parseFloat(shipping),
-            is_buy_now: isBuyNow,
+            is_buy_now: (isBuyNow === "true"),
             price: parseFloat(price),
             category_id: categoryId,
             user_id: 2
