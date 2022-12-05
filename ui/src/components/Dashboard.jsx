@@ -3,24 +3,16 @@ import { useEffect, useState } from "react";
 import { getAuthenticatedUser } from "../lib/common";
 
 const Dashboard = () => {
-  const [userName, setuserName] = useState("Guest");
+  const [userName, setUserName] = useState("Guest");
+
+  useEffect(() => {
+    getAuthenticatedUser().then((value) => setUserName(value.name));
+    console.log(userName);
+  }, []);
 
   return (
     <div>
-      <h1>Hi {userName}</h1>
-      <button
-        onClick={() => {
-          getAuthenticatedUser().then((value) => {
-            let curName = "Guest";
-            if (value && value["name"] && value["name"] != "") {
-              curName = value["name"];
-            }
-            console.log(curName);
-            setuserName(curName);
-          });
-        }}>
-        Click to refresh changing user status
-      </button>
+      <h1>Hi {userName ? userName : "Guest"}</h1>
       <Table striped bordered hover>
         <thead>
           <tr>
