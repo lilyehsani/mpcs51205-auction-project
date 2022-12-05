@@ -9,6 +9,7 @@ const Cart = () => {
     const [userid, setUserId] = useState(1);
     const [items, setItems] = useState([]);
     const [user, setUser] = useState({});
+    const [data, setData] = useState({});
 
     useEffect(() => {
         getAuthenticatedUser().then((value) => setUser(value));
@@ -31,17 +32,27 @@ const Cart = () => {
                     'accept': "application/json",
                 }
             });
-            console.log(response.data.data);
+            //console.log(response.data.data);
             var resp_items = response.data.data;
-            console.log(resp_items.length);
-            console.log(resp_items[0]);
             setItems(resp_items);
             //console.log(items);
         };
         getItemsInCart();
     }, []);
 
+    const checkout = async () => {
+        data["id"] = parseInt(userid);
+        axios.post("http://127.0.0.1:5002/checkout", data, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type':  'application/json',
+                'accept': "application/json",
+            }
+        }).then(resp => console.log(resp.data))
+    };
+
     return (
+        <div>
             <div  className="p-5 bg-light border">
                 <h1>Shopping Cart</h1>
                 <ul>
@@ -57,6 +68,11 @@ const Cart = () => {
                     ))}
                 </ul>
             </div>
+            <button onClick={() => { (checkout()) }}>Checkout</button>
+            <div>
+                <Link to="/item_list">Continue Shopping</Link>
+            </div>
+        </div>
     );
 }
 

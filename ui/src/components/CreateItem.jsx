@@ -40,7 +40,6 @@ const CreateItem = () => {
   };
 
   const createItem = async () => {
-    console.log(isBuyNow === "true");
     axios
       .post(
         "http://127.0.0.1:5002/create_item",
@@ -63,8 +62,6 @@ const CreateItem = () => {
         }
       )
       .then((resp) => console.log(resp.data));
-    // todo: navigate to seller page after creating items
-    // navigate(APP_ROUTES.SELLER);
   };
 
   const handleItemnameChange = (value) => {
@@ -96,49 +93,63 @@ const CreateItem = () => {
   };
 
   return (
-    <Form noValidate validated={validated} onSubmit={handleSubmit}>
-      <Col className="mb-3">
-        <Form.Group as={Col} md="4" controlId="validationCustom01">
-          <Form.Label>Item Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Item Name"
-            required
-            onChange={handleItemnameChange}
-          />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom02">
-          <Form.Label>Description</Form.Label>
-          <Form.Control type="text" placeholder="Description" onChange={handleDescriptionChange} />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom03">
-          <Form.Label>Quantity</Form.Label>
-          <Form.Control type="number" placeholder="0" required onChange={handleQuantityChange} />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom04">
-          <Form.Label>Shipping Cost</Form.Label>
-          <Form.Control
-            type="number"
-            placeholder="0"
-            required
-            onChange={handleShippingCostChange}
-          />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom05">
-          <Form.Label>Price</Form.Label>
-          <Form.Control type="number" placeholder="0" required onChange={handlePriceChange} />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom06">
-          <Form.Label>Is Buy Now</Form.Label>
-          <Form.Control type="text" placeholder="true" onChange={handleIsBuyNowChange} />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="validationCustom07">
-          <Form.Label>Category ID</Form.Label>
-          <Form.Control type="number" placeholder="0" required onChange={handleCategoryIdChange} />
-        </Form.Group>
-      </Col>
-      <Button type="submit">Submit form</Button>
-    </Form>
+    <div>
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <Col className="mb-3">
+          <Form.Group as={Col} md="4" controlId="validationCustom01">
+            <Form.Label>Item Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Item Name"
+              required
+              onChange={handleItemnameChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom02">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Description"
+              onChange={handleDescriptionChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom03">
+            <Form.Label>Quantity</Form.Label>
+            <Form.Control type="number" placeholder="0" required onChange={handleQuantityChange} />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom04">
+            <Form.Label>Shipping Cost</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="0"
+              required
+              onChange={handleShippingCostChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom05">
+            <Form.Label>Price</Form.Label>
+            <Form.Control type="number" placeholder="0" required onChange={handlePriceChange} />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom06">
+            <Form.Label>Is Buy Now</Form.Label>
+            <Form.Control type="text" placeholder="true" onChange={handleIsBuyNowChange} />
+          </Form.Group>
+          <Form.Group as={Col} md="4" controlId="validationCustom07">
+            <Form.Label>Category ID</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="0"
+              required
+              onChange={handleCategoryIdChange}
+            />
+          </Form.Group>
+        </Col>
+        <Button type="submit">Submit form</Button>
+      </Form>
+      <div>
+        <Link to="/saleitems">Back to Seller Page</Link>
+      </div>
+    </div>
   );
 };
 
