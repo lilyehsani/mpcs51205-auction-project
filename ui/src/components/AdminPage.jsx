@@ -15,7 +15,6 @@ import { getAuthenticatedUser } from "../lib/common";
 
 const AdminPage = () => {
   const [user, setUser] = useState({});
-  console.log(user);
 
   useEffect(() => {
     getAuthenticatedUser().then((value) => setUser(value));
@@ -29,7 +28,7 @@ const AdminPage = () => {
       setEmailsLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5006/get_all_email");
-        console.log(response);
+        // console.log(response);
         setEmails(response.data.data);
       } catch (error) {
         console.error(error);
@@ -63,7 +62,7 @@ const AdminPage = () => {
       setFlaggedItemsLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5001/get_red_flag_item");
-        console.log(response);
+        // console.log(response);
         setFlaggedItems(response.data.data);
       } catch (error) {
         console.error(error);

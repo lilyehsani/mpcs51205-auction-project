@@ -1,18 +1,23 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { APP_ROUTES } from "../utils/constants";
-import { useNavigate, useParams } from "react-router-dom";
-import { useUser } from "../lib/customHooks";
 import axios from "axios";
 import "./index.css";
 import moment from "moment";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
+import { getAuthenticatedUser } from "../lib/common";
 
 // Props: id (auction id), auction (auction)
 const AuctionRow = (props) => {
   const [bidInput, setLastBid] = useState("");
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    getAuthenticatedUser().then((value) => {
+      setUser(value);
+    });
+  }, []);
 
   const placeBid = async (bidAmount) => {
     try {
@@ -20,9 +25,8 @@ const AuctionRow = (props) => {
         "http://127.0.0.1:5003/place_bid",
         {
           auction_id: props.auction.id,
-          user_id: "1",
+          user_id: user.id,
           bid_amount: bidAmount,
-          // todo: get user_id in session
         },
         {
           headers: {
@@ -60,8 +64,10 @@ const AuctionRow = (props) => {
     }
   };
 
-  function getRelativeTime(timeString) {
-    return moment(timeString).fromNow();
+  function getDisplayTime(timeString) {
+    const relativeTime = moment(timeString).fromNow();
+    var res = timeString + " (" + relativeTime + ")";
+    return res;
   }
 
   function numToPrice(num) {
@@ -82,7 +88,6 @@ const AuctionRow = (props) => {
 
   const handleBidChange = (value) => {
     setLastBid(value.target.value);
-    console.log(value.target.value);
   };
 
   return (
@@ -105,8 +110,8 @@ const AuctionRow = (props) => {
           <Button type="submit">Place Bid</Button>
         </Form>
       </td>
-      <td>{getRelativeTime(props.auction.start_time)}</td>
-      <td>{getRelativeTime(props.auction.end_time)}</td>
+      <td>{getDisplayTime(props.auction.start_time)}</td>
+      <td>{getDisplayTime(props.auction.end_time)}</td>
     </tr>
   );
 };

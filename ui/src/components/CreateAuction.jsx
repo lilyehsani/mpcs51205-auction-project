@@ -1,25 +1,19 @@
 import React from "react";
 import axios from "axios";
 import { useState } from "react";
-import { API_ROUTES, APP_ROUTES } from "../utils/constants";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
-import InputGroup from "react-bootstrap/InputGroup";
-import Row from "react-bootstrap/Row";
 import { getAuthenticatedUser } from "../lib/common";
 import { useEffect } from "react";
 
 const CreateAuction = () => {
   const [user, setUser] = useState({});
-  useEffect(() => {
-    getAuthenticatedUser().then((value) => setUser(value));
-  }, []);
-
+  const [userLoading, setUserLoading] = useState(false);
   const navigate = useNavigate();
-  const userId = "1";
   const [itemId, setItemId] = useState("");
+  const [itemLoading, setItemLoading] = useState(true);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [startPrice, setStartPrice] = useState(-1);
@@ -28,7 +22,6 @@ const CreateAuction = () => {
 
   const createAuction = async () => {
     try {
-      console.log(parseInt(itemId), parseFloat(startPrice));
       const response = await axios.post(
         "http://127.0.0.1:5003/create_auction",
         {
@@ -86,7 +79,6 @@ const CreateAuction = () => {
   };
 
   const handleItemSelect = (value) => {
-    console.log(value.target.value);
     setItemId(value.target.value);
   };
 
@@ -102,67 +94,83 @@ const CreateAuction = () => {
     setStartPrice(value.target.value);
   };
 
-  const getOptions = () => {
-    if (itemsForSale.length === 1) {
-      return;
-    }
-  };
-
   useEffect(() => {
-    const getItemsForSale = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:5002/get_items_for_sale?user_id=" + userId
-        );
-        setItemsForSale(response.data.data);
-        console.log(itemsForSale);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getItemsForSale();
-  }, []);
+    getAuthenticatedUser()
+      .then((value) => {
+        setUser(value);
+        setUserLoading(true);
+      })
+      .finally(() => {
+        const getItemsForSale = () => {
+          //   console.log(user.id);
+          axios
+            .get("http://127.0.0.1:5002/get_items_for_sale?user_id=" + user.id)
+            .then((response) => {
+              if (response.data.data !== null) {
+                setItemsForSale(response.data.data);
+                setItemLoading(false);
+              }
+              //   setItemsForSale(response.data.data);
+              //   setItemLoading(false);
+              //   console.log(itemsForSale);
+              //   console.log(response);
+            })
+            .catch((error) => console.error(error));
+        };
+        getItemsForSale();
+      });
+  }, [userLoading]);
 
-  return (
-    <Form noValidate validated={validated} onSubmit={handleSubmit}>
-      <Col className="mb-3">
-        <Form.Group as={Col} md="4">
-          <Form.Label>Item Name</Form.Label>
-          <Form.Select required onChange={handleItemSelect}>
-            <option>Choose an existing item for sale.</option>
-            {itemsForSale.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-        <Form.Group as={Col} md="4">
-          <Form.Label>Start time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="YYYY-MM-DD HH:MM:SS"
-            onChange={handleStartTimeChange}
-          />
-        </Form.Group>
-        <Form.Group as={Col} md="4">
-          <Form.Label>End time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="YYYY-MM-DD HH:MM:SS"
-            onChange={handleEndTimeChange}
-          />
-        </Form.Group>
-        <Form.Group as={Col} md="4">
-          <Form.Label>Start price</Form.Label>
-          <Form.Control required type="number" placeholder="0" onChange={handleStartPriceChange} />
-        </Form.Group>
-      </Col>
-      <Button type="submit">Submit form</Button>
-    </Form>
-  );
+  if (itemLoading) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <Col className="mb-3">
+          <Form.Group as={Col} md="4">
+            <Form.Label>Item Name</Form.Label>
+            <Form.Select required onChange={handleItemSelect}>
+              {itemLoading && <div>Loading...</div>}
+              <option>Choose an existing item for sale.</option>
+              {itemsForSale.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+          <Form.Group as={Col} md="4">
+            <Form.Label>Start time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="YYYY-MM-DD HH:MM:SS"
+              onChange={handleStartTimeChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4">
+            <Form.Label>End time (must be in YYYY-MM-DD HH:MM:SS format).</Form.Label>
+            <Form.Control
+              required
+              type="text"
+              placeholder="YYYY-MM-DD HH:MM:SS"
+              onChange={handleEndTimeChange}
+            />
+          </Form.Group>
+          <Form.Group as={Col} md="4">
+            <Form.Label>Start price</Form.Label>
+            <Form.Control
+              required
+              type="number"
+              placeholder="0"
+              onChange={handleStartPriceChange}
+            />
+          </Form.Group>
+        </Col>
+        <Button type="submit">Submit form</Button>
+      </Form>
+    );
+  }
 };
 
 export default CreateAuction;

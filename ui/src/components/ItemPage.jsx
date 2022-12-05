@@ -15,15 +15,16 @@ import { getAuthenticatedUser } from "../lib/common";
 
 const ItemPage = () => {
   const [user, setUser] = useState({});
-  console.log(user);
+  // console.log(user);
 
   let { itemId } = useParams();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [isBuyNow, setIsBuyNow] = useState(false);
+  const [isBuyNow, setIsBuyNow] = useState(-1);
   const [buyNowPrice, setBuyNowPrice] = useState(-1);
+  const [quantityToBuy, setQuantityToBuy] = useState(-1);
   const [quantity, setQuantity] = useState(-1);
   const [shippingCost, setShippingCost] = useState("");
 
@@ -42,7 +43,6 @@ const ItemPage = () => {
       setItemLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5001/get_items?ids=" + itemId);
-        console.log(response);
         var data = response.data.data[0];
         setName(data.name);
         setDescription(data.description);
@@ -86,6 +86,16 @@ const ItemPage = () => {
     getAuthenticatedUser().then((value) => setUser(value));
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // todo: add to card
+  };
+
+  const handleQuantityToBuyChange = (value) => {
+    setQuantityToBuy(value.target.value);
+  };
+
   return (
     <div>
       <h1>Name: {name}</h1>
@@ -94,6 +104,24 @@ const ItemPage = () => {
       <div>Category: {category}</div>
       <div>Quantity: {quantity}</div>
       <div>Shipping cost: {shippingCost}</div>
+      <div>
+        {isBuyNow === 1 && (
+          <Form noValidate onSubmit={handleSubmit}>
+            <Col className="mb-3">
+              <Form.Group as={Col} md="4">
+                <Form.Label>Quantity to buy:</Form.Label>
+                <Form.Control
+                  required
+                  type="number"
+                  placeholder="0"
+                  onChange={handleQuantityToBuyChange}
+                />
+              </Form.Group>
+            </Col>
+            <Button type="submit">Submit form</Button>
+          </Form>
+        )}
+      </div>
       {auctionsLoading && <div>Loading...</div>}
       <h2>Auctions:</h2>
       <Table striped bordered>
