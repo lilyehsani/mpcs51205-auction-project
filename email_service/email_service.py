@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import os
 import json
 import requests
+from flask_cors import CORS
 
 app = Flask(__name__)
 
@@ -104,4 +105,7 @@ def json_success():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5007))
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    cors = CORS(app)
+    app.config['SECRET_KEY'] = 'super-secret'
     app.run(debug=True, host="0.0.0.0", port=port)

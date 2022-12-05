@@ -112,26 +112,10 @@ send_complaint_email()
 
 sched = BackgroundScheduler(daemon=True)
 
-sched.add_job(start_and_end_auctions,'interval',minutes=1)
-# sched.add_job(start_and_end_auctions,'interval',minutes=10,start_date=get_nearest_10_min())
+# sched.add_job(start_and_end_auctions,'interval',minutes=1)
+sched.add_job(start_and_end_auctions,'interval',minutes=10,start_date=get_nearest_10_min())
 sched.start()
 
 while True:
     time.sleep(10)
 sched.shutdown()
-
-# start = datetime.now() + timedelta(seconds=45)
-# a1 = {
-#   "start_time":format_time(start),
-#   "end_time":format_time(start + timedelta(minutes=1)),
-#   "item_id": 1
-#   }
-# a2 = {
-#   "start_time":format_time(start + timedelta(minutes=1)),
-#   "end_time":format_time(start + timedelta(minutes=2)),
-#   "item_id": 2
-#   }
-
-# res = requests.post(api_url + "create_auction", json=a1)
-# res1 = requests.post(api_url + "create_auction", json=a2)
-# print(res.text, res1.text)

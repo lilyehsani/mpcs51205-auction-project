@@ -11,6 +11,7 @@ import Table from "react-bootstrap/Table";
 import AuctionRow from "./AuctionRow";
 import { getAuthenticatedUser } from "../lib/common";
 import { Link, useNavigate } from "react-router-dom";
+import AdminEmailRow from "./AdminEmailRow";
 
 const AdminPage = () => {
   const [user, setUser] = useState({});
@@ -29,7 +30,6 @@ const AdminPage = () => {
       setEmailsLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5006/get_all_email");
-        // console.log(response);
         setEmails(response.data.data);
       } catch (error) {
         console.error(error);
@@ -43,27 +43,11 @@ const AdminPage = () => {
   const [flaggedItems, setFlaggedItems] = useState([]);
   const [flaggedItemsLoading, setFlaggedItemsLoading] = useState(false);
 
-  //   useEffect(() => {
-  //     const getFlaggedItems = async () => {
-  //       setFlaggedItemsLoading(true);
-  //       try {
-  //         const response = await axios.get("http://127.0.0.1:5001/get_red_flag_item");
-  //         console.log(response);
-  //       } catch (error) {
-  //         console.error(error);
-  //       } finally {
-  //         setFlaggedItemsLoading(false);
-  //       }
-  //     };
-  //     getFlaggedItems();
-  //   }, []);
-
   useEffect(() => {
     const getFlaggedItems = async () => {
       setFlaggedItemsLoading(true);
       try {
         const response = await axios.get("http://127.0.0.1:5001/get_red_flag_item");
-        // console.log(response);
         setFlaggedItems(response.data.data);
       } catch (error) {
         console.error(error);
@@ -128,12 +112,11 @@ const AdminPage = () => {
             <tr>
               <th>Sender</th>
               <th>Body</th>
+              <th>Responded to?</th>
+              <th>Respond</th>
             </tr>
             {emails.map((email) => (
-              <tr key={email.id}>
-                <td>{email.sender}</td>
-                <td>{email.body}</td>
-              </tr>
+              <AdminEmailRow key={email.id} email={email} />
             ))}
           </tbody>
         </Table>

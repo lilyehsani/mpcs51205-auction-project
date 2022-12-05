@@ -2,6 +2,19 @@
 
 MPCS 51205 Topics in Software Engineering group project by Lily Ehsani, Yuke Gong, Yunchen Liu, and Wei Shi (Ted) Wang
 
+# For Professor and TA's
+
+Note: The service will automatically create some support emails on startup. The support emails will have the sender field set to lilytehsani@gmail.com. If you want them to be from your email (to test the responding to email functionality), please change this field located at 'mpcs51205-auction-project/auction_queue/admin_email_data.py' in the `senders` list.
+
+To start our project, you must have docker and docker-compose installed. To run the backend, run:
+`docker-compose up --force-recreate --build`
+This will take 30-45 seconds to get everything up and running, because the backend services have to wait for the DB services to be healthy. You will know it is done when the output of that command shows these three services: mpcs51205-auction-project-shopping_service-1, mpcs51205-auction-project-auction_service-1, and mpcs51205-auction-project-inventory_service-1 with the output " \* Debugger is active!".
+To run the webapp frontend, once the backend is up, `cd` into the directory `ui/src`, then run `npm start`. It should open localhost:3000/dashboard.
+
+From there, you can use the webapp to explore the system. If you open the console, you will likely see logging output and (hopefully not) error output, should any arise.
+
+The rest of this document gives more details about each API.
+
 # system setup
 
 ./run.sh

@@ -1,5 +1,5 @@
 # "From" email addresses to be used for complaint emails
-senders = ["lilyehsani@uchicago.edu", "president@potus.gov", "familymember@gmail.com"]
+senders = ["lilytehsani@gmail.com"]
 # Complaint email bodies
 bodies = [
     "This website is bad!",
