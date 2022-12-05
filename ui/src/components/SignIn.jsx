@@ -45,9 +45,19 @@ const SignIn = () => {
         }
       )
       .then((resp) => {
+        console.log(resp);
+        if (resp?.status != 200) {
+          console.log("sign in error");
+          return;
+        }
         storeTokenInLocalStorage(resp.data.access_token);
         console.log(getAuthenticatedUser());
-      });
+        alert("sign in successfully")
+      },
+        (error) => {
+          console.log(error);
+        }
+      );
   };
 
   const handleUsernameChange = (value) => {
@@ -61,33 +71,33 @@ const SignIn = () => {
   return (
     <div>
       <Link to="/dashboard">Back to dashboard</Link>
-    <div style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}>
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <Col className="mb-3">
-          <Form.Group as={Col} md="4" controlId="validationCustom02">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Username"
-              required
-              style={{ width: "300px" }}
-              onChange={handleUsernameChange}
-            />
-          </Form.Group>
-          <Form.Group as={Col} md="4" controlId="validationCustom03">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Password"
-              required
-              style={{ width: "300px" }}
-              onChange={handlePasswordChange}
-            />
-          </Form.Group>
-        </Col>
-        <Button type="submit">Submit form</Button>
-      </Form>
-    </div>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+          <Col className="mb-3">
+            <Form.Group as={Col} md="4" controlId="validationCustom02">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Username"
+                required
+                style={{ width: "300px" }}
+                onChange={handleUsernameChange}
+              />
+            </Form.Group>
+            <Form.Group as={Col} md="4" controlId="validationCustom03">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Password"
+                required
+                style={{ width: "300px" }}
+                onChange={handlePasswordChange}
+              />
+            </Form.Group>
+          </Col>
+          <Button type="submit">Submit form</Button>
+        </Form>
+      </div>
     </div>
   );
 };

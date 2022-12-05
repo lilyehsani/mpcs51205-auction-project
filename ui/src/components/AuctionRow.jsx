@@ -68,6 +68,7 @@ const AuctionRow = (props) => {
     const relativeTime = moment(timeString).fromNow();
     var res = timeString + " (" + relativeTime + ")";
     return res;
+    // return String(timeString);
   }
 
   function numToPrice(num) {
