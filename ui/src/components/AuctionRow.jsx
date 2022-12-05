@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./index.css";
-import moment from "moment";
+// import moment from "moment";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
@@ -65,9 +65,10 @@ const AuctionRow = (props) => {
   };
 
   function getDisplayTime(timeString) {
-    const relativeTime = moment(timeString).fromNow();
-    var res = timeString + " (" + relativeTime + ")";
-    return res;
+    // const relativeTime = moment(timeString).fromNow();
+    // var res = timeString + " (" + relativeTime + ")";
+    // return res;
+    return "fake time"
   }
 
   function numToPrice(num) {

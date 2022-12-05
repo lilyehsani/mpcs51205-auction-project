@@ -142,13 +142,13 @@ def place_bid():
 
     return json_success()
 
-# Requires: None
+# Requires: sort_end_time(bool), whether sort by end time(desc)
 @app.route("/get_all_auction",methods=["GET"])
 def get_all_auction():
+    sort_end_time = True if request.args.get('sort_end_time') == "True" else False
     accessor = AuctionAccessor()
-
     try:
-        auctions = accessor.get_all_auction()
+        auctions = accessor.get_all_auction(sort_end_time)
     except Exception as err:
         return pack_err(str(err))
 
