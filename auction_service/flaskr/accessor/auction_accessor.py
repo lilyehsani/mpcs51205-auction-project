@@ -365,7 +365,7 @@ class AuctionAccessor:
 
         return auctions
 
-    def get_all_auction(self) -> list:
+    def get_all_auction(self, sort_desc_end_time) -> list:
         # Connect to db and acquire cursor
         db = mysql.connector.connect(
             host = self.db_host,
@@ -375,8 +375,10 @@ class AuctionAccessor:
             database = self.db_name,
         )
         cursor = db.cursor()
-
-        get_auction = "SELECT * FROM Auction"
+        if sort_desc_end_time == True:
+            get_auction = "SELECT * FROM Auction order by end_time desc"
+        else:
+            get_auction = "SELECT * FROM Auction"
         cursor.execute(get_auction)
         fetched_auctions = cursor.fetchall()
 
