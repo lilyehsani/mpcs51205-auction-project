@@ -83,7 +83,7 @@ def add_watch_list():
 def get_items_for_sale():
     user_id = request.args.get('user_id')
     item_ids, err = shopping_accessor.get_items_by_user(user_id)
-    if len(item_ids) == 0:
+    if item_ids == None or len(item_ids) == 0:
         return pack_success(None)
     if err:
         return pack_err(err)

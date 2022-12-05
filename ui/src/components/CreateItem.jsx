@@ -22,6 +22,7 @@ const CreateItem = () => {
   const [categoryId, setCategoryId] = useState(0);
   const [validated, setValidated] = useState(false);
   const [user, setUser] = useState({});
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     getAuthenticatedUser().then((value) => setUser(value));
@@ -40,6 +41,10 @@ const CreateItem = () => {
   };
 
   const createItem = async () => {
+    if (!user["id"] || user["id"] === "") {
+      alert("login before creating an item");
+      return;
+    }
     axios
       .post(
         "http://127.0.0.1:5002/create_item",
@@ -100,9 +105,48 @@ const CreateItem = () => {
     setCategoryId(value.target.value);
   };
 
+  const getAllCategories = async () => {
+    axios.get("http://localhost:5001/get_all_categories").then(
+      (response) => {
+        console.log(response);
+        if (response?.status != 200) {
+          console.log("get all categories error");
+          return;
+        }
+        console.log(response.data.data);
+        let resp_categories = response.data.data;
+        let categories_array = [];
+        for (let i = 0; i < resp_categories.length; i++) {
+          categories_array.push(
+            <div key={resp_categories[i].id}>
+              ID: {resp_categories[i].id} - Name: {resp_categories[i].name}
+            </div>
+          );
+        }
+        setCategories(categories_array);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  };
+
+
   return (
     <div>
       <Link to="/dashboard">Back to dashboard</Link>
+      <div className="p-3 bg-light border">
+                <h3>Get all categories</h3>
+                <p>Use this category ID when you are creating items</p>
+                <button
+                    onClick={() => {
+                        getAllCategories();
+                    }}>
+                    Get all the categories
+                </button>
+                <div>{categories}</div>
+            </div>
+
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Col className="mb-3">
           <Form.Group as={Col} md="4" controlId="validationCustom01">

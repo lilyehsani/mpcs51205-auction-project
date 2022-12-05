@@ -47,7 +47,7 @@ class DBInit():
         cursor.execute("DROP TABLE IF EXISTS categories")
         create_categories = "CREATE TABLE categories (category_id int AUTO_INCREMENT PRIMARY KEY, name varchar(255), status int)"
         cursor.execute(create_categories)
-        insert_categories = "INSERT INTO categories values (1, 'Food', 1)"
+        insert_categories = "INSERT INTO categories values (1, 'default', 0)"
         cursor.execute(insert_categories)
         db.commit()
         # category_item

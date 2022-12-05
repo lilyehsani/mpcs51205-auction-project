@@ -70,6 +70,11 @@ const Dashboard = () => {
           <td>Cart Item Page</td>
           <td><a href="http://localhost:3000/cart"> Cart page link </a> </td>
         </tr>
+        <tr>
+          <td>12</td>
+          <td>Category Page</td>
+          <td><a href="http://localhost:3000/category"> Category page link </a> </td>
+        </tr>
       </tbody>
     </Table>
   );

@@ -101,6 +101,8 @@ const SignUp = () => {
   };
 
   return (
+    <div>
+      <Link to="/dashboard">Back to dashboard</Link>
     <div style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Col className="mb-3">
@@ -148,6 +150,7 @@ const SignUp = () => {
         </Col>
         <Button type="submit">Submit form</Button>
       </Form>
+    </div>
     </div>
   );
 };

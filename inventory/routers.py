@@ -151,7 +151,7 @@ def delete_category():
     data = request.get_data()
     data = json.loads(data)
     id = data.get('id')
-    _, err = category_accessor.delete_category(id)
+    _, err = category_accessor.delete_category(int(id))
     if err:
         return pack_err(err)
     return pack_success(None)
