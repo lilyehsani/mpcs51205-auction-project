@@ -3,10 +3,17 @@ import axios from 'axios';
 import { useState } from 'react';
 import { API_ROUTES, APP_ROUTES } from '../utils/constants';
 import { Link, useNavigate } from 'react-router-dom';
+import {getAuthenticatedUser} from "../lib/common";
 
 const Cart = () => {
     const [userid, setUserId] = useState(1);
     const [items, setItems] = useState([]);
+    const [user, setUser] = useState({});
+
+    useEffect(() => {
+        getAuthenticatedUser().then((value) => setUser(value));
+        setUserId(user['id']);
+    }, []);
 
     const deleteItemInCart = async (itemId) => {
         const response = await axios.delete("http://127.0.0.1:5002/remove_item_from_cart?id=" + userid + "&item=" + itemId);
