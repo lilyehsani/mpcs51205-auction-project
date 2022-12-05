@@ -9,12 +9,12 @@ class ItemAccessor:
         # self.db = mysql.connector.connect(user='root', password='root_password', database='inventory_db', port=3309)
         self.cursor = self.db.cursor()
 
-    def pack_item(self, rows):
+    def pack_item(self, rows, show_all_items=False):
         result = []
         try:
             for row in rows:
                 # filter not normal items
-                if row[7] != item_status['normal']:
+                if not show_all_items and row[7] != item_status['normal']:
                     continue
                 result.append(Item(id = row[0],name=row[1],description=row[2], quantity=row[3],shipping_cost=row[4],is_buy_now=row[5],price=row[6],status = row[7], category_id=row[8], category=row[9]))
         except Exception as e:
@@ -60,7 +60,7 @@ class ItemAccessor:
         try:
             self.cursor.execute(sql)
             items = self.cursor.fetchall()
-            return self.pack_item(items)
+            return self.pack_item(items, True)
         except Exception as e:
             print("get_red_flag_items err", e)
             return [], err_msg["db_err"]
