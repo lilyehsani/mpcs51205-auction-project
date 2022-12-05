@@ -14,7 +14,9 @@ import SaleItems from "./components/SaleItems";
 import Cart from "./components/Cart";
 import AdminPage from "./components/AdminPage";
 import AuctionList from "./components/AuctionList";
+import Category from "./components/Category";
 import MyBids from "./components/MyBids";
+
 
 function App() {
   return (
@@ -34,6 +36,7 @@ function App() {
         <Route path={APP_ROUTES.SALE_ITEMS} element={<SaleItems />} />
         <Route path={APP_ROUTES.CART_PAGE} element={<Cart />} />
         <Route path={APP_ROUTES.AUCTION_LIST} element={<AuctionList />} />
+        <Route path={APP_ROUTES.CATEGORY} element={<Category />} />
         <Route path={APP_ROUTES.MY_BIDS} element={<MyBids />} />
       </Routes>
     </BrowserRouter>

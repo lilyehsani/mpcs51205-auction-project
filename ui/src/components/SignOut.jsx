@@ -23,26 +23,29 @@ const SignOut = () => {
   };
 
   const handleDeleteAccount = async () => {
-        axios
-          .delete("http://127.0.0.1:5005/account/" + user.id)
-          .then((resp) => console.log(resp.status));
-        destroyToken();
+    axios
+      .delete("http://127.0.0.1:5005/account/" + user.id)
+      .then((resp) => console.log(resp.status));
+    destroyToken();
   };
 
   return (
-    <div style={{ display: "flex", justifyContent: "space-evenly", marginTop: "100px" }}>
+    <div>
+      <Link to="/dashboard">Back to dashboard</Link>
+      <div style={{ display: "flex", justifyContent: "space-evenly", marginTop: "100px" }}>
         <Button
-            variant="primary"
-            onClick={handleClick}
+          variant="primary"
+          onClick={handleClick}
         >
-        Sign Out
+          Sign Out
         </Button>
         <Button
-            variant="primary"
-            onClick={handleDeleteAccount}
+          variant="primary"
+          onClick={handleDeleteAccount}
         >
-        Delete Account
+          Delete Account
         </Button>
+      </div>
     </div>
   );
 };

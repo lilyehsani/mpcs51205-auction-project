@@ -19,5 +19,6 @@ export const APP_ROUTES = {
   SALE_ITEMS: "/saleitems",
   CART_PAGE: "/cart",
   AUCTION_LIST: "/auction_list",
+  CATEGORY: "/category",
   MY_BIDS: "/my_bids",
 };
