@@ -56,8 +56,6 @@ const CreateItem = () => {
                 'accept': "application/json",
             }
         }).then(resp => console.log(resp.data))
-        // todo: navigate to seller page after creating items
-        // navigate(APP_ROUTES.SELLER);
     };
 
     const handleItemnameChange = (value) => {
@@ -89,6 +87,7 @@ const CreateItem = () => {
     }
 
     return (
+        <div>
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Col className="mb-3">
                 <Form.Group as={Col} md="4" controlId="validationCustom01">
@@ -155,6 +154,10 @@ const CreateItem = () => {
             </Col>
             <Button type="submit">Submit form</Button>
         </Form>
+        <div>
+            <Link to="/saleitems">Back to Seller Page</Link>
+        </div>
+        </div>
     );
 }
 
