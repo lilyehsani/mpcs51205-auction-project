@@ -30,7 +30,7 @@ const ItemPage = () => {
   const [auctions, setAuctions] = useState([]);
 
   const [itemLoading, setItemLoading] = useState(false);
-  const [auctionLoading, setAuctionLoading] = useState(false);
+  const [auctionsLoading, setAuctionsLoading] = useState(false);
 
   function numToPrice(num) {
     var strNum = num.toFixed(2);
@@ -66,7 +66,7 @@ const ItemPage = () => {
 
   useEffect(() => {
     const getAuctionInfo = async () => {
-      setAuctionLoading(true);
+      setAuctionsLoading(true);
       try {
         const auctionResponse = await axios.get(
           "http://127.0.0.1:5003/get_auctions_by_item_id?id=" + itemId
@@ -76,7 +76,7 @@ const ItemPage = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        setAuctionLoading(false);
+        setAuctionsLoading(false);
       }
     };
     getAuctionInfo();
@@ -94,7 +94,7 @@ const ItemPage = () => {
       <div>Category: {category}</div>
       <div>Quantity: {quantity}</div>
       <div>Shipping cost: {shippingCost}</div>
-      {auctionLoading && <div>Loading...</div>}
+      {auctionsLoading && <div>Loading...</div>}
       <h2>Auctions:</h2>
       <Table striped bordered>
         <tbody>

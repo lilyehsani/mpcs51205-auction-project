@@ -37,7 +37,11 @@ const SignIn = () => {
           user_password: password,
         },
         {
-          headers: {},
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            accept: "application/json",
+          },
         }
       )
       .then((resp) => {

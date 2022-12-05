@@ -11,7 +11,7 @@ import { APP_ROUTES } from "./utils/constants";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SaleItems from "./components/SaleItems";
 import Cart from "./components/Cart";
-
+import AdminPage from "./components/AdminPage";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route exact path="/" element={<Navigate to={APP_ROUTES.DASHBOARD} />} />
         <Route path={APP_ROUTES.SIGN_UP} exact element={<SignUp />} />
         <Route path={APP_ROUTES.SIGN_IN} element={<SignIn />} />
+        <Route path={APP_ROUTES.ADMIN_PAGE} element={<AdminPage />} />
         {/* <Route path={APP_ROUTES.SIGN_OUT} element={<SignOut />} /> */}
         <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={APP_ROUTES.CREATE_AUCTION} element={<CreateAuction />} />

@@ -120,8 +120,7 @@ services:
       - /etc/localtime:/etc/localtime
 
   #---------- FRONTEND ----------#
-  frontend:
-    build: ui
-    ports:
-      - "3000:3000"
-
+  # frontend:
+  #   build: ui
+  #   ports:
+  #     - "3000:3000"

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime
 import os
 import json
+from flask_cors import CORS
 
 from flaskr.accessor.admin_accessor import AdminAccessor
 
@@ -108,4 +109,7 @@ def format_time(time: datetime):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5006))
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    cors = CORS(app)
+    app.config['SECRET_KEY'] = 'super-secret'
     app.run(debug=True, host="0.0.0.0", port=port)

@@ -98,7 +98,7 @@ const AuctionRow = (props) => {
         <Form noValidate onSubmit={handlePlaceBid}>
           <Col>
             <Form.Group as={Col} md="4" controlId="validationCustom01">
-              <Form.Control type="text" placeholder="Bid" required onChange={handleBidChange} />
+              <Form.Control type="number" placeholder="0" required onChange={handleBidChange} />
               <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             </Form.Group>
           </Col>
