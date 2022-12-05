@@ -22,5 +22,8 @@ class AccountService:
                     user_password: str):
         return self._account_accessor.update_user(user_id, name, status, email, seller_rating, user_name, user_password)
 
+    def suspend_user(self, user_id: str):
+        return self._account_accessor.suspend_user(user_id)
+
     def delete_user(self, user_id: str):
         return self._account_accessor.delete_user(user_id)

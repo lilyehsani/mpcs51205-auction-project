@@ -70,6 +70,23 @@ def get_account_jwt(account_service: AccountService = Provide[Module.account_ser
 
     return jsonify(user.to_json()), 200
 
+
+@blueprint.route("/suspend/<user_id>", methods=['PUT'])
+@inject
+def suspend_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
+    try:
+        account_service.suspend_user(user_id)
+    except Exception as exception:
+        return jsonify(
+            {
+                "status": "fail",
+                "message": str(exception)
+            }
+        ), 400
+
+    return jsonify({"status": "success"}), 200
+
+
 @blueprint.route("/<user_id>", methods=['PUT'])
 @inject
 def update_account(user_id: str, account_service: AccountService = Provide[Module.account_service]):
