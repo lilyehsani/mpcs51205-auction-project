@@ -119,8 +119,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime
 
-  #---------- FRONTEND ----------#
-  # frontend:
-  #   build: ui
-  #   ports:
-  #     - "3000:3000"
+  #---------- FRONTEND ---------- #
+  frontend:
+    build: ui
+    ports:
+      - "3000:3000"
