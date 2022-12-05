@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { API_ROUTES, APP_ROUTES } from '../utils/constants';
@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
+import {getAuthenticatedUser} from "../lib/common";
 
 const CreateItem = () => {
     const navigate = useNavigate()
@@ -20,6 +21,11 @@ const CreateItem = () => {
     const [status, setStatus] = useState(0);
     const [categoryId, setCategoryId] = useState(0);
     const [validated, setValidated] = useState(false);
+    const [user, setUser] = useState({});
+
+    useEffect(() => {
+        getAuthenticatedUser().then((value) => setUser(value));
+    }, []);
 
     const handleSubmit = (event) => {
         const form = event.currentTarget;
@@ -39,11 +45,10 @@ const CreateItem = () => {
             description: description,
             quantity: parseInt(quantity),
             shipping_cost: parseFloat(shipping),
-            is_buy_now: (isBuyNow === "true"),
+            is_buy_now: (isBuyNow === true),
             price: parseFloat(price),
             category_id: categoryId,
-            user_id: 2
-            // todo: get user_id in session
+            user_id: user['id']
         }, {
             headers: {
                 'Access-Control-Allow-Origin': '*',
