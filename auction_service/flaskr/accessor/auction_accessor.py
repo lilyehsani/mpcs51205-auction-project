@@ -510,6 +510,30 @@ class AuctionAccessor:
                         
         return bids
 
+    def get_bids_by_user(self, user_id: str) -> list:
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_bid = "SELECT * FROM Bid WHERE user_id = %s"
+        get_bid_data = [user_id]
+        cursor.execute(get_bid, get_bid_data)
+        fetched_bids = cursor.fetchall()
+
+        bids = []
+
+        for bid_info in fetched_bids:
+            bid = Bid(bid_info[0], bid_info[1], bid_info[2], bid_info[3], bid_info[4])
+            bids.append(bid)
+                        
+        return bids
+
     def db_test(self):
         self.print_tables()
         now = datetime.now()
