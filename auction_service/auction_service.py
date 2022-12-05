@@ -100,45 +100,31 @@ def place_bid():
     except Exception as err:
         return pack_err(str(err))
         
+    # Get item information
+    item_id = auction.item_id
+
+    try:
+        response = requests.get(shopping_url + "get_item_info?item_id=" + str(item_id))
+    except Exception as err:
+        return str(err)
+        
+    try:
+        response = json.loads(response.text)
+    except json.decoder.JSONDecodeError as err:
+        return str(err)
+        
+    item = response.get("data")
+
     # Notify losing_user
     if winning_bid_id is not None:
-        err = try_notify_bidder(accessor, winning_bid_id)
+        err = try_notify_bidder(accessor, winning_bid_id, item)
         if err:
             return pack_err(err)
 
     # Notify seller
-    # item_id = auction.item_id
-
-    # try:
-    #     response = requests.get(inventory_url + "get_items?ids=" + item_id)
-    # except Exception as err:
-    #     return pack_err(str(err))
-        
-    # try:
-    #     response = json.loads(response.text)
-    # except json.decoder.JSONDecodeError as err:
-    #     return pack_err(str(err))
-        
-    # subject = "Someone placed a bid!"
-    # body = "Someone just placed a bid of ${} on your auction.".format(bid_amount)
-
-    # try:
-    #     response = requests.get(account_url + str(losing_user))
-    # except Exception as err:
-    #     return pack_err(str(err))
-
-    # try:
-    #     response = json.loads(response.text)
-    # except json.decoder.JSONDecodeError as err:
-    #     return pack_err(str(err))
-
-    # losing_user_email = response.get("email")
-    # post_data = {"subject": subject, "body": body, "to": losing_user_email}
-    
-    # # We should still allow bid even if email fails
-    # requests.post(email_url + "send_email", json=post_data)
-
-    # seller_id = response["data"][0].get("")
+    err = try_notify_seller(auction.item_id, bid_amount, item)
+    if err:
+        return pack_err(err)
 
     return json_success()
 
@@ -415,15 +401,16 @@ def check_success(response):
     response = json.loads(response.text)
     return response.get("status")
 
-def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int):
+def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int, item):
     try:
         winning_bid = accessor.get_bid_by_id(winning_bid_id)
     except Exception as err:
         return str(err)
     losing_user = winning_bid.user_id
 
-    subject = "You've been outbid."
-    body = "Someone else just bid higher than you on an auction."
+    subject = "You've been outbid!"
+    body = "Someone else just bid higher than you on an auction for the item {}.\n".format(item.get("name", "Name not found"))
+    body += "Navigate to the website with suffix /item/{} (url: localhost:3000/item/{}) to see the item and auction information.".format(item.get("id", "ID not found"), item.get("id", "ID not found"))
 
     try:
         response = requests.get(account_url + str(losing_user))
@@ -440,6 +427,28 @@ def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int):
     
     # We should still allow bid even if email fails
     requests.post(email_url + "send_email", json=post_data)
+
+def try_notify_seller(item_id, bid_amount, item):
+    try:
+        response = requests.get(account_url + str(item.get("user_id")))
+    except Exception as err:
+        return str(err)
+
+    try:
+        response = json.loads(response.text)
+    except json.decoder.JSONDecodeError as err:
+        return str(err)
+    
+    item_name = item.get("name")
+    seller_email = response.get("email")
+    subject = "Someone bid on your auction!"
+    body = "Someone just placed a bid of ${:10.2f} on your auction for the item {}.\n".format(bid_amount, item_name)
+    body += "Navigate to the website with suffix /item/{} (url: localhost:3000/item/{}) to see the item and auction information.".format(item_id, item_id)
+    post_data = {"subject": subject, "body": body, "to": seller_email}
+    
+    # We should still allow bid even if email fails
+    requests.post(email_url + "send_email", json=post_data)
+
 
 def pack_err(err_msg):
     return jsonify({

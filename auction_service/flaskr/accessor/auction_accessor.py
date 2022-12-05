@@ -521,16 +521,16 @@ class AuctionAccessor:
         self.print_from_db("Current auction-item relations in AuctionItem table:", "AuctionItem")
         self.update_auction(auction_1, "status", 1)
         self.print_from_db("The first of the following auctions should now have status=1:", "Auction")
-        self.place_bid(1, 1, 20.50, now + timedelta(minutes=2))
-        self.place_bid(1, 2, 25.50, now + timedelta(minutes=3))
-        self.place_bid(1, 1, 30.50, now + timedelta(minutes=4))
+        self.place_bid(1, "1", 20.50, now + timedelta(minutes=2))
+        self.place_bid(1, "2", 25.50, now + timedelta(minutes=3))
+        self.place_bid(1, "1", 30.50, now + timedelta(minutes=4))
         try:
-            self.place_bid(1, 2, 30.50, now + timedelta(minutes=4))
+            self.place_bid(1, "2", 30.50, now + timedelta(minutes=4))
         except Exception as err:
             print("The following error should prevent the bid because it is too low:")
             print(err)
         try:
-            self.place_bid(2, 1, 30.50, now + timedelta(minutes=4))
+            self.place_bid(2, "1", 30.50, now + timedelta(minutes=4))
         except Exception as err:
             print("The follow error should prevent the bid because the auction is offline:")
             print(err)
