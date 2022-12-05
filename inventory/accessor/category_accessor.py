@@ -78,7 +78,7 @@ class CategoryAccessor:
 
     # update category for item
     # add category when getting items
-    def add_category_item_relation(self, item_id, category_id):
+    def add_category_item_relation(self, item_id:int, category_id:int):
         sql = "insert into category_item values (%d, %d)" % (category_id, item_id)
         try:
             self.cursor.execute(sql)

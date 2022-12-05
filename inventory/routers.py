@@ -31,10 +31,10 @@ def create_item():
     item_id, err = item_accessor.create_item(data.get('name'), data.get('description'), data.get('quantity'), data.get('shipping_cost'), data.get('is_buy_now'), data.get('price'), item_status["normal"])
     if err:
         return pack_err("create item itself failed " + err)
-    _, err = category_accessor.add_category_item_relation(item_id, data.get('category_id'))
+    _, err = category_accessor.add_category_item_relation(int(item_id), int(data.get('category_id')))
     if err:
         return pack_err("link item to category failed " + err)
-    item_info, err = item_accessor.get_item_by_ids([item_id])
+    item_info, err = item_accessor.get_item_by_ids([int(item_id)])
     if err:
         return pack_err(err)
     return pack_success(item_info[0].serialize())
