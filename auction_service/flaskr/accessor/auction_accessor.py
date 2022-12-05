@@ -510,6 +510,30 @@ class AuctionAccessor:
                         
         return bids
 
+    def get_bids_by_user(self, user_id: str) -> list:
+        # Connect to db and acquire cursor
+        db = mysql.connector.connect(
+            host = self.db_host,
+            port = self.db_port,
+            user = self.db_user,
+            password = self.db_pwd,
+            database = self.db_name,
+        )
+        cursor = db.cursor()
+
+        get_bid = "SELECT * FROM Bid WHERE user_id = %s"
+        get_bid_data = [user_id]
+        cursor.execute(get_bid, get_bid_data)
+        fetched_bids = cursor.fetchall()
+
+        bids = []
+
+        for bid_info in fetched_bids:
+            bid = Bid(bid_info[0], bid_info[1], bid_info[2], bid_info[3], bid_info[4])
+            bids.append(bid)
+                        
+        return bids
+
     def db_test(self):
         self.print_tables()
         now = datetime.now()
@@ -521,16 +545,16 @@ class AuctionAccessor:
         self.print_from_db("Current auction-item relations in AuctionItem table:", "AuctionItem")
         self.update_auction(auction_1, "status", 1)
         self.print_from_db("The first of the following auctions should now have status=1:", "Auction")
-        self.place_bid(1, 1, 20.50, now + timedelta(minutes=2))
-        self.place_bid(1, 2, 25.50, now + timedelta(minutes=3))
-        self.place_bid(1, 1, 30.50, now + timedelta(minutes=4))
+        self.place_bid(1, "1", 20.50, now + timedelta(minutes=2))
+        self.place_bid(1, "2", 25.50, now + timedelta(minutes=3))
+        self.place_bid(1, "1", 30.50, now + timedelta(minutes=4))
         try:
-            self.place_bid(1, 2, 30.50, now + timedelta(minutes=4))
+            self.place_bid(1, "2", 30.50, now + timedelta(minutes=4))
         except Exception as err:
             print("The following error should prevent the bid because it is too low:")
             print(err)
         try:
-            self.place_bid(2, 1, 30.50, now + timedelta(minutes=4))
+            self.place_bid(2, "1", 30.50, now + timedelta(minutes=4))
         except Exception as err:
             print("The follow error should prevent the bid because the auction is offline:")
             print(err)

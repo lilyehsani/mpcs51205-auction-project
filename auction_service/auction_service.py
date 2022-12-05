@@ -100,45 +100,31 @@ def place_bid():
     except Exception as err:
         return pack_err(str(err))
         
+    # Get item information
+    item_id = auction.item_id
+
+    try:
+        response = requests.get(shopping_url + "get_item_info?item_id=" + str(item_id))
+    except Exception as err:
+        return str(err)
+        
+    try:
+        response = json.loads(response.text)
+    except json.decoder.JSONDecodeError as err:
+        return str(err)
+        
+    item = response.get("data")
+
     # Notify losing_user
     if winning_bid_id is not None:
-        err = try_notify_bidder(accessor, winning_bid_id)
+        err = try_notify_bidder_of_outbid(accessor, winning_bid_id, item)
         if err:
             return pack_err(err)
 
     # Notify seller
-    # item_id = auction.item_id
-
-    # try:
-    #     response = requests.get(inventory_url + "get_items?ids=" + item_id)
-    # except Exception as err:
-    #     return pack_err(str(err))
-        
-    # try:
-    #     response = json.loads(response.text)
-    # except json.decoder.JSONDecodeError as err:
-    #     return pack_err(str(err))
-        
-    # subject = "Someone placed a bid!"
-    # body = "Someone just placed a bid of ${} on your auction.".format(bid_amount)
-
-    # try:
-    #     response = requests.get(account_url + str(losing_user))
-    # except Exception as err:
-    #     return pack_err(str(err))
-
-    # try:
-    #     response = json.loads(response.text)
-    # except json.decoder.JSONDecodeError as err:
-    #     return pack_err(str(err))
-
-    # losing_user_email = response.get("email")
-    # post_data = {"subject": subject, "body": body, "to": losing_user_email}
-    
-    # # We should still allow bid even if email fails
-    # requests.post(email_url + "send_email", json=post_data)
-
-    # seller_id = response["data"][0].get("")
+    err = try_notify_seller_of_bid(auction.item_id, bid_amount, item)
+    if err:
+        return pack_err(err)
 
     return json_success()
 
@@ -259,10 +245,10 @@ def start_auction():
 # Requires: id (int), ID of existing auction
 @app.route("/end_auction_by_time",methods=["PATCH"])
 def end_auction_by_time():
-    # TODO: call shopping API and place item in user's cart
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
 
+    # Update status to ended by time
     try:
         accessor.update_auction(auction_id, "status", auction_status["ended_by_time"])
     except Exception as err:
@@ -277,26 +263,29 @@ def end_auction_by_time():
     winning_bid_id = auction.current_highest_bid_id
 
     if winning_bid_id is None:
-        # Notify seller that nobody bid
         return json_success()
 
+    # Get winning bid
     try:
         winning_bid = accessor.get_bid_by_id(winning_bid_id)
     except Exception as err:
         return pack_err(str(err))
 
+    # Get winning bid amount and update in auction
     try:
         winning_bid_amount = winning_bid.bid_amount
         accessor.update_auction(auction_id, "finished_price", winning_bid_amount)
     except Exception as err:
         return pack_err(str(err))
 
+    # Get winning user and update in auction
     try:
         winner = winning_bid.user_id
         accessor.update_auction(auction_id, "finished_user", winner)
     except Exception as err:
         return pack_err(str(err))
 
+    # Update price of item to winning amount
     try:
         post_data = {"id": item_id, "price": winning_bid_amount}
         update_item = requests.post(inventory_url + "update_item", json=post_data)
@@ -307,6 +296,7 @@ def end_auction_by_time():
     if not check_update_item:
         return pack_err("Unable to update item price.")
 
+    # Place item in cart of winning user
     try:
         put_data = "add_item_to_cart?id={}&item={}&quantity=1".format(winner, item_id)
         add_to_cart = requests.put(shopping_url + put_data)
@@ -337,6 +327,16 @@ def end_auction_by_purchase():
 def cancel_auction():
     accessor = AuctionAccessor()
     auction_id = request.args.get("id")
+
+    try:
+        auction = accessor.get_auction_by_id(auction_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    winning_bid_id = auction.current_highest_bid_id
+
+    if winning_bid_id is not None:
+        return pack_err("Cannot cancel auction, there are bids on it.")
 
     try:
         accessor.update_auction(auction_id, "status", auction_status["canceled"])
@@ -372,6 +372,33 @@ def get_bids_by_auction():
     json_bids = []
     for bid in bids:
         json_bids.append(bid.to_json())
+
+    return pack_success(json_bids)
+
+# Requires: id (str), ID of existing user
+@app.route("/get_bids_by_user",methods=["GET"])
+def get_bids_by_user():
+    accessor = AuctionAccessor()
+    user_id = request.args.get("id")
+
+    try:
+        bids = accessor.get_bids_by_user(user_id)
+    except Exception as err:
+        return pack_err(str(err))
+
+    json_bids = []
+    for bid in bids:
+        bid_dict = bid.to_json()
+        auction_id = bid.auction_id
+        try:
+            auction = accessor.get_auction_by_id(auction_id)
+        except Exception as err:
+            return pack_err(str(err))
+
+        item_id = auction.item_id
+
+        bid_dict["item_id"] = item_id
+        json_bids.append(bid_dict)
 
     return pack_success(json_bids)
 
@@ -415,15 +442,16 @@ def check_success(response):
     response = json.loads(response.text)
     return response.get("status")
 
-def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int):
+def try_notify_bidder_of_outbid(accessor: AuctionAccessor, winning_bid_id: int, item):
     try:
         winning_bid = accessor.get_bid_by_id(winning_bid_id)
     except Exception as err:
         return str(err)
     losing_user = winning_bid.user_id
 
-    subject = "You've been outbid."
-    body = "Someone else just bid higher than you on an auction."
+    subject = "You've been outbid!"
+    body = "Someone else just bid higher than you on an auction for the item {}.\n".format(item.get("name", "Name not found"))
+    body += "Navigate to the website with suffix /item/{} (url: localhost:3000/item/{}) to see the item and auction information.".format(item.get("id", "ID not found"), item.get("id", "ID not found"))
 
     try:
         response = requests.get(account_url + str(losing_user))
@@ -440,6 +468,28 @@ def try_notify_bidder(accessor: AuctionAccessor, winning_bid_id: int):
     
     # We should still allow bid even if email fails
     requests.post(email_url + "send_email", json=post_data)
+
+def try_notify_seller_of_bid(item_id, bid_amount, item):
+    try:
+        response = requests.get(account_url + str(item.get("user_id")))
+    except Exception as err:
+        return str(err)
+
+    try:
+        response = json.loads(response.text)
+    except json.decoder.JSONDecodeError as err:
+        return str(err)
+    
+    item_name = item.get("name")
+    seller_email = response.get("email")
+    subject = "Someone bid on your auction!"
+    body = "Someone just placed a bid of ${:10.2f} on your auction for the item {}.\n".format(bid_amount, item_name)
+    body += "Navigate to the website with suffix /item/{} (url: localhost:3000/item/{}) to see the item and auction information.".format(item_id, item_id)
+    post_data = {"subject": subject, "body": body, "to": seller_email}
+    
+    # We should still allow bid even if email fails
+    requests.post(email_url + "send_email", json=post_data)
+
 
 def pack_err(err_msg):
     return jsonify({

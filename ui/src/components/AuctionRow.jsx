@@ -109,6 +109,10 @@ const AuctionRow = (props) => {
           </Col>
           <Button type="submit">Place Bid</Button>
         </Form>
+        <div>
+          This operation can take time and will alert you when it is complete. Please only press the
+          button once.
+        </div>
       </td>
       <td>{getDisplayTime(props.auction.start_time)}</td>
       <td>{getDisplayTime(props.auction.end_time)}</td>
