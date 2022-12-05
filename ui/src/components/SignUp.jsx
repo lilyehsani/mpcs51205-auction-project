@@ -41,6 +41,8 @@ const SignUp = () => {
           user_name: username,
           user_password: password,
           email: email,
+          status: 1,
+          seller_rating: 0,
         },
         {
           headers: {
@@ -104,7 +106,7 @@ const SignUp = () => {
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Col className="mb-3">
           <Form.Group as={Col} md="4" controlId="validationCustom01">
-            <Form.Label style={{ display: "flex", justifyContent: "center" }}>Name</Form.Label>
+            <Form.Label>Name</Form.Label>
             <Form.Control
               type="text"
               placeholder="Name"
