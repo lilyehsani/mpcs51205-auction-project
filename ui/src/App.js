@@ -20,7 +20,7 @@ function App() {
         <Route exact path="/" element={<Navigate to={APP_ROUTES.DASHBOARD} />} />
         <Route path={APP_ROUTES.SIGN_UP} exact element={<SignUp />} />
         <Route path={APP_ROUTES.SIGN_IN} element={<SignIn />} />
-        <Route path={APP_ROUTES.SIGN_OUT} element={<SignOut />} />
+        {/* <Route path={APP_ROUTES.SIGN_OUT} element={<SignOut />} /> */}
         <Route path={APP_ROUTES.DASHBOARD} element={<Dashboard />} />
         <Route path={APP_ROUTES.CREATE_AUCTION} element={<CreateAuction />} />
         <Route path={APP_ROUTES.CREATE_ITEM} element={<CreateItem />} />
