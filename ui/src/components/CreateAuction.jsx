@@ -111,7 +111,7 @@ const CreateAuction = () => {
                 setItemLoading(false);
               } else {
                 alert(
-                  "You have no items for sale. Navigate to createitem page to create items for sale, then you can create auctions for them."
+                  "Make sure you have created an item for sale on the createitem page before trying this page."
                 );
               }
             })
