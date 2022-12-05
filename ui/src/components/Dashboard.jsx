@@ -74,6 +74,8 @@ const Dashboard = () => {
           <td>12</td>
           <td>Category Page</td>
           <td><a href="http://localhost:3000/category"> Category page link </a> </td>
+        </tr>
+        <tr>
           <td>13</td>
           <td>My Bids Page</td>
           <td><a href="http://localhost:3000/my_bids"> My bids page link </a> </td>

@@ -12,6 +12,7 @@ import AuctionRow from "./AuctionRow";
 import { getAuthenticatedUser } from "../lib/common";
 import { Link, useNavigate } from "react-router-dom";
 import AdminEmailRow from "./AdminEmailRow";
+import AuctionList from "./AuctionList";
 
 const AdminPage = () => {
   const [user, setUser] = useState({});
@@ -136,6 +137,8 @@ const AdminPage = () => {
             ))}
           </tbody>
         </Table>
+        <h3>Auctions:</h3>
+        <AuctionList />
       </div>
     );
   } else {
