@@ -23,7 +23,12 @@ export async function getAuthenticatedUser() {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data;
+
+    if (response.data && response.data.status === 1) {
+     return response.data;
+    } else {
+    return { "message": "User is suspended."}
+    }
   } catch (err) {
     console.log("getAuthenticatedUser, Something Went Wrong", err);
     return defaultReturnObject;

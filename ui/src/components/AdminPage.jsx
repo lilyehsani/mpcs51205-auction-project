@@ -103,7 +103,7 @@ const AdminPage = () => {
     setSelectedUserId(value.target.value);
   };
 
-
+  if (user.user_name === "admin") {
     return (
       <div>
         <h1>Admin Page</h1>
@@ -157,6 +157,9 @@ const AdminPage = () => {
         </Table>
       </div>
     );
+    } else {
+        return <div>You are not the admin! Come back when your username is "admin"!</div>;
+    }
 };
 
 export default AdminPage;
