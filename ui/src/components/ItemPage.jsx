@@ -119,27 +119,30 @@ const ItemPage = () => {
     setQuantityToBuy(value.target.value);
   };
 
-  // This is not working
   const flagItem = async () => {
     try {
-      const response = axios.post(
-        "http://127.0.0.1:5001/red_flag_item/",
-        {
-          id: itemId,
-        },
-        {
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-            accept: "application/json",
+      axios
+        .post(
+          "http://127.0.0.1:5001/red_flag_item",
+          {
+            id: parseInt(itemId),
           },
-        }
-      );
-      if (response.data.status) {
-        alert("Red flag of item successful!");
-      } else {
-        alert("Item could not be red flagged. Reason: " + response.data.err_msg);
-      }
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              "Content-Type": "application/json",
+              accept: "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.status) {
+            alert("Red flag of item successful!");
+            window.location.reload(false);
+          } else {
+            alert("Item could not be red flagged. Reason: " + response.data.err_msg);
+          }
+        });
     } catch (error) {
       console.error(error);
     }
@@ -164,6 +167,7 @@ const ItemPage = () => {
         {isBuyNow === 1 && (
           <div>
             <h3>Buy it now!</h3>
+            <div>Price: {buyNowPrice}</div>
             <Form noValidate onSubmit={handleSubmit}>
               <Col className="mb-3">
                 <Form.Group as={Col} md="4">
