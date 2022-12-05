@@ -26,6 +26,7 @@ const SignOut = () => {
         axios
           .delete("http://127.0.0.1:5005/account/" + user.id)
           .then((resp) => console.log(resp.status));
+        destroyToken();
   };
 
   return (

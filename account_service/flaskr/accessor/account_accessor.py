@@ -79,7 +79,7 @@ class AccountAccessor:
         if not existing_user:
             raise Exception("This user does not exist.")
 
-        self._soft_delete(query, existing_user)
+        self._hard_delete_user(user_id)
 
     def _soft_delete(self, query: dict, existing_user: dict):
         self.table.update_one(query, {"$set": {"name": existing_user.get('name'),
@@ -90,7 +90,7 @@ class AccountAccessor:
                                                "user_password": existing_user.get('user_password')
                                                }})
 
-    def hard_delete_user(self, user_id: str) -> int:
+    def _hard_delete_user(self, user_id: str) -> int:
         return self.table.delete_one({'_id': ObjectId(user_id)}).deleted_count
 
     def suspend_user(self, user_id: str) -> None:
