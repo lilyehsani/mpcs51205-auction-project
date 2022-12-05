@@ -41,7 +41,8 @@ const CreateItem = () => {
   };
 
   const createItem = async () => {
-    if (!user["id"] || user["id"] === "") {
+    console.log(user);
+    if (! user || !user["id"] || user["id"] === "") {
       alert("login before creating an item");
       return;
     }
