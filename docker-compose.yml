@@ -29,15 +29,15 @@ services:
         condition: service_healthy
 
   # Builds the auction queue service using port 5004
-  # auction_queue:
-  #   build: auction_queue
-  #   ports:
-  #     - "5004:5004"
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime
-  #   depends_on:
-  #     auction_db:
-  #       condition: service_healthy
+  auction_queue:
+    build: auction_queue
+    ports:
+      - "5004:5004"
+    volumes:
+      - /etc/localtime:/etc/localtime
+    depends_on:
+      auction_db:
+        condition: service_healthy
 
   #---------- INVENTORY ----------#
   inventorydb:
