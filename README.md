@@ -17,7 +17,7 @@ The rest of this document gives more details about each API.
 
 # system setup
 
-./run.sh
+docker-compose up --force-recreate --build
 
 # test inventory
 
